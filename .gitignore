@@ -1,0 +1,40 @@
+# WordPress
+.htaccess
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+sitemap.xml
+*.log
+
+# Dependencies
+node_modules/
+vendor/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Backups
+backups/
+*.backup
+*.bak
+
+# Temp files
+*.tmp
+*.temp
+*~
+
+# Composer
+composer.lock
+
+# NPM
+package-lock.json
+yarn.lock
