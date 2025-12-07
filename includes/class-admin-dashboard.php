@@ -297,7 +297,15 @@ class PS_Update_Manager_Admin_Dashboard {
 									<?php echo esc_html( ucfirst( $product['type'] ) ); ?>
 								</span>
 								<span class="ps-product-status <?php echo $product['is_active'] ? 'active' : 'inactive'; ?>">
-									<?php echo $product['is_active'] ? __( 'Aktiv', 'ps-update-manager' ) : __( 'Inaktiv', 'ps-update-manager' ); ?>
+									<?php 
+									// Multisite: Zeige ob netzwerkweit aktiv
+									if ( is_multisite() && $product['is_active'] && isset( $product['basename'] ) && is_plugin_active_for_network( $product['basename'] ) ) {
+										echo '<span class="dashicons dashicons-networking" style="font-size: 14px; width: 14px; height: 14px;"></span> ';
+										esc_html_e( 'Netzwerkweit aktiv', 'ps-update-manager' );
+									} else {
+										echo $product['is_active'] ? __( 'Aktiv', 'ps-update-manager' ) : __( 'Inaktiv', 'ps-update-manager' );
+									}
+									?>
 								</span>
 							</div>
 							
@@ -368,7 +376,17 @@ class PS_Update_Manager_Admin_Dashboard {
 		$last_scan_time = get_transient( 'ps_last_scan_time' );
 		$current_time = current_time( 'timestamp' );
 		
-		if ( ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
+		// Force-Scan wenn ?force_scan=1 im URL
+		$force_scan = isset( $_GET['force_scan'] ) && '1' === sanitize_key( $_GET['force_scan'] );
+		
+		if ( $force_scan || ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
+			if ( $force_scan ) {
+				// Alle Transients löschen für kompletten Neustart
+				delete_transient( 'ps_last_scan_time' );
+				delete_transient( 'ps_discovered_products' );
+				delete_transient( 'ps_update_manager_products_cache' );
+				delete_transient( 'ps_update_manager_status_cache' );
+			}
 			$scanner->scan_all();
 		}
 		
@@ -446,7 +464,21 @@ class PS_Update_Manager_Admin_Dashboard {
 								<?php elseif ( $product['update_available'] ) : ?>
 									<span class="ps-badge ps-badge-update"><?php printf( __( 'Update: v%s', 'ps-update-manager' ), esc_html( $product['new_version'] ) ); ?></span>
 								<?php elseif ( $product['active'] ) : ?>
-									<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+									<?php
+									// Multisite: Prüfe ob netzwerkweit aktiv
+									$is_network_active = false;
+									if ( is_multisite() && isset( $installed_products[ $slug ]['basename'] ) ) {
+										$is_network_active = is_plugin_active_for_network( $installed_products[ $slug ]['basename'] );
+									}
+									?>
+									<?php if ( $is_network_active ) : ?>
+										<span class="ps-badge ps-badge-network-active" title="<?php esc_attr_e( 'Netzwerkweit aktiviert', 'ps-update-manager' ); ?>">
+											<span class="dashicons dashicons-networking" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span>
+											<?php esc_html_e( 'Netzwerkweit', 'ps-update-manager' ); ?>
+										</span>
+									<?php else : ?>
+										<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+									<?php endif; ?>
 								<?php else : ?>
 									<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
 								<?php endif; ?>
@@ -482,15 +514,151 @@ class PS_Update_Manager_Admin_Dashboard {
 								</a>
 							<?php elseif ( ! $product['active'] && 'plugin' === $product['type'] ) : ?>
 								<?php
-								$activate_url = wp_nonce_url(
-									admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $slug . '/' . $slug . '.php' ) ),
-									'activate-plugin_' . $slug . '/' . $slug . '.php'
-								);
-								?>
-								<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-									<span class="dashicons dashicons-yes"></span>
-									<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
-								</a>
+								// Basename aus Registry holen (z.B. ps-chat/psource-chat.php)
+								$plugin_basename = isset( $installed_products[ $slug ]['basename'] ) 
+									? $installed_products[ $slug ]['basename'] 
+									: $slug . '/' . $slug . '.php'; // Fallback
+								
+								// Network-Modus aus Registry holen
+								$network_only = isset( $installed_products[ $slug ]['network_only'] ) && $installed_products[ $slug ]['network_only'];
+								$network_mode = isset( $installed_products[ $slug ]['network_mode'] ) ? $installed_products[ $slug ]['network_mode'] : 'none';
+								
+								// Multisite: Prüfe ob wir im Network Admin sind
+								if ( is_multisite() && is_network_admin() ) {
+									// Prüfe ob Plugin netzwerkweit aktivierbar ist
+									if ( 'none' === $network_mode ) {
+										// Site-Only Plugin - nicht im Netzwerk-Admin aktivierbar
+										?>
+										<button class="button" disabled>
+											<span class="dashicons dashicons-admin-site"></span>
+											<?php esc_html_e( 'Nur Unterseiten', 'ps-update-manager' ); ?>
+										</button>
+										<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+											<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+											<?php esc_html_e( 'Nur auf Unterseiten-Ebene aktivierbar (nicht netzwerkweit).', 'ps-update-manager' ); ?>
+										</p>
+										<?php
+									} else {
+										// Netzwerkweite Aktivierung möglich
+										$activate_url = wp_nonce_url(
+											network_admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+											'activate-plugin_' . $plugin_basename
+										);
+										?>
+										<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+											<span class="dashicons dashicons-yes"></span>
+											<?php esc_html_e( 'Netzwerkweit aktivieren', 'ps-update-manager' ); ?>
+										</a>
+										<?php if ( 'wordpress-network' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px; color: #d63638;">
+												<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+												<?php esc_html_e( 'Dieses Plugin kann nur netzwerkweit aktiviert werden.', 'ps-update-manager' ); ?>
+											</p>
+										<?php elseif ( 'multisite-required' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+												<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+												<?php esc_html_e( 'Auf Multisite nur netzwerkweit aktivierbar. Auf Single-Sites normal nutzbar.', 'ps-update-manager' ); ?>
+											</p>
+										<?php elseif ( 'flexible' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px;">
+												<?php esc_html_e( 'Kann auch site-by-site im Site-Admin aktiviert werden.', 'ps-update-manager' ); ?>
+											</p>
+										<?php endif; ?>
+									<?php
+									}
+								} elseif ( is_multisite() && ! $network_only ) {
+									// Site-Admin auf Multisite: Nur wenn Plugin nicht network-only ist
+									$activate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+										'activate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+										<span class="dashicons dashicons-yes"></span>
+										<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+									</a>
+									<p class="description" style="margin-top: 8px; font-size: 12px;">
+										<?php esc_html_e( 'Aktiviert das Plugin nur für diese Site.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } elseif ( is_multisite() && $network_only ) {
+									// Site-Admin, aber Plugin ist network-only
+									?>
+									<button class="button" disabled>
+										<span class="dashicons dashicons-lock"></span>
+										<?php esc_html_e( 'Nur Netzwerk-Admin', 'ps-update-manager' ); ?>
+									</button>
+									<p class="description" style="margin-top: 8px; font-size: 12px; color: #d63638;">
+										<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+										<?php esc_html_e( 'Dieses Plugin kann nur im Netzwerk-Admin aktiviert werden.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } else {
+									// Single-Site Standard-Aktivierung
+									$activate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+										'activate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+										<span class="dashicons dashicons-yes"></span>
+										<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } ?>
+							<?php elseif ( $product['active'] && 'plugin' === $product['type'] ) : ?>
+								<?php
+								// Basename aus Registry holen
+								$plugin_basename = isset( $installed_products[ $slug ]['basename'] ) 
+									? $installed_products[ $slug ]['basename'] 
+									: $slug . '/' . $slug . '.php';
+								
+								// Prüfe ob netzwerkweit aktiv
+								$is_network_active = is_multisite() && is_plugin_active_for_network( $plugin_basename );
+								
+								// Deaktivierungs-URLs
+								if ( is_multisite() && is_network_admin() && $is_network_active ) {
+									// Netzwerkweite Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										network_admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Netzwerkweit deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } elseif ( is_multisite() && ! is_network_admin() && ! $is_network_active ) {
+									// Site-spezifische Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } elseif ( is_multisite() && ! is_network_admin() && $is_network_active ) {
+									// Im Site-Admin, aber netzwerkweit aktiv - kann hier nicht deaktiviert werden
+									?>
+									<button class="button" disabled>
+										<span class="dashicons dashicons-admin-network"></span>
+										<?php esc_html_e( 'Netzwerkweit aktiv', 'ps-update-manager' ); ?>
+									</button>
+									<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+										<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+										<?php esc_html_e( 'Nur im Netzwerk-Admin deaktivierbar.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } else {
+									// Single-Site Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } ?>
 							<?php elseif ( $product['active'] ) : ?>
 								<button class="button" disabled>
 									<span class="dashicons dashicons-yes-alt"></span>
@@ -587,6 +755,14 @@ class PS_Update_Manager_Admin_Dashboard {
 			.ps-badge-active {
 				background: #d4edda;
 				color: #155724;
+			}
+			
+			.ps-badge-network-active {
+				background: #cfe2ff;
+				color: #084298;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
 			}
 			
 			.ps-badge-update {

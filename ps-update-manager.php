@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name: PS Update Manager
- * Plugin URI: https://github.com/cp-psource
+ * Plugin URI: https://power-source.github.io/ps-update-manager/
  * Description: Zentraler Update-Manager für alle PSource Plugins und Themes. Verwaltet Updates von GitHub oder eigenem Server.
  * Version: 1.0.0
  * Author: PSource
- * Author URI: https://github.com/cp-psource
+ * Author URI: https://nerdservice.eimen.net
  * Text Domain: ps-update-manager
  * Domain Path: /languages
- * Network: true
+ * PS Network: required
  */
 
 // Direkten Zugriff verhindern
@@ -32,11 +32,6 @@ class PS_Update_Manager {
 	 * Singleton Instance
 	 */
 	private static $instance = null;
-	
-	/**
-	 * Registrierte Produkte
-	 */
-	private $products = array();
 	
 	/**
 	 * Singleton Instance abrufen
@@ -159,6 +154,23 @@ function ps_update_manager() {
 
 // Plugin initialisieren
 ps_update_manager();
+
+/**
+ * Plugin Deaktivierung - Aufräumen
+ */
+register_deactivation_hook( __FILE__, function() {
+	// Cron-Job entfernen
+	$timestamp = wp_next_scheduled( 'ps_update_manager_daily_scan' );
+	if ( $timestamp ) {
+		wp_unschedule_event( $timestamp, 'ps_update_manager_daily_scan' );
+	}
+	
+	// Optional: Transients aufräumen (auskommentiert, da Daten erhalten bleiben sollen)
+	// delete_transient( 'ps_last_scan_time' );
+	// delete_transient( 'ps_discovered_products' );
+	// delete_transient( 'ps_update_manager_products_cache' );
+	// delete_transient( 'ps_update_manager_status_cache' );
+} );
 
 /**
  * Helper-Funktion für andere Plugins

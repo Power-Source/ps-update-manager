@@ -55,15 +55,19 @@ class PS_Update_Manager_Product_Scanner {
 		
 		// Plugins scannen
 		$plugins = $this->scan_plugins();
+		error_log( 'Scanner: Found ' . count( $plugins ) . ' plugins: ' . print_r( array_keys( $plugins ), true ) );
 		if ( ! empty( $plugins ) ) {
 			$discovered = array_merge( $discovered, $plugins );
 		}
 		
 		// Themes scannen
 		$themes = $this->scan_themes();
+		error_log( 'Scanner: Found ' . count( $themes ) . ' themes: ' . print_r( array_keys( $themes ), true ) );
 		if ( ! empty( $themes ) ) {
 			$discovered = array_merge( $discovered, $themes );
 		}
+		
+		error_log( 'Scanner: Total discovered products: ' . count( $discovered ) );
 		
 		// In Registry speichern
 		$this->save_discovered_products( $discovered );
@@ -106,13 +110,21 @@ class PS_Update_Manager_Product_Scanner {
 				continue;
 			}
 			
+			// WICHTIG: basename ist der tatsächliche Plugin-File-Path (z.B. ps-chat/psource-chat.php)
+			// slug ist nur das Verzeichnis (z.B. ps-chat)
+			
+			// Network-Modus aus Plugin-Header auslesen
+			// Network: true = nur netzwerkweit aktivierbar
+			// PS Network: flexible = beide Modi möglich (netzwerkweit ODER site-by-site)
+			$network_info = $this->get_network_mode( WP_PLUGIN_DIR . '/' . $plugin_file );
+			
 			$psource_plugins[ $slug ] = array(
 				'slug'          => $slug,
 				'name'          => $manifest['name'],
 				'version'       => $plugin_data['Version'],
 				'type'          => 'plugin',
 				'file'          => WP_PLUGIN_DIR . '/' . $plugin_file,
-				'basename'      => $plugin_file,
+				'basename'      => $plugin_file, // KRITISCH: Muss kompletter Pfad sein!
 				'github_repo'   => $manifest['repo'],
 				'description'   => $manifest['description'],
 				'author'        => $plugin_data['Author'] ?? 'PSource',
@@ -123,6 +135,8 @@ class PS_Update_Manager_Product_Scanner {
 				'icon'          => $manifest['icon'] ?? 'dashicons-admin-plugins',
 				'category'      => $manifest['category'] ?? 'general',
 				'is_active'     => is_plugin_active( $plugin_file ) || ( is_multisite() && is_plugin_active_for_network( $plugin_file ) ),
+				'network_only'  => $network_info['network_only'], // true wenn nur netzwerkweit
+				'network_mode'  => $network_info['mode'], // 'required', 'flexible', oder 'none'
 				'discovered'    => true,
 				'official'      => true,
 			);
@@ -228,6 +242,69 @@ class PS_Update_Manager_Product_Scanner {
 	 */
 	public function get_official_products() {
 		return $this->official_products;
+	}
+	
+	/**
+	 * Network-Modus aus Plugin-Header auslesen
+	 * 
+	 * Unterstützte Header:
+	 * - Network: true = Nur netzwerkweit aktivierbar (WordPress Standard)
+	 * - PS Network: flexible = Beide Modi möglich (netzwerkweit ODER site-by-site)
+	 * - PS Network: required = Nur netzwerkweit (explizit für PSource)
+	 * - Kein Header = Nur site-by-site möglich
+	 * 
+	 * @param string $plugin_file Vollständiger Pfad zur Plugin-Datei
+	 * @return array ['network_only' => bool, 'mode' => string]
+	 */
+	private function get_network_mode( $plugin_file ) {
+		$default = array(
+			'network_only' => false,
+			'mode' => 'none', // 'required', 'flexible', 'none'
+		);
+		
+		if ( ! file_exists( $plugin_file ) ) {
+			return $default;
+		}
+		
+		// Plugin-Header auslesen (erste 8KB wie WordPress es macht)
+		$file_data = get_file_data( $plugin_file, array(
+			'Network' => 'Network',
+			'PSNetwork' => 'PS Network',
+		) );
+		
+		// PS Network Header hat Vorrang (PSource-spezifisch)
+		if ( ! empty( $file_data['PSNetwork'] ) ) {
+			$ps_network = strtolower( trim( $file_data['PSNetwork'] ) );
+			
+			if ( 'flexible' === $ps_network ) {
+				return array(
+					'network_only' => false,
+					'mode' => 'flexible', // Kann beides
+				);
+			} elseif ( 'required' === $ps_network || 'true' === $ps_network ) {
+				// PS Network: required = Multisite-aware (Single-Site OK, Multisite nur netzwerkweit)
+				return array(
+					'network_only' => is_multisite(), // Nur auf Multisite network-only
+					'mode' => 'multisite-required', // Multisite-aware Modus
+				);
+			}
+		}
+		
+		// WordPress Standard "Network: true" Header
+		// Immer nur netzwerkweit, auch auf Single-Sites
+		if ( ! empty( $file_data['Network'] ) ) {
+			$network = strtolower( trim( $file_data['Network'] ) );
+			
+			if ( 'true' === $network ) {
+				return array(
+					'network_only' => true,
+					'mode' => 'wordpress-network', // WordPress Standard - immer nur netzwerkweit
+				);
+			}
+		}
+		
+		// Kein Network-Header = Nur site-by-site
+		return $default;
 	}
 	
 	/**

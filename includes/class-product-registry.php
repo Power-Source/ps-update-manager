@@ -26,12 +26,8 @@ class PS_Update_Manager_Product_Registry {
 	}
 	
 	private function __construct() {
-		add_action( 'ps_update_manager_init', array( $this, 'init' ), 5 );
-	}
-	
-	public function init() {
-		// Produkte aus Option laden (für Persistenz)
-		// Nutze Transient mit Cache für bessere Performance
+		// Produkte sofort beim Konstruktor laden (NICHT erst am Hook)
+		// Sonst kann Scanner nichts registrieren wenn er früher läuft
 		$cache_key = 'ps_update_manager_products_cache';
 		$cached = get_transient( $cache_key );
 		
