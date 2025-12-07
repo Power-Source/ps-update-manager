@@ -258,7 +258,7 @@ GPL v2 oder höher
 - **GitHub Repository:** https://github.com/Power-Source/ps-update-manager
 - **Issues & Support:** https://github.com/Power-Source/ps-update-manager/issues
 - **PSource Organization:** https://github.com/Power-Source
-- **Legacy Repos:** https://github.com/cp-psource
+- **Legacy Repos:** https://github.com/Power-Source
 
 ---
 

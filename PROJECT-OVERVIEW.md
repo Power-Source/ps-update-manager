@@ -149,7 +149,7 @@ require 'psource/psource-plugin-update/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
  
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/cp-psource/default-theme',
+    'https://github.com/Power-Source/default-theme',
     __FILE__,
     'default-theme'
 );
@@ -170,7 +170,7 @@ add_action( 'plugins_loaded', function() {
             'version'     => '1.0.5',
             'type'        => 'plugin',
             'file'        => __FILE__,
-            'github_repo' => 'cp-psource/default-theme',
+            'github_repo' => 'Power-Source/default-theme',
         ) );
     }
 }, 5 );
@@ -213,7 +213,7 @@ add_action( 'plugins_loaded', function() {
             'version'     => '1.0.5',
             'type'        => 'plugin',
             'file'        => __FILE__,
-            'github_repo' => 'cp-psource/default-theme',
+            'github_repo' => 'Power-Source/default-theme',
         ) );
     }
 }, 5 );
@@ -249,7 +249,7 @@ cd ps-update-manager
 git init
 git add .
 git commit -m "Initial release v1.0.0"
-git remote add origin git@github.com:cp-psource/ps-update-manager.git
+git remote add origin git@github.com:Power-Source/ps-update-manager.git
 git push -u origin master
 
 # Release erstellen
@@ -329,7 +329,7 @@ Das System ist so designed, dass du einfach erweitern kannst:
 
 ## 📞 Support & Contribution
 
-- **Issues:** https://github.com/cp-psource/ps-update-manager/issues
+- **Issues:** https://github.com/Power-Source/ps-update-manager/issues
 - **Pull Requests:** Immer willkommen!
 - **Diskussionen:** GitHub Discussions
 

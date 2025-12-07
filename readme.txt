@@ -97,7 +97,7 @@ ps_register_product( array(
 
 = Dokumentation =
 
-Vollständige Dokumentation findest du auf [GitHub](https://github.com/cp-psource/ps-update-manager).
+Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Source/ps-update-manager).
 
 == Installation ==
 
@@ -106,7 +106,7 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/cp-psourc
 3. Dashboard ist unter "PS Updates" verfügbar
 4. Integration-Code in deine Plugins einfügen
 
-Für detaillierte Anleitung siehe [Quick Start Guide](https://github.com/cp-psource/ps-update-manager/blob/master/QUICKSTART.md).
+Für detaillierte Anleitung siehe [Quick Start Guide](https://github.com/Power-Source/ps-update-manager/blob/master/QUICKSTART.md).
 
 == Frequently Asked Questions ==
 
@@ -166,7 +166,7 @@ Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatisc
 * ✅ Admin Notices
 * ✅ Caching für bessere Performance
 
-Vollständiger Changelog: [CHANGELOG.md](https://github.com/cp-psource/ps-update-manager/blob/master/CHANGELOG.md)
+Vollständiger Changelog: [CHANGELOG.md](https://github.com/Power-Source/ps-update-manager/blob/master/CHANGELOG.md)
 
 == Upgrade Notice ==
 
@@ -175,9 +175,9 @@ Erstes Release - keine Upgrades nötig.
 
 == Support ==
 
-* GitHub Issues: https://github.com/cp-psource/ps-update-manager/issues
-* Dokumentation: https://github.com/cp-psource/ps-update-manager
+* GitHub Issues: https://github.com/Power-Source/ps-update-manager/issues
+* Dokumentation: https://github.com/Power-Source/ps-update-manager
 
 == Contribute ==
 
-Dieses Plugin ist Open Source! Contributions sind willkommen auf [GitHub](https://github.com/cp-psource/ps-update-manager).
+Dieses Plugin ist Open Source! Contributions sind willkommen auf [GitHub](https://github.com/Power-Source/ps-update-manager).

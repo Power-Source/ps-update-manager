@@ -353,7 +353,7 @@ class PS_Update_Manager_Admin_Dashboard {
 					<?php esc_html_e( 'Alle PSource Produkte sind Open Source. Du kannst jederzeit beitragen, Issues melden oder Features vorschlagen.', 'ps-update-manager' ); ?>
 				</p>
 				<p>
-					<a href="https://github.com/cp-psource" target="_blank" class="button">
+					<a href="https://github.com/Power-Source" target="_blank" class="button">
 						<?php esc_html_e( 'Auf GitHub mitarbeiten', 'ps-update-manager' ); ?>
 					</a>
 				</p>

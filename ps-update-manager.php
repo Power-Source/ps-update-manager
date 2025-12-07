@@ -184,7 +184,7 @@ register_deactivation_hook( __FILE__, function() {
  *     @type string $version      Aktuelle Version (erforderlich)
  *     @type string $type         'plugin' oder 'theme' (erforderlich)
  *     @type string $file         Haupt-Plugin-Datei (__FILE__) (erforderlich)
- *     @type string $github_repo  GitHub Repo (z.B. 'cp-psource/default-theme') (optional)
+ *     @type string $github_repo  GitHub Repo (z.B. 'Power-Source/default-theme') (optional)
  *     @type string $update_url   Custom Update URL (optional)
  *     @type string $docs_url     Dokumentation URL (optional)
  *     @type string $support_url  Support URL (optional)

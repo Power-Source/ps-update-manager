@@ -25,14 +25,14 @@ PLUGINS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # Liste deiner Plugins
 # Format: "ordner-name|plugin-datei.php|Anzeigename|GitHub Repo"
 PLUGINS=(
-    "default-theme|default-theme.php|Standard Theme|cp-psource/default-theme"
-    "events-and-bookings|events-and-bookings.php|Events and Bookings|cp-psource/events-and-bookings"
-    "marketpress|marketpress.php|MarketPress|cp-psource/marketpress"
-    "powerform|powerform.php|PowerForm|cp-psource/powerform"
-    "ps-chat|psource-chat.php|PS Chat|cp-psource/ps-chat"
-    "ps-live-debug|class-ps-live-debug.php|PS Live Debug|cp-psource/ps-live-debug"
-    "psource-link-checker|broken-link-checker.php|PS Link Checker|cp-psource/psource-link-checker"
-    "upfront-builder|upfront-theme-exporter.php|Upfront Builder|cp-psource/upfront-builder"
+    "default-theme|default-theme.php|Standard Theme|Power-Source/default-theme"
+    "events-and-bookings|events-and-bookings.php|Events and Bookings|Power-Source/events-and-bookings"
+    "marketpress|marketpress.php|MarketPress|Power-Source/marketpress"
+    "powerform|powerform.php|PowerForm|Power-Source/powerform"
+    "ps-chat|psource-chat.php|PS Chat|Power-Source/ps-chat"
+    "ps-live-debug|class-ps-live-debug.php|PS Live Debug|Power-Source/ps-live-debug"
+    "psource-link-checker|broken-link-checker.php|PS Link Checker|Power-Source/psource-link-checker"
+    "upfront-builder|upfront-theme-exporter.php|Upfront Builder|Power-Source/upfront-builder"
 )
 
 # Backup-Verzeichnis erstellen
@@ -63,7 +63,7 @@ add_action( 'plugins_loaded', function() {
             'type'          => 'plugin',
             'file'          => __FILE__,
             'github_repo'   => '$github_repo',
-            'docs_url'      => 'https://cp-psource.github.io/$slug/',
+            'docs_url'      => 'https://Power-Source.github.io/$slug/',
             'support_url'   => 'https://github.com/$github_repo/issues',
             'changelog_url' => 'https://github.com/$github_repo/releases',
         ) );
@@ -77,7 +77,7 @@ add_action( 'admin_notices', function() {
         if ( \$screen && in_array( \$screen->id, array( 'plugins', 'plugins-network' ) ) ) {
             echo '<div class="notice notice-info is-dismissible"><p>';
             echo '<strong>$name:</strong> ';
-            echo 'Installiere den <a href="https://github.com/cp-psource/ps-update-manager">PS Update Manager</a> für Updates.';
+            echo 'Installiere den <a href="https://github.com/Power-Source/ps-update-manager">PS Update Manager</a> für Updates.';
             echo '</p></div>';
         }
     }

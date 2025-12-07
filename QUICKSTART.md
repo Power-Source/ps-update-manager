@@ -90,9 +90,9 @@ add_action( 'plugins_loaded', function() {
             'version'       => '1.0.0',                          // ← ANPASSEN
             'type'          => 'plugin',
             'file'          => __FILE__,
-            'github_repo'   => 'cp-psource/REPO-NAME',          // ← ANPASSEN
+            'github_repo'   => 'Power-Source/REPO-NAME',        // ← ANPASSEN
             'docs_url'      => 'https://deine-docs.de',         // ← Optional
-            'support_url'   => 'https://github.com/cp-psource/REPO-NAME/issues',
+            'support_url'   => 'https://github.com/Power-Source/REPO-NAME/issues',
             'description'   => 'Kurze Beschreibung',            // ← Optional
         ) );
     }
@@ -105,7 +105,7 @@ add_action( 'admin_notices', function() {
         if ( $screen && in_array( $screen->id, array( 'plugins', 'plugins-network' ) ) ) {
             echo '<div class="notice notice-info is-dismissible"><p>';
             echo '<strong>PLUGIN NAME:</strong> ';  // ← ANPASSEN
-            echo 'Installiere den <a href="https://github.com/cp-psource/ps-update-manager">PS Update Manager</a> für Updates.';
+            echo 'Installiere den <a href="https://github.com/Power-Source/ps-update-manager">PS Update Manager</a> für Updates.';
             echo '</p></div>';
         }
     }
@@ -226,8 +226,8 @@ git push origin v1.0.1
 ## 📚 Weitere Ressourcen
 
 - [Vollständige Dokumentation](README.md)
-- [GitHub Repo](https://github.com/cp-psource/ps-update-manager)
-- [Issues melden](https://github.com/cp-psource/ps-update-manager/issues)
+- [GitHub Repo](https://github.com/Power-Source/ps-update-manager)
+- [Issues melden](https://github.com/Power-Source/ps-update-manager/issues)
 
 ---
 

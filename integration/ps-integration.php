@@ -116,7 +116,7 @@ class PS_Product_Integration {
 				'<div class="notice notice-warning is-dismissible"><p><strong>%s</strong> %s <a href="%s" target="_blank">%s</a></p></div>',
 				esc_html( $this->product_data['name'] ),
 				esc_html__( 'empfiehlt den PS Update Manager für Updates und Support.', 'ps-update-manager' ),
-				'https://github.com/cp-psource/ps-update-manager',
+				'https://github.com/Power-Source/ps-update-manager',
 				esc_html__( 'Mehr erfahren', 'ps-update-manager' )
 			);
 		}
@@ -139,10 +139,10 @@ new PS_Product_Integration( __FILE__, array(
 	'name'          => 'Default Theme',                    // Anzeigename
 	'version'       => '1.0.0',                            // Aktuelle Version
 	'type'          => 'plugin',                           // 'plugin' oder 'theme'
-	'github_repo'   => 'cp-psource/default-theme',         // GitHub Repo (owner/repo)
+	'github_repo'   => 'Power-Source/default-theme',       // GitHub Repo (owner/repo)
 	'docs_url'      => 'https://deine-docs.de',            // Optional: Dokumentation
-	'support_url'   => 'https://github.com/cp-psource/default-theme/issues',  // Optional: Support
-	'changelog_url' => 'https://github.com/cp-psource/default-theme/releases', // Optional: Changelog
+	'support_url'   => 'https://github.com/Power-Source/default-theme/issues',  // Optional: Support
+	'changelog_url' => 'https://github.com/Power-Source/default-theme/releases', // Optional: Changelog
 	'description'   => 'Dein cooles Plugin beschreibung',  // Optional: Beschreibung
 ) );
 */
@@ -161,7 +161,7 @@ add_action( 'plugins_loaded', function() {
 			'version'     => '1.0.0',
 			'type'        => 'plugin',
 			'file'        => __FILE__,
-			'github_repo' => 'cp-psource/default-theme',
+			'github_repo' => 'Power-Source/default-theme',
 			'docs_url'    => 'https://deine-docs.de',
 		) );
 	}
@@ -172,7 +172,7 @@ add_action( 'admin_notices', function() {
 	if ( ! function_exists( 'ps_register_product' ) && current_user_can( 'install_plugins' ) ) {
 		echo '<div class="notice notice-info"><p>';
 		echo '<strong>Default Theme:</strong> ';
-		echo 'Installiere den <a href="https://github.com/cp-psource/ps-update-manager" target="_blank">PS Update Manager</a> für automatische Updates.';
+		echo 'Installiere den <a href="https://github.com/Power-Source/ps-update-manager" target="_blank">PS Update Manager</a> für automatische Updates.';
 		echo '</p></div>';
 	}
 });

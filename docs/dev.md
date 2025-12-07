@@ -66,8 +66,7 @@ Empfohlene Kategorien für bessere Organisation:
 ### Schritt 1: Repository erstellen
 
 Stelle sicher, dass das Repository in der GitHub-Organisation existiert:
-- **Power-Source** (bevorzugt für neue Produkte)
-- **cp-psource** (für Legacy-Produkte)
+- **Power-Source** (Organisation für alle Produkte)
 
 ### Schritt 2: Manifest aktualisieren
 
@@ -182,7 +181,7 @@ $product = $scanner->get_official_product( 'ps-chat' );
 
 if ( $product ) {
     echo $product['name']; // "PS Chat"
-    echo $product['repo']; // "cp-psource/ps-chat"
+    echo $product['repo']; // "Power-Source/ps-chat"
 }
 ```
 

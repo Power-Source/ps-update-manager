@@ -77,7 +77,7 @@ class PS_Update_Manager_Product_Registry {
 			'changelog_url' => '',
 			'description'   => '',
 			'author'        => 'PSource',
-			'author_url'    => 'https://github.com/cp-psource',
+			'author_url'    => 'https://github.com/Power-Source',
 			'registered_at' => current_time( 'mysql' ),
 		) );
 		

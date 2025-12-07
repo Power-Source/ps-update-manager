@@ -2,15 +2,15 @@
 /*
 Plugin Name: Standard Theme
 Version: 1.0.5
-Plugin URI: https://cp-psource.github.io/default-theme/
+Plugin URI: https://Power-Source.github.io/default-theme/
 Description: Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen
 Author: PSOURCE
-Author URI: https://github.com/cp-psource
+Author URI: https://github.com/Power-Source
 Network: true
 */
 
 /*
-Copyright 2020-2025 PSOURCE (https://github.com/cp-psource)
+Copyright 2020-2025 PSOURCE (https://github.com/Power-Source)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -40,10 +40,10 @@ add_action( 'plugins_loaded', function() {
 			'version'       => '1.0.5',
 			'type'          => 'plugin',
 			'file'          => __FILE__,
-			'github_repo'   => 'cp-psource/default-theme',
-			'docs_url'      => 'https://cp-psource.github.io/default-theme/',
-			'support_url'   => 'https://github.com/cp-psource/default-theme/issues',
-			'changelog_url' => 'https://github.com/cp-psource/default-theme/releases',
+			'github_repo'   => 'Power-Source/default-theme',
+			'docs_url'      => 'https://Power-Source.github.io/default-theme/',
+			'support_url'   => 'https://github.com/Power-Source/default-theme/issues',
+			'changelog_url' => 'https://github.com/Power-Source/default-theme/releases',
 			'description'   => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen in WordPress Multisite.',
 		) );
 	}
@@ -57,7 +57,7 @@ add_action( 'admin_notices', function() {
 			echo '<div class="notice notice-info is-dismissible">';
 			echo '<p><strong>Standard Theme:</strong> ';
 			echo 'Für automatische Updates empfehlen wir den ';
-			echo '<a href="https://github.com/cp-psource/ps-update-manager" target="_blank">PS Update Manager</a>.';
+			echo '<a href="https://github.com/Power-Source/ps-update-manager" target="_blank">PS Update Manager</a>.';
 			echo '</p></div>';
 		}
 	}
