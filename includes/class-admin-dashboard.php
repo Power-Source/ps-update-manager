@@ -21,17 +21,28 @@ class PS_Update_Manager_Admin_Dashboard {
 	
 	private function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
-		add_action( 'network_admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'network_admin_menu', array( $this, 'add_network_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'admin_init', array( $this, 'handle_settings_save' ) );
 		
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
 	}
 	
 	/**
-	 * Menü hinzufügen
+	 * Menü hinzufügen (Normal/Einzelsite)
 	 */
 	public function add_menu() {
+		// Im Netzwerk-Modus: Menü nur im Netzwerk-Admin anzeigen
+		if ( is_multisite() ) {
+			return;
+		}
+		
+		// Prüfe Zugriff
+		if ( ! $this->current_user_can_access() ) {
+			return;
+		}
+		
 		add_menu_page(
 			__( 'PS Update Manager', 'ps-update-manager' ),
 			__( 'PS Updates', 'ps-update-manager' ),
@@ -58,6 +69,58 @@ class PS_Update_Manager_Admin_Dashboard {
 			'manage_options',
 			'ps-update-manager-products',
 			array( $this, 'render_products' )
+		);
+	}
+	
+	/**
+	 * Netzwerk-Admin-Menü hinzufügen
+	 */
+	public function add_network_menu() {
+		// Nur im Netzwerk-Modus
+		if ( ! is_multisite() ) {
+			return;
+		}
+		
+		// Nur für Netzwerk-Admins
+		if ( ! is_super_admin() ) {
+			return;
+		}
+		
+		add_menu_page(
+			__( 'PS Update Manager', 'ps-update-manager' ),
+			__( 'PS Updates', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager',
+			array( $this, 'render_dashboard' ),
+			'dashicons-update',
+			59
+		);
+		
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'Dashboard', 'ps-update-manager' ),
+			__( 'Dashboard', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager',
+			array( $this, 'render_dashboard' )
+		);
+		
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'Alle Produkte', 'ps-update-manager' ),
+			__( 'Alle Produkte', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager-products',
+			array( $this, 'render_products' )
+		);
+		
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'Einstellungen', 'ps-update-manager' ),
+			__( 'Einstellungen', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager-settings',
+			array( $this, 'render_settings' )
 		);
 	}
 	
@@ -96,9 +159,44 @@ class PS_Update_Manager_Admin_Dashboard {
 	}
 	
 	/**
+	 * Prüfe ob aktueller Benutzer Zugriff auf Dashboard hat
+	 */
+	private function current_user_can_access() {
+		return PS_Update_Manager_Settings::get_instance()->user_can_access_dashboard();
+	}
+	
+	/**
+	 * Handle-Funktion für Einstellungen-Speicherung
+	 */
+	public function handle_settings_save() {
+		if ( ! is_multisite() || ! is_super_admin() ) {
+			return;
+		}
+		
+		if ( ! isset( $_POST['ps_update_manager_settings_nonce'] ) ) {
+			return;
+		}
+		
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ps_update_manager_settings_nonce'] ) ), 'ps_update_manager_settings' ) ) {
+			return;
+		}
+		
+		if ( ! isset( $_POST['ps_update_manager_allowed_roles'] ) ) {
+			return;
+		}
+		
+		$roles = array_map( 'sanitize_key', wp_unslash( (array) $_POST['ps_update_manager_allowed_roles'] ) );
+		PS_Update_Manager_Settings::get_instance()->update_setting( 'allowed_roles', $roles );
+	}
+	
+	/**
 	 * Dashboard rendern
 	 */
 	public function render_dashboard() {
+		// Zugriffsprüfung
+		if ( ! $this->current_user_can_access() ) {
+			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+		}
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
 		
@@ -228,6 +326,10 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * Produkte-Seite rendern
 	 */
 	public function render_products() {
+		// Zugriffsprüfung
+		if ( ! $this->current_user_can_access() ) {
+			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+		}
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		
 		?>
@@ -307,6 +409,150 @@ class PS_Update_Manager_Admin_Dashboard {
 	}
 	
 	/**
+	 * Einstellungen-Seite rendern
+	 */
+	public function render_settings() {
+		// Zugriffsprüfung - nur Netzwerk-Admin
+		if ( ! is_multisite() || ! is_super_admin() ) {
+			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+		}
+		
+		$settings = PS_Update_Manager_Settings::get_instance();
+		$allowed_roles = $settings->get_setting( 'allowed_roles' );
+		$available_roles = $settings->get_available_roles();
+		?>
+		<div class="wrap ps-update-manager-settings">
+			<h1><?php esc_html_e( 'PS Update Manager - Einstellungen', 'ps-update-manager' ); ?></h1>
+			
+			<div class="ps-settings-container">
+				<form method="post" action="">
+					<?php wp_nonce_field( 'ps_update_manager_settings', 'ps_update_manager_settings_nonce' ); ?>
+					
+					<div class="ps-settings-section">
+						<h2><?php esc_html_e( 'Zugriffsrechte', 'ps-update-manager' ); ?></h2>
+						<p class="description">
+							<?php esc_html_e( 'Wählen Sie aus, welche Benutzerrollen das Dashboard sehen und verwenden dürfen.', 'ps-update-manager' ); ?>
+						</p>
+						
+						<table class="ps-roles-table">
+							<tbody>
+								<?php foreach ( $available_roles as $role_slug => $role_data ) : ?>
+									<tr>
+										<td>
+											<label>
+												<input type="checkbox" 
+													name="ps_update_manager_allowed_roles[]" 
+													value="<?php echo esc_attr( $role_slug ); ?>"
+													<?php checked( in_array( $role_slug, $allowed_roles, true ) ); ?>
+												>
+												<strong><?php echo esc_html( $role_data['name'] ); ?></strong>
+											</label>
+										</td>
+										<td class="ps-role-caption">
+											<em><?php echo esc_html( $role_slug ); ?></em>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+					
+					<?php submit_button( __( 'Einstellungen speichern', 'ps-update-manager' ), 'primary', 'submit', true ); ?>
+				</form>
+			</div>
+			
+			<div class="ps-info-box">
+				<h3><?php esc_html_e( '💡 Hinweise', 'ps-update-manager' ); ?></h3>
+				<ul>
+					<li><?php esc_html_e( 'Der Netzwerk-Administrator hat immer Zugriff auf das Dashboard.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Wählen Sie mindestens eine Rolle aus, damit andere Benutzer Zugriff haben.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Diese Einstellung gilt netzwerkweit für alle Seiten.', 'ps-update-manager' ); ?></li>
+				</ul>
+			</div>
+		</div>
+		
+		<style>
+			.ps-settings-container {
+				max-width: 800px;
+				margin-top: 20px;
+				background: white;
+				padding: 20px;
+				border-radius: 4px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+			
+			.ps-settings-section {
+				margin-bottom: 30px;
+			}
+			
+			.ps-settings-section h2 {
+				margin-top: 0;
+				margin-bottom: 15px;
+				font-size: 18px;
+				color: #333;
+			}
+			
+			.ps-settings-section .description {
+				margin-bottom: 20px;
+				color: #666;
+			}
+			
+			.ps-roles-table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			
+			.ps-roles-table td {
+				padding: 12px 10px;
+				border-bottom: 1px solid #eee;
+			}
+			
+			.ps-roles-table tr:last-child td {
+				border-bottom: none;
+			}
+			
+			.ps-roles-table td:first-child {
+				flex: 1;
+			}
+			
+			.ps-role-caption {
+				text-align: right;
+				width: 200px;
+				color: #999;
+				font-size: 12px;
+			}
+			
+			.ps-roles-table input[type="checkbox"] {
+				margin-right: 8px;
+			}
+			
+			.ps-info-box {
+				margin-top: 30px;
+				background: #f0f6fc;
+				padding: 15px 20px;
+				border-left: 4px solid #0073aa;
+				border-radius: 4px;
+			}
+			
+			.ps-info-box h3 {
+				margin-top: 0;
+				margin-bottom: 10px;
+				color: #0073aa;
+			}
+			
+			.ps-info-box ul {
+				margin: 10px 0;
+				padding-left: 20px;
+			}
+			
+			.ps-info-box li {
+				margin: 5px 0;
+			}
+		</style>
+		<?php
+	}
+	
+	/**
 	 * Verfügbare Updates zählen
 	 */
 	private function count_available_updates( $products ) {
@@ -335,7 +581,7 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_force_update_check() {
 		check_ajax_referer( 'ps_update_manager', 'nonce' );
 		
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! $this->current_user_can_access() ) {
 			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
 		}
 		

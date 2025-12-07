@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Lade Admin-Funktionen wenn nicht verfügbar (z.B. bei AJAX)
+if ( ! function_exists( 'is_plugin_active' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
 class PS_Update_Manager_Product_Registry {
 	
 	private static $instance = null;
@@ -92,10 +97,17 @@ class PS_Update_Manager_Product_Registry {
 	 */
 	private function check_active_status( $product ) {
 		if ( 'plugin' === $product['type'] ) {
-			if ( is_multisite() ) {
-				return is_plugin_active_for_network( $product['basename'] ) || is_plugin_active( $product['basename'] );
+			// Prüfe Einzelsite-Aktivierung
+			if ( is_plugin_active( $product['basename'] ) ) {
+				return true;
 			}
-			return is_plugin_active( $product['basename'] );
+			
+			// Für Multisite: Netzwerk-Aktivierung prüfen
+			if ( is_multisite() ) {
+				return is_plugin_active_for_network( $product['basename'] );
+			}
+			
+			return false;
 		} elseif ( 'theme' === $product['type'] ) {
 			$current_theme = wp_get_theme();
 			return ( $current_theme->get_stylesheet() === $product['slug'] || $current_theme->get_template() === $product['slug'] );
