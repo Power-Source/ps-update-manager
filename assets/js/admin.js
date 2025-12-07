@@ -78,6 +78,65 @@
 			// Nichts tun, nur sicherstellen dass target="_blank" funktioniert
 		});
 		
+		/**
+		 * AJAX Installation von Produkten
+		 */
+		$(document).on('click', '.ps-install-product', function(e) {
+			e.preventDefault();
+			var $button = $(this);
+			var slug = $button.data('slug');
+			var repo = $button.data('repo');
+			var type = $button.data('type');
+			var $card = $button.closest('.ps-store-card');
+			
+			// Bestätigung
+			if (!confirm('Möchten Sie "' + slug + '" von GitHub installieren?')) {
+				return;
+			}
+			
+			// Button State
+			$button.prop('disabled', true)
+				.html('<span class="dashicons dashicons-update spin"></span> Installiere...');
+			
+			$.ajax({
+				url: psUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_install_product',
+					nonce: psUpdateManager.nonce,
+					slug: slug,
+					repo: repo,
+					type: type
+				},
+				success: function(response) {
+					if (response.success) {
+						// Erfolgs-Badge zeigen
+						$card.find('.ps-store-status').html('<span class="ps-badge ps-badge-active">✓ Installiert</span>');
+						$button.html('<span class="dashicons dashicons-yes-alt"></span> Erfolgreich installiert!');
+						
+						// Nach 2 Sekunden Seite neu laden
+						setTimeout(function() {
+							location.reload();
+						}, 2000);
+					} else {
+						alert('Installation fehlgeschlagen: ' + response.data);
+						$button.prop('disabled', false)
+							.html('<span class="dashicons dashicons-download"></span> Installieren');
+					}
+				},
+				error: function(xhr, status, error) {
+					alert('Ein Fehler ist aufgetreten: ' + error);
+					$button.prop('disabled', false)
+						.html('<span class="dashicons dashicons-download"></span> Installieren');
+				}
+			});
+		});
+		
+		// Spin-Animation für Ladezeichen
+		if (!$('style#ps-spin-animation').length) {
+			$('<style id="ps-spin-animation">.spin { animation: spin 1s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>').appendTo('head');
+		}
+		
 	});
 	
 })(jQuery);

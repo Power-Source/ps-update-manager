@@ -27,6 +27,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
+		add_action( 'wp_ajax_ps_install_product', array( $this, 'ajax_install_product' ) );
 	}
 	
 	/**
@@ -197,6 +198,21 @@ class PS_Update_Manager_Admin_Dashboard {
 		if ( ! $this->current_user_can_access() ) {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
+		
+		// Scanner-Info
+		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
+		
+		// PERFORMANCE: Nur alle 5 Minuten neu scannen (verhindert Slowdown bei häufigen Page-Loads)
+		$last_scan_time = get_transient( 'ps_last_scan_time' );
+		$current_time = current_time( 'timestamp' );
+		
+		if ( ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
+			$scanner->scan_all();
+			$last_scan = $current_time;
+		} else {
+			$last_scan = $last_scan_time;
+		}
+		
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
 		
@@ -208,7 +224,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				<div class="ps-stats">
 					<div class="ps-stat-box">
 						<div class="ps-stat-number"><?php echo count( $products ); ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Registrierte Produkte', 'ps-update-manager' ); ?></div>
+						<div class="ps-stat-label"><?php esc_html_e( 'Gefundene Produkte', 'ps-update-manager' ); ?></div>
 					</div>
 					<div class="ps-stat-box">
 						<div class="ps-stat-number"><?php echo $updates_available; ?></div>
@@ -227,6 +243,17 @@ class PS_Update_Manager_Admin_Dashboard {
 					</button>
 				</div>
 			</div>
+			
+			<?php if ( $last_scan ) : ?>
+				<p class="ps-scan-info">
+					<?php
+					printf(
+						esc_html__( 'Letzter Scan: %s', 'ps-update-manager' ),
+						human_time_diff( $last_scan, current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'ps-update-manager' )
+					);
+					?>
+				</p>
+			<?php endif; ?>
 			
 			<?php if ( $updates_available > 0 ) : ?>
 				<div class="notice notice-info">
@@ -255,7 +282,12 @@ class PS_Update_Manager_Admin_Dashboard {
 					?>
 						<div class="ps-product-card <?php echo $has_update ? 'has-update' : ''; ?>">
 							<div class="ps-product-header">
-								<h3><?php echo esc_html( $product['name'] ); ?></h3>
+								<h3>
+									<?php echo esc_html( $product['name'] ); ?>
+									<?php if ( isset( $product['discovered'] ) && $product['discovered'] ) : ?>
+										<span class="ps-badge-discovered" title="<?php esc_attr_e( 'Automatisch erkannt', 'ps-update-manager' ); ?>">Auto</span>
+									<?php endif; ?>
+								</h3>
 								<span class="ps-product-version">v<?php echo esc_html( $product['version'] ); ?></span>
 							</div>
 							
@@ -330,67 +362,287 @@ class PS_Update_Manager_Admin_Dashboard {
 		if ( ! $this->current_user_can_access() ) {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
-		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
+		
+		// Scanner: PERFORMANCE - Nur alle 5 Minuten neu scannen
+		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
+		$last_scan_time = get_transient( 'ps_last_scan_time' );
+		$current_time = current_time( 'timestamp' );
+		
+		if ( ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
+			$scanner->scan_all();
+		}
+		
+		// Alle offiziellen Produkte aus Manifest
+		$official_products = $scanner->get_official_products();
+		
+		// Registrierte/installierte Produkte
+		$registry = PS_Update_Manager_Product_Registry::get_instance();
+		$installed_products = $registry->get_all();
+		
+		// Zusammenführen: Manifest + Installation Status
+		$all_products = array();
+		
+		foreach ( $official_products as $slug => $manifest ) {
+			$product = array(
+				'slug'        => $slug,
+				'name'        => $manifest['name'],
+				'description' => $manifest['description'],
+				'type'        => $manifest['type'],
+				'repo'        => $manifest['repo'],
+				'icon'        => $manifest['icon'] ?? 'dashicons-admin-plugins',
+				'category'    => $manifest['category'] ?? 'general',
+				'installed'   => false,
+				'active'      => false,
+				'version'     => null,
+				'update_available' => false,
+				'new_version' => null,
+			);
+			
+			// Prüfe ob installiert
+			if ( isset( $installed_products[ $slug ] ) ) {
+				$installed = $installed_products[ $slug ];
+				$product['installed'] = true;
+				$product['active'] = $installed['is_active'];
+				$product['version'] = $installed['version'];
+				
+				// Update verfügbar?
+				$update_info = $this->get_product_update_info( $installed );
+				if ( $update_info && version_compare( $update_info['version'], $installed['version'], '>' ) ) {
+					$product['update_available'] = true;
+					$product['new_version'] = $update_info['version'];
+				}
+			}
+			
+			$all_products[ $slug ] = $product;
+		}
 		
 		?>
 		<div class="wrap ps-update-manager-products">
 			<h1><?php esc_html_e( 'Alle PS Produkte', 'ps-update-manager' ); ?></h1>
+			<p class="description">
+				<?php esc_html_e( 'Entdecke und installiere offizielle PSource Plugins und Themes aus dem Power-Source Repository.', 'ps-update-manager' ); ?>
+			</p>
 			
-			<table class="wp-list-table widefat fixed striped">
-				<thead>
-					<tr>
-						<th><?php esc_html_e( 'Name', 'ps-update-manager' ); ?></th>
-						<th><?php esc_html_e( 'Version', 'ps-update-manager' ); ?></th>
-						<th><?php esc_html_e( 'Typ', 'ps-update-manager' ); ?></th>
-						<th><?php esc_html_e( 'Status', 'ps-update-manager' ); ?></th>
-						<th><?php esc_html_e( 'Update', 'ps-update-manager' ); ?></th>
-						<th><?php esc_html_e( 'Links', 'ps-update-manager' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php foreach ( $products as $product ) : 
-						$update_info = $this->get_product_update_info( $product );
-						$has_update = $update_info && version_compare( $update_info['version'], $product['version'], '>' );
-					?>
-						<tr>
-							<td><strong><?php echo esc_html( $product['name'] ); ?></strong></td>
-							<td><?php echo esc_html( $product['version'] ); ?></td>
-							<td><?php echo esc_html( ucfirst( $product['type'] ) ); ?></td>
-							<td>
-								<?php if ( $product['is_active'] ) : ?>
-									<span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span> <?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?>
+			<div class="ps-products-store">
+				<?php foreach ( $all_products as $slug => $product ) : ?>
+					<div class="ps-store-card" data-slug="<?php echo esc_attr( $slug ); ?>">
+						<div class="ps-store-card-header">
+							<span class="ps-store-icon">
+								<span class="dashicons <?php echo esc_attr( $product['icon'] ); ?>"></span>
+							</span>
+							<div class="ps-store-title">
+								<h3><?php echo esc_html( $product['name'] ); ?></h3>
+								<span class="ps-store-meta">
+									<?php echo esc_html( ucfirst( $product['type'] ) ); ?> 
+									<?php if ( $product['version'] ) : ?>
+										· v<?php echo esc_html( $product['version'] ); ?>
+									<?php endif; ?>
+								</span>
+							</div>
+							
+							<div class="ps-store-status">
+								<?php if ( ! $product['installed'] ) : ?>
+									<span class="ps-badge ps-badge-not-installed"><?php esc_html_e( 'Nicht installiert', 'ps-update-manager' ); ?></span>
+								<?php elseif ( $product['update_available'] ) : ?>
+									<span class="ps-badge ps-badge-update"><?php printf( __( 'Update: v%s', 'ps-update-manager' ), esc_html( $product['new_version'] ) ); ?></span>
+								<?php elseif ( $product['active'] ) : ?>
+									<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
 								<?php else : ?>
-									<span class="dashicons dashicons-marker" style="color: #999;"></span> <?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?>
+									<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
 								<?php endif; ?>
-							</td>
-							<td>
-								<?php if ( $has_update ) : ?>
-									<span style="color: #d63638;">
-										<span class="dashicons dashicons-update-alt"></span>
-										v<?php echo esc_html( $update_info['version'] ); ?>
-									</span>
-								<?php else : ?>
-									<span style="color: #46b450;">
-										<?php esc_html_e( 'Aktuell', 'ps-update-manager' ); ?>
-									</span>
-								<?php endif; ?>
-							</td>
-							<td>
-								<?php if ( ! empty( $product['docs_url'] ) ) : ?>
-									<a href="<?php echo esc_url( $product['docs_url'] ); ?>" target="_blank"><?php esc_html_e( 'Docs', 'ps-update-manager' ); ?></a> |
-								<?php endif; ?>
-								<?php if ( ! empty( $product['support_url'] ) ) : ?>
-									<a href="<?php echo esc_url( $product['support_url'] ); ?>" target="_blank"><?php esc_html_e( 'Support', 'ps-update-manager' ); ?></a> |
-								<?php endif; ?>
-								<?php if ( ! empty( $product['github_repo'] ) ) : ?>
-									<a href="<?php echo esc_url( 'https://github.com/' . $product['github_repo'] ); ?>" target="_blank">GitHub</a>
-								<?php endif; ?>
-							</td>
-						</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-body">
+							<p class="ps-store-description"><?php echo esc_html( $product['description'] ); ?></p>
+							
+							<div class="ps-store-links">
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-admin-site"></span> GitHub
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/issues" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-sos"></span> Support
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/releases" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-media-document"></span> Changelog
+								</a>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-footer">
+							<?php if ( ! $product['installed'] ) : ?>
+								<button class="button button-primary ps-install-product" data-slug="<?php echo esc_attr( $slug ); ?>" data-repo="<?php echo esc_attr( $product['repo'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
+									<span class="dashicons dashicons-download"></span>
+									<?php esc_html_e( 'Installieren', 'ps-update-manager' ); ?>
+								</button>
+							<?php elseif ( $product['update_available'] ) : ?>
+								<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-primary">
+									<span class="dashicons dashicons-update"></span>
+									<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
+								</a>
+							<?php elseif ( ! $product['active'] && 'plugin' === $product['type'] ) : ?>
+								<?php
+								$activate_url = wp_nonce_url(
+									admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $slug . '/' . $slug . '.php' ) ),
+									'activate-plugin_' . $slug . '/' . $slug . '.php'
+								);
+								?>
+								<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+									<span class="dashicons dashicons-yes"></span>
+									<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+								</a>
+							<?php elseif ( $product['active'] ) : ?>
+								<button class="button" disabled>
+									<span class="dashicons dashicons-yes-alt"></span>
+									<?php esc_html_e( 'Aktiv & Aktuell', 'ps-update-manager' ); ?>
+								</button>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
 		</div>
+		
+		<style>
+			.ps-products-store {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+				gap: 20px;
+				margin-top: 20px;
+			}
+			
+			.ps-store-card {
+				background: #fff;
+				border: 1px solid #ccd0d4;
+				border-radius: 4px;
+				box-shadow: 0 1px 1px rgba(0,0,0,.04);
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.ps-store-card-header {
+				padding: 20px;
+				border-bottom: 1px solid #f0f0f1;
+				display: flex;
+				align-items: flex-start;
+				gap: 15px;
+			}
+			
+			.ps-store-icon {
+				flex-shrink: 0;
+				width: 48px;
+				height: 48px;
+				background: #f0f0f1;
+				border-radius: 4px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.ps-store-icon .dashicons {
+				font-size: 28px;
+				width: 28px;
+				height: 28px;
+				color: #2271b1;
+			}
+			
+			.ps-store-title {
+				flex: 1;
+			}
+			
+			.ps-store-title h3 {
+				margin: 0 0 5px;
+				font-size: 16px;
+				font-weight: 600;
+			}
+			
+			.ps-store-meta {
+				font-size: 13px;
+				color: #646970;
+			}
+			
+			.ps-store-status {
+				flex-shrink: 0;
+			}
+			
+			.ps-badge {
+				display: inline-block;
+				padding: 4px 10px;
+				font-size: 12px;
+				font-weight: 500;
+				border-radius: 3px;
+				white-space: nowrap;
+			}
+			
+			.ps-badge-not-installed {
+				background: #f0f0f1;
+				color: #646970;
+			}
+			
+			.ps-badge-inactive {
+				background: #fcf9e8;
+				color: #8a6d3b;
+			}
+			
+			.ps-badge-active {
+				background: #d4edda;
+				color: #155724;
+			}
+			
+			.ps-badge-update {
+				background: #fff3cd;
+				color: #856404;
+			}
+			
+			.ps-store-card-body {
+				padding: 20px;
+				flex: 1;
+			}
+			
+			.ps-store-description {
+				margin: 0 0 15px;
+				color: #50575e;
+				line-height: 1.6;
+			}
+			
+			.ps-store-links {
+				display: flex;
+				gap: 15px;
+			}
+			
+			.ps-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				font-size: 13px;
+				color: #2271b1;
+				text-decoration: none;
+			}
+			
+			.ps-link:hover {
+				color: #135e96;
+			}
+			
+			.ps-link .dashicons {
+				font-size: 16px;
+				width: 16px;
+				height: 16px;
+			}
+			
+			.ps-store-card-footer {
+				padding: 15px 20px;
+				border-top: 1px solid #f0f0f1;
+				background: #f6f7f7;
+			}
+			
+			.ps-store-card-footer .button {
+				width: 100%;
+				justify-content: center;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+			}
+		</style>
 		<?php
 	}
 	
@@ -591,4 +843,137 @@ class PS_Update_Manager_Admin_Dashboard {
 			'message' => __( 'Update-Prüfung abgeschlossen!', 'ps-update-manager' ),
 		) );
 	}
+	
+	/**
+	 * AJAX Handler: Produkt von GitHub installieren
+	 */
+	public function ajax_install_product() {
+		check_ajax_referer( 'ps_update_manager', 'nonce' );
+		
+		if ( ! $this->current_user_can_access() ) {
+			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
+		}
+		
+		// Zusätzlicher Capability-Check für Installation
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			wp_send_json_error( __( 'Fehlende Berechtigung zum Installieren von Plugins', 'ps-update-manager' ) );
+		}
+		
+		$slug = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
+		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
+		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : 'plugin';
+		
+		if ( empty( $slug ) || empty( $repo ) ) {
+			wp_send_json_error( __( 'Ungültige Parameter', 'ps-update-manager' ) );
+		}
+		
+		// SICHERHEIT: Manifest-Validierung - nur erlaubte Repos dürfen installiert werden
+		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
+		$official_product = $scanner->get_official_product( $slug );
+		
+		if ( ! $official_product || $official_product['repo'] !== $repo ) {
+			wp_send_json_error( __( 'Sicherheitsfehler: Produkt nicht im offiziellen Manifest', 'ps-update-manager' ) );
+		}
+		
+		// Type-Validierung
+		if ( ! in_array( $type, array( 'plugin', 'theme' ), true ) ) {
+			wp_send_json_error( __( 'Ungültiger Produkttyp', 'ps-update-manager' ) );
+		}
+		
+		// Installationslogik
+		$result = $this->install_from_github( $slug, $repo, $type );
+		
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( $result->get_error_message() );
+		}
+		
+		wp_send_json_success( array(
+			'message' => sprintf( __( '%s erfolgreich installiert!', 'ps-update-manager' ), $slug ),
+		) );
+	}
+	
+	/**
+	 * Produkt von GitHub installieren
+	 */
+	private function install_from_github( $slug, $repo, $type = 'plugin' ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		
+		// GitHub API: Latest Release holen
+		$api = PS_Update_Manager_GitHub_API::get_instance();
+		$release = $api->get_latest_release( $repo );
+		
+		if ( ! $release ) {
+			return new WP_Error( 'no_release', __( 'Kein Release auf GitHub gefunden', 'ps-update-manager' ) );
+		}
+		
+		// ZIP-Download-URL
+		$download_url = $release['zipball_url'];
+		
+		// Temporäres Verzeichnis
+		$temp_file = download_url( $download_url );
+		
+		if ( is_wp_error( $temp_file ) ) {
+			return new WP_Error( 'download_failed', __( 'Download fehlgeschlagen', 'ps-update-manager' ) );
+		}
+		
+		// Zielverzeichnis
+		$destination = ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes/' : WP_PLUGIN_DIR . '/';
+		
+		// Entpacken
+		WP_Filesystem();
+		global $wp_filesystem;
+		
+		$unzip_result = unzip_file( $temp_file, $destination );
+		
+		// Temp-Datei löschen (proper cleanup ohne error suppression)
+		if ( file_exists( $temp_file ) ) {
+			wp_delete_file( $temp_file );
+		}
+		
+		if ( is_wp_error( $unzip_result ) ) {
+			return new WP_Error( 'unzip_failed', __( 'Entpacken fehlgeschlagen', 'ps-update-manager' ) );
+		}
+		
+		// GitHub ZIP hat Ordner wie "Power-Source-ps-chat-abc123"
+		// Umbenennen zu "ps-chat"
+		$extracted_dir = $this->find_extracted_directory( $destination, $repo );
+		
+		if ( $extracted_dir ) {
+			// SICHERHEIT: Path Traversal Prevention
+			$slug_safe = sanitize_file_name( $slug );
+			$target_dir = trailingslashit( $destination ) . $slug_safe;
+			
+			// Validiere dass Zielordner innerhalb von destination liegt
+			if ( 0 !== strpos( realpath( dirname( $target_dir ) ), realpath( $destination ) ) ) {
+				return new WP_Error( 'security_error', __( 'Sicherheitsfehler: Ungültiger Zielpfad', 'ps-update-manager' ) );
+			}
+			
+			if ( ! file_exists( $target_dir ) ) {
+				$rename_result = rename( $extracted_dir, $target_dir );
+				if ( ! $rename_result ) {
+					return new WP_Error( 'rename_failed', __( 'Umbenennen des Verzeichnisses fehlgeschlagen', 'ps-update-manager' ) );
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Extrahierten Ordner finden (GitHub ZIP hat Hash im Namen)
+	 */
+	private function find_extracted_directory( $destination, $repo ) {
+		$repo_name = basename( $repo );
+		$files = glob( $destination . '*' . $repo_name . '*' );
+		
+		if ( ! empty( $files ) ) {
+			return $files[0];
+		}
+		
+		return false;
+	}
 }
+

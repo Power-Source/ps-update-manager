@@ -61,6 +61,7 @@ class PS_Update_Manager {
 	 */
 	private function load_dependencies() {
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-product-registry.php';
+		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-product-scanner.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-update-checker.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-github-api.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-settings.php';
@@ -74,16 +75,25 @@ class PS_Update_Manager {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'init' ) );
 		
-		// Settings initialisieren
-		PS_Update_Manager_Settings::get_instance();
-		
-		// Admin-Bereich
+		// Nur im Admin-Bereich für bessere Performance
 		if ( is_admin() ) {
+			// Settings initialisieren
+			PS_Update_Manager_Settings::get_instance();
+			
+			// Dashboard initialisieren
 			PS_Update_Manager_Admin_Dashboard::get_instance();
+			
+			// Update-Checker initialisieren
+			PS_Update_Manager_Update_Checker::get_instance();
+			
+			// Scanner initialisieren
+			PS_Update_Manager_Product_Scanner::get_instance();
 		}
 		
-		// Update-Checker initialisieren
-		PS_Update_Manager_Update_Checker::get_instance();
+		// Täglicher Scan-Hook
+		if ( ! wp_next_scheduled( 'ps_update_manager_daily_scan' ) ) {
+			wp_schedule_event( time(), 'daily', 'ps_update_manager_daily_scan' );
+		}
 	}
 	
 	/**
@@ -103,6 +113,11 @@ class PS_Update_Manager {
 	public function init() {
 		// Action für andere Plugins zum Registrieren
 		do_action( 'ps_update_manager_init', $this );
+		
+		// Initialer Scan wenn noch nie gescannt wurde
+		if ( is_admin() && ! get_transient( 'ps_last_scan_time' ) ) {
+			PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
+		}
 	}
 	
 	/**

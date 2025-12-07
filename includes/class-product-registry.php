@@ -31,9 +31,19 @@ class PS_Update_Manager_Product_Registry {
 	
 	public function init() {
 		// Produkte aus Option laden (für Persistenz)
-		$saved_products = get_option( 'ps_update_manager_products', array() );
-		if ( is_array( $saved_products ) ) {
-			$this->products = $saved_products;
+		// Nutze Transient mit Cache für bessere Performance
+		$cache_key = 'ps_update_manager_products_cache';
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			$this->products = $cached;
+		} else {
+			$saved_products = get_option( 'ps_update_manager_products', array() );
+			if ( is_array( $saved_products ) ) {
+				$this->products = $saved_products;
+				// Cache für 12 Stunden
+				set_transient( $cache_key, $saved_products, 12 * HOUR_IN_SECONDS );
+			}
 		}
 	}
 	
@@ -89,6 +99,9 @@ class PS_Update_Manager_Product_Registry {
 		// In Datenbank speichern
 		$this->save();
 		
+		// Cache invalidieren
+		delete_transient( 'ps_update_manager_products_cache' );
+		
 		return true;
 	}
 	
@@ -119,10 +132,20 @@ class PS_Update_Manager_Product_Registry {
 	 * Alle Produkte abrufen
 	 */
 	public function get_all() {
-		// Status aktualisieren
-		foreach ( $this->products as $slug => &$product ) {
-			$product['is_active'] = $this->check_active_status( $product );
+		// Cache für Status aktualisieren (1 Minute)
+		$cache_key = 'ps_update_manager_status_cache';
+		$cached_time = get_transient( $cache_key );
+		
+		// Nur wenn wir nicht gerade gecacht haben - verhindert konstante DB-Zugriffe
+		if ( ! $cached_time || ( current_time( 'timestamp' ) - $cached_time > 60 ) ) {
+			// Status aktualisieren
+			foreach ( $this->products as $slug => &$product ) {
+				$product['is_active'] = $this->check_active_status( $product );
+			}
+			// Cache aktualisieren
+			set_transient( $cache_key, current_time( 'timestamp' ), HOUR_IN_SECONDS );
 		}
+		
 		return $this->products;
 	}
 	

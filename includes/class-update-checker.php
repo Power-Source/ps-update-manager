@@ -160,20 +160,36 @@ class PS_Update_Manager_Update_Checker {
 	
 	/**
 	 * Update-Info von GitHub oder Custom URL abrufen
+	 * Mit Caching für bessere Performance
 	 */
 	private function get_update_info( $product ) {
+		// Cache Key generieren
+		$cache_key = 'ps_update_info_' . md5( $product['slug'] );
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+		
+		$update_info = false;
+		
 		// Erst GitHub prüfen
 		if ( ! empty( $product['github_repo'] ) ) {
 			$github = PS_Update_Manager_GitHub_API::get_instance();
-			return $github->get_latest_release( $product['github_repo'] );
+			$update_info = $github->get_latest_release( $product['github_repo'] );
 		}
 		
 		// Dann Custom URL
-		if ( ! empty( $product['update_url'] ) ) {
-			return $this->get_custom_update_info( $product['update_url'] );
+		if ( ! $update_info && ! empty( $product['update_url'] ) ) {
+			$update_info = $this->get_custom_update_info( $product['update_url'] );
 		}
 		
-		return false;
+		// Cache Update-Info für 6 Stunden
+		if ( $update_info && ! is_wp_error( $update_info ) ) {
+			set_transient( $cache_key, $update_info, 6 * HOUR_IN_SECONDS );
+		}
+		
+		return $update_info;
 	}
 	
 	/**

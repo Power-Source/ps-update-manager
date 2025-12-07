@@ -43,6 +43,11 @@
 .ps-actions {
 	display: flex;
 	gap: 10px;
+	align-items: center;
+}
+
+.ps-actions .dashicons {
+	margin-right: 5px;
 }
 
 #ps-force-check .dashicons {
@@ -51,6 +56,16 @@
 
 #ps-force-check.checking .dashicons {
 	animation: spin 1s linear infinite;
+}
+
+/* Scan Info */
+.ps-scan-info {
+	margin: 10px 0;
+	padding: 8px 12px;
+	background: #f0f0f1;
+	border-left: 3px solid #2271b1;
+	font-size: 13px;
+	color: #646970;
 }
 
 @keyframes spin {
@@ -101,6 +116,21 @@
 	margin: 0;
 	font-size: 16px;
 	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ps-badge-discovered {
+	display: inline-block;
+	padding: 2px 6px;
+	background: #2271b1;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 500;
+	border-radius: 3px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .ps-product-version {
