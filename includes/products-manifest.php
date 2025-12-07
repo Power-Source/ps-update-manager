@@ -37,16 +37,16 @@ return array(
 	'default-theme' => array(
 		'type'        => 'plugin',
 		'name'        => 'Standard Theme',
-		'repo'        => 'cp-psource/default-theme',
+		'repo'        => 'Power-Source/default-theme',
 		'description' => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-admin-appearance',
 	),
 
-    	'default-theme' => array(
+    'ps-live-debug' => array(
 		'type'        => 'plugin',
 		'name'        => 'PSOURCE Live Debug',
-		'repo'        => 'Power-Source/default-theme',
+		'repo'        => 'Power-Source/ps-live-debug',
 		'description' => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-admin-appearance',

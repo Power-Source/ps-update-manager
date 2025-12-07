@@ -55,19 +55,15 @@ class PS_Update_Manager_Product_Scanner {
 		
 		// Plugins scannen
 		$plugins = $this->scan_plugins();
-		error_log( 'Scanner: Found ' . count( $plugins ) . ' plugins: ' . print_r( array_keys( $plugins ), true ) );
 		if ( ! empty( $plugins ) ) {
 			$discovered = array_merge( $discovered, $plugins );
 		}
 		
 		// Themes scannen
 		$themes = $this->scan_themes();
-		error_log( 'Scanner: Found ' . count( $themes ) . ' themes: ' . print_r( array_keys( $themes ), true ) );
 		if ( ! empty( $themes ) ) {
 			$discovered = array_merge( $discovered, $themes );
 		}
-		
-		error_log( 'Scanner: Total discovered products: ' . count( $discovered ) );
 		
 		// In Registry speichern
 		$this->save_discovered_products( $discovered );
