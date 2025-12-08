@@ -30,6 +30,9 @@ class PS_Update_Manager_Admin_Dashboard {
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
 		add_action( 'wp_ajax_ps_install_product', array( $this, 'ajax_install_product' ) );
+		add_action( 'wp_ajax_ps_clean_registry', array( $this, 'ajax_clean_registry' ) );
+		add_action( 'wp_ajax_ps_test_github_api', array( $this, 'ajax_test_github_api' ) );
+		add_action( 'wp_ajax_ps_clear_github_cache', array( $this, 'ajax_clear_github_cache' ) );
 	}
 	
 	/**
@@ -267,19 +270,10 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
 		
-		// Scanner-Info
+		// Scanner immer ausführen, damit Status sofort aktuell ist
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		
-		// PERFORMANCE: Nur alle 5 Minuten neu scannen (verhindert Slowdown bei häufigen Page-Loads)
-		$last_scan_time = get_transient( 'ps_last_scan_time' );
-		$current_time = current_time( 'timestamp' );
-		
-		if ( ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
-			$scanner->scan_all();
-			$last_scan = $current_time;
-		} else {
-			$last_scan = $last_scan_time;
-		}
+		$scanner->scan_all();
+		$last_scan = current_time( 'timestamp' );
 		
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
@@ -308,6 +302,10 @@ class PS_Update_Manager_Admin_Dashboard {
 					<button type="button" id="ps-force-check" class="button button-primary">
 						<span class="dashicons dashicons-update"></span>
 						<?php esc_html_e( 'Updates prüfen', 'ps-update-manager' ); ?>
+					</button>
+					<button type="button" id="ps-clear-cache" class="button" style="margin-left: 5px;">
+						<span class="dashicons dashicons-trash"></span>
+						<?php esc_html_e( 'Cache löschen', 'ps-update-manager' ); ?>
 					</button>
 				</div>
 			</div>
@@ -439,24 +437,16 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
 		
-		// Scanner: PERFORMANCE - Nur alle 5 Minuten neu scannen
+		// Scanner immer ausführen, optional mit force_scan zusätzlich Cache leeren
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$last_scan_time = get_transient( 'ps_last_scan_time' );
-		$current_time = current_time( 'timestamp' );
-		
-		// Force-Scan wenn ?force_scan=1 im URL
 		$force_scan = isset( $_GET['force_scan'] ) && '1' === sanitize_key( $_GET['force_scan'] );
-		
-		if ( $force_scan || ! $last_scan_time || ( $current_time - $last_scan_time ) > 300 ) {
-			if ( $force_scan ) {
-				// Alle Transients löschen für kompletten Neustart
-				delete_transient( 'ps_last_scan_time' );
-				delete_transient( 'ps_discovered_products' );
-				delete_transient( 'ps_update_manager_products_cache' );
-				delete_transient( 'ps_update_manager_status_cache' );
-			}
-			$scanner->scan_all();
+		if ( $force_scan ) {
+			delete_transient( 'ps_last_scan_time' );
+			delete_transient( 'ps_discovered_products' );
+			delete_transient( 'ps_update_manager_products_cache' );
+			delete_transient( 'ps_update_manager_status_cache' );
 		}
+		$scanner->scan_all();
 		
 		// Alle offiziellen Produkte aus Manifest
 		$official_products = $scanner->get_official_products();
@@ -957,6 +947,17 @@ class PS_Update_Manager_Admin_Dashboard {
 				</form>
 			</div>
 			
+			<div class="ps-settings-section" style="margin-top:20px;">
+				<h2><?php esc_html_e( 'Registry-Wartung', 'ps-update-manager' ); ?></h2>
+				<p class="description">
+					<?php esc_html_e( 'Bereinigt verwaiste Einträge (gelöschte Plugins/Themes werden aus der Registry entfernt).', 'ps-update-manager' ); ?>
+				</p>
+				<button type="button" id="ps-clean-registry" class="button">
+					<span class="dashicons dashicons-trash"></span>
+					<?php esc_html_e( 'Registry bereinigen', 'ps-update-manager' ); ?>
+				</button>
+			</div>
+
 			<div class="ps-info-box">
 				<h3><?php esc_html_e( '💡 Hinweise', 'ps-update-manager' ); ?></h3>
 				<ul>
@@ -1087,6 +1088,30 @@ class PS_Update_Manager_Admin_Dashboard {
 			'message' => __( 'Update-Prüfung abgeschlossen!', 'ps-update-manager' ),
 		) );
 	}
+
+	/**
+	 * AJAX: Registry bereinigen (verwaiste Produkte entfernen)
+	 */
+	public function ajax_clean_registry() {
+		check_ajax_referer( 'ps_update_manager', 'nonce' );
+
+		// Nur Netzwerk-Admin
+		if ( ! is_multisite() || ! is_super_admin() ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		}
+
+		$registry = PS_Update_Manager_Product_Registry::get_instance();
+		$before = count( $registry->get_all() );
+		// get_all() führt die Bereinigung durch; erneuter Abruf für aktuellen Stand
+		$after = count( $registry->get_all() );
+		$removed = max( 0, $before - $after );
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( 'Registry bereinigt. %d Eintrag(e) entfernt.', 'ps-update-manager' ), $removed ),
+			'removed' => $removed,
+			'count'   => $after,
+		) );
+	}
 	
 	/**
 	 * AJAX Handler: Produkt von GitHub installieren
@@ -1128,7 +1153,11 @@ class PS_Update_Manager_Admin_Dashboard {
 		$result = $this->install_from_github( $slug, $repo, $type );
 		
 		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( $result->get_error_message() );
+			// WP_Error: Fehler-Code und Message separate zurückgeben
+			wp_send_json_error( array(
+				'message' => $result->get_error_message(),
+				'code'    => $result->get_error_code(),
+			) );
 		}
 		
 		wp_send_json_success( array(
@@ -1149,22 +1178,41 @@ class PS_Update_Manager_Admin_Dashboard {
 		$api = PS_Update_Manager_GitHub_API::get_instance();
 		$release = $api->get_latest_release( $repo );
 		
-		if ( ! $release || is_wp_error( $release ) ) {
-			return new WP_Error( 'no_release', __( 'Kein Release auf GitHub gefunden', 'ps-update-manager' ) );
+		// Debug: Fehler spezifisch handeln
+		if ( is_wp_error( $release ) ) {
+			// Preserve the actual error from GitHub API
+			return $release;
+		}
+		
+		if ( ! $release || ! is_array( $release ) ) {
+			return new WP_Error( 'invalid_release', sprintf(
+				__( 'Ungültiges Release-Format für "%s"', 'ps-update-manager' ),
+				esc_html( $repo )
+			) );
 		}
 		
 		// ZIP-Download-URL (korrekter Array-Key)
-		$download_url = $release['download_url'];
+		$download_url = $release['download_url'] ?? '';
 		
 		if ( empty( $download_url ) ) {
-			return new WP_Error( 'no_download_url', __( 'Keine Download-URL in GitHub Release gefunden', 'ps-update-manager' ) );
+			return new WP_Error( 'no_download_url', sprintf(
+				__( 'Keine Download-URL in GitHub Release "%s" gefunden', 'ps-update-manager' ),
+				esc_html( $repo )
+			) );
 		}
 		
 		// Temporäres Verzeichnis
 		$temp_file = download_url( $download_url );
 		
 		if ( is_wp_error( $temp_file ) ) {
-			return $temp_file;
+			return new WP_Error( 'download_failed', sprintf(
+				__( 'Download fehlgeschlagen: %s', 'ps-update-manager' ),
+				$temp_file->get_error_message()
+			) );
+		}
+		
+		if ( ! file_exists( $temp_file ) ) {
+			return new WP_Error( 'temp_file_not_exists', __( 'Temporäre Datei konnte nicht erstellt werden', 'ps-update-manager' ) );
 		}
 		
 		// Zielverzeichnis
@@ -1181,7 +1229,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			if ( file_exists( $temp_file ) ) {
 				wp_delete_file( $temp_file );
 			}
-			return new WP_Error( 'wp_filesystem_error', __( 'Dateisystem konnte nicht initialisiert werden', 'ps-update-manager' ) );
+			return new WP_Error( 'wp_filesystem_error', __( 'WordPress Dateisystem konnte nicht initialisiert werden. Bitte prüfe die Dateisystem-Berechtigungen.', 'ps-update-manager' ) );
 		}
 		
 		global $wp_filesystem;
@@ -1194,7 +1242,10 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		if ( is_wp_error( $unzip_result ) ) {
-			return $unzip_result;
+			return new WP_Error( 'unzip_failed', sprintf(
+				__( 'Entpacken fehlgeschlagen: %s', 'ps-update-manager' ),
+				$unzip_result->get_error_message()
+			) );
 		}
 		
 		// GitHub ZIP hat Ordner wie "Power-Source-ps-chat-abc123"
@@ -1304,6 +1355,70 @@ class PS_Update_Manager_Admin_Dashboard {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+	
+	/**
+	 * Test GitHub API - Debug-Funktion
+	 */
+	public function ajax_test_github_api() {
+		check_ajax_referer( 'ps_update_manager', 'nonce' );
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
+		}
+		
+		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
+		
+		if ( empty( $repo ) ) {
+			wp_send_json_error( __( 'Repository-Name erforderlich', 'ps-update-manager' ) );
+		}
+		
+		$api = PS_Update_Manager_GitHub_API::get_instance();
+		$release = $api->get_latest_release( $repo );
+		
+		if ( is_wp_error( $release ) ) {
+			wp_send_json_error( array(
+				'code'    => $release->get_error_code(),
+				'message' => $release->get_error_message(),
+			) );
+		}
+		
+		wp_send_json_success( array(
+			'repo'           => $repo,
+			'version'        => $release['version'] ?? 'N/A',
+			'tag_name'       => $release['tag_name'] ?? 'N/A',
+			'download_url'   => $release['download_url'] ?? 'N/A',
+			'has_zip'        => ! empty( $release['download_url'] ),
+		) );
+	}
+	
+	/**
+	 * Cache für GitHub API löschen
+	 */
+	public function ajax_clear_github_cache() {
+		check_ajax_referer( 'ps_update_manager', 'nonce' );
+		
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
+		}
+		
+		$api = PS_Update_Manager_GitHub_API::get_instance();
+		
+		// Repo optional
+		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : null;
+		
+		if ( method_exists( $api, 'clear_cache' ) ) {
+			$api->clear_cache( $repo );
+		}
+		
+		// Zusätzliche Transients löschen
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_ps_github_%'" );
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_ps_github_%'" );
+		
+		wp_send_json_success( array(
+			'message' => $repo ? sprintf( __( 'Cache für %s gelöscht', 'ps-update-manager' ), $repo ) : __( 'Gesamter GitHub Cache gelöscht', 'ps-update-manager' ),
+		) );
 	}
 }
 

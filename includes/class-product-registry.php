@@ -128,21 +128,41 @@ class PS_Update_Manager_Product_Registry {
 	 * Alle PSOURCE-Einträge abrufen
 	 */
 	public function get_all() {
-		// Cache für Status aktualisieren (1 Minute)
-		$cache_key = 'ps_update_manager_status_cache';
-		$cached_time = get_transient( $cache_key );
-		
-		// Nur wenn wir nicht gerade gecacht haben - verhindert konstante DB-Zugriffe
-		if ( ! $cached_time || ( current_time( 'timestamp' ) - $cached_time > 60 ) ) {
-			// Status aktualisieren
-			foreach ( $this->products as $slug => &$product ) {
-				$product['is_active'] = $this->check_active_status( $product );
+		// Entferne verwaiste Einträge deren Dateien nicht mehr existieren
+		foreach ( $this->products as $slug => $product ) {
+			if ( ! $this->product_files_exist( $product ) ) {
+				unset( $this->products[ $slug ] );
 			}
-			// Cache aktualisieren
-			set_transient( $cache_key, current_time( 'timestamp' ), HOUR_IN_SECONDS );
 		}
 		
+		// Immer aktuellen Aktiv-Status berechnen
+		foreach ( $this->products as $slug => &$product ) {
+			$product['is_active'] = $this->check_active_status( $product );
+		}
+		unset( $product );
+		
+		// Persistiere Änderungen wenn etwas entfernt wurde
+		$this->save();
+		
 		return $this->products;
+	}
+
+	/**
+	 * Prüfe ob zugehörige Dateien eines Produkts existieren
+	 */
+	private function product_files_exist( $product ) {
+		if ( 'plugin' === $product['type'] ) {
+			if ( empty( $product['basename'] ) ) {
+				return false;
+			}
+			$plugin_file = WP_PLUGIN_DIR . '/' . $product['basename'];
+			return file_exists( $plugin_file );
+		}
+		if ( 'theme' === $product['type'] ) {
+			$theme_dir = WP_CONTENT_DIR . '/themes/' . sanitize_file_name( $product['slug'] );
+			return is_dir( $theme_dir );
+		}
+		return false;
 	}
 	
 	/**

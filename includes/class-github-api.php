@@ -26,42 +26,85 @@ class PS_Update_Manager_GitHub_API {
 	 * @return array|WP_Error
 	 */
 	public function get_latest_release( $repo ) {
-		// Transient prüfen (Cache für 12 Stunden)
+		// Transient prüfen (Cache für 12 Stunden) - ABER: nur bei Success, nicht bei Errors
 		$transient_key = 'ps_github_release_' . md5( $repo );
 		$cached = get_transient( $transient_key );
 		
-		if ( false !== $cached ) {
+		// Gültiger Cache: Array mit 'version' Key
+		if ( false !== $cached && is_array( $cached ) && isset( $cached['version'] ) ) {
 			return $cached;
 		}
 		
 		// GitHub API Request
 		$url = "https://api.github.com/repos/{$repo}/releases/latest";
 		
+		// Optional: GitHub Token aus Environment/Settings für höhere Rate Limits
+		$headers = array(
+			'Accept' => 'application/vnd.github.v3+json',
+			'User-Agent' => 'PS-Update-Manager/1.1.2',
+		);
+		
+		// Prüfe auf GitHub Token in WP Settings
+		$github_token = get_option( 'ps_github_api_token' );
+		if ( ! empty( $github_token ) ) {
+			$headers['Authorization'] = 'token ' . sanitize_text_field( $github_token );
+		}
+		
 		$response = wp_remote_get( $url, array(
 			'timeout' => 15,
-			'headers' => array(
-				'Accept' => 'application/vnd.github.v3+json',
-				'User-Agent' => 'PS-Update-Manager',
-			),
+			'headers' => $headers,
+			'sslverify' => true,
 		) );
 		
 		if ( is_wp_error( $response ) ) {
+			// Nicht cachen bei Netzwerkfehlern
 			return $response;
 		}
 		
 		$code = wp_remote_retrieve_response_code( $response );
+		$body = wp_remote_retrieve_body( $response );
+		
+		// Debug Info speichern
+		set_transient( 'ps_github_last_api_call', array(
+			'repo'   => $repo,
+			'code'   => $code,
+			'time'   => current_time( 'mysql' ),
+		), HOUR_IN_SECONDS );
+		
+		// Fehlerhafte Response-Codes handeln
 		if ( 200 !== $code ) {
+			$error_data = json_decode( $body, true );
+			$error_message = isset( $error_data['message'] ) ? $error_data['message'] : "HTTP {$code}";
+			
+			// Spezielle Fehler-Handling
+			if ( 404 === $code ) {
+				return new WP_Error( 'github_not_found', sprintf(
+					__( 'Repository "%s" auf GitHub nicht gefunden', 'ps-update-manager' ),
+					esc_html( $repo )
+				) );
+			} elseif ( 403 === $code ) {
+				// Fallback: Releases-HTML parsen, um Asset-ZIP zu finden
+				$fallback = $this->fallback_latest_release_via_html( $repo );
+				if ( is_array( $fallback ) && ! empty( $fallback['download_url'] ) ) {
+					// Nicht cachen (HTML kann sich schnell ändern), aber gib Ergebnis zurück
+					return $fallback;
+				}
+				return new WP_Error( 'github_rate_limit', __( 'GitHub API Rate Limit erreicht. Bitte später versuchen oder GitHub Token konfigurieren.', 'ps-update-manager' ) );
+			}
+			
 			return new WP_Error( 'github_api_error', sprintf(
-				__( 'GitHub API returned error code %d', 'ps-update-manager' ),
-				$code
+				__( 'GitHub API Fehler: %s', 'ps-update-manager' ),
+				esc_html( $error_message )
 			) );
 		}
 		
-		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 		
 		if ( ! $data || ! isset( $data['tag_name'] ) ) {
-			return new WP_Error( 'github_invalid_response', __( 'Invalid GitHub API response', 'ps-update-manager' ) );
+			return new WP_Error( 'github_invalid_response', sprintf(
+				__( 'GitHub API antwortete mit ungültiger Antwort für "%s"', 'ps-update-manager' ),
+				esc_html( $repo )
+			) );
 		}
 		
 		// Daten strukturieren
@@ -85,10 +128,58 @@ class PS_Update_Manager_GitHub_API {
 			}
 		}
 		
-		// In Transient speichern
+		// In Transient speichern (nur erfolgreiche Responses)
 		set_transient( $transient_key, $release, 12 * HOUR_IN_SECONDS );
 		
 		return $release;
+	}
+
+	/**
+	 * Fallback: Neueste Release-Asset über HTML-Releases-Seite extrahieren
+	 * Hinweis: Nicht so robust wie die API, aber vermeidet Rate-Limit.
+	 */
+	private function fallback_latest_release_via_html( $repo ) {
+		$releases_url = "https://github.com/{$repo}/releases";
+		$response = wp_remote_get( $releases_url, array(
+			'timeout' => 15,
+			'headers' => array(
+				'User-Agent' => 'PS-Update-Manager/1.1.2',
+			),
+		) );
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $code ) {
+			return new WP_Error( 'github_html_error', sprintf( __( 'GitHub Releases Seite antwortete mit %d', 'ps-update-manager' ), $code ) );
+		}
+		$body = wp_remote_retrieve_body( $response );
+		// Suche nach dem ersten Asset-Link auf der Seite
+		// Beispiel: href="/owner/repo/releases/download/v1.2.3/plugin.zip"
+		if ( preg_match( '#href="(/[^\"]+/releases/download/[^\"]+\.zip)"#i', $body, $m ) ) {
+			$asset_path = $m[1];
+			$download_url = 'https://github.com' . $asset_path;
+			return array(
+				'version'      => '',
+				'tag_name'     => '',
+				'name'         => '',
+				'download_url' => $download_url,
+				'changelog'    => '',
+				'published_at' => '',
+				'html_url'     => $releases_url,
+			);
+		}
+		// Alternativ: ZIP der Hauptbranch (nicht Release) – nur letzter Ausweg
+		$default_branch_zip = "https://codeload.github.com/{$repo}/zip/refs/heads/main";
+		return array(
+			'version'      => '',
+			'tag_name'     => '',
+			'name'         => '',
+			'download_url' => $default_branch_zip,
+			'changelog'    => '',
+			'published_at' => '',
+			'html_url'     => $releases_url,
+		);
 	}
 	
 	/**
