@@ -27,41 +27,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 /**
- * @@@@@@@@@@@@@@@@@ PS UPDATE MANAGER @@@@@@@@@@@
- * NEU: Leichtgewichtige Integration mit PS Update Manager
- * Ersetzt den alten Yanis Updater mit nur wenigen Zeilen Code!
- **/
-add_action( 'plugins_loaded', function() {
-	// PS Update Manager verfügbar?
-	if ( function_exists( 'ps_register_product' ) ) {
-		ps_register_product( array(
-			'slug'          => 'default-theme',
-			'name'          => 'Standard Theme',
-			'version'       => '1.0.5',
-			'type'          => 'plugin',
-			'file'          => __FILE__,
-			'github_repo'   => 'Power-Source/default-theme',
-			'docs_url'      => 'https://Power-Source.github.io/default-theme/',
-			'support_url'   => 'https://github.com/Power-Source/default-theme/issues',
-			'changelog_url' => 'https://github.com/Power-Source/default-theme/releases',
-			'description'   => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen in WordPress Multisite.',
-		) );
-	}
-}, 5 );
-
-// Optional: Freundlicher Hinweis wenn Update Manager nicht installiert
-add_action( 'admin_notices', function() {
-	if ( ! function_exists( 'ps_register_product' ) && current_user_can( 'install_plugins' ) ) {
-		$screen = get_current_screen();
-		if ( $screen && in_array( $screen->id, array( 'plugins', 'plugins-network' ) ) ) {
-			echo '<div class="notice notice-info is-dismissible">';
-			echo '<p><strong>Standard Theme:</strong> ';
-			echo 'Für automatische Updates empfehlen wir den ';
-			echo '<a href="https://github.com/Power-Source/ps-update-manager" target="_blank">PS Update Manager</a>.';
-			echo '</p></div>';
-		}
-	}
-});
+ * PS Update Manager Integration
+ * Das Plugin wird automatisch durch PS Manager registriert, wenn es installiert ist.
+ * Keine zusätzliche Konfiguration erforderlich.
+ */
 /**
  * @@@@@@@@@@@@@@@@@ ENDE PS UPDATE MANAGER @@@@@@@@@@@
  **/

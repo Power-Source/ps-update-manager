@@ -25,6 +25,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_init', array( $this, 'handle_settings_save' ) );
 		add_action( 'admin_init', array( $this, 'maybe_redirect_legacy_products_page' ) );
+		add_action( 'admin_init', array( $this, 'cleanup_orphaned_products' ) );
 		
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
@@ -205,6 +206,32 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		wp_safe_redirect( $target );
 		exit;
+	}
+	
+	/**
+	 * Bereinige verwaiste Produkte die nicht mehr im Manifest sind
+	 */
+	public function cleanup_orphaned_products() {
+		if ( ! is_multisite() || ! is_super_admin() ) {
+			return;
+		}
+		
+		$registry = PS_Update_Manager_Product_Registry::get_instance();
+		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
+		
+		// Offizielle Produkte aus Manifest abrufen
+		$official_products = $scanner->get_official_products();
+		$official_slugs = array_keys( $official_products );
+		
+		// Alle registrierten Produkte durchgehen
+		$all_products = $registry->get_all();
+		
+		foreach ( $all_products as $slug => $product ) {
+			// Wenn Produkt nicht im Manifest und nicht installiert, löschen
+			if ( ! in_array( $slug, $official_slugs, true ) && ! $product['is_active'] ) {
+				$registry->unregister( $slug );
+			}
+		}
 	}
 	
 	/**

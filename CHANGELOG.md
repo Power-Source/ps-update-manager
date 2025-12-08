@@ -1,5 +1,27 @@
 # Changelog
 
+## Version 1.1.1 (2025-12-08)
+
+### 🐛 Bugfixes & Sicherheit
+
+**Bugfixes:**
+- ✅ Entfernt: Debug `error_log()` Ausgaben (Performance)
+- ✅ Entfernt: Redundante Default Theme Registrierung
+- ✅ Fixed: REQUEST_METHOD Prüfung (`strtoupper()` für Kompatibilität)
+- ✅ Fixed: Automatische Cleanup verwaister Produkte (nicht im Manifest, nicht installiert)
+
+**Sicherheit:**
+- 🔐 Verbesserte Security-Prüfungen in Tool Manager
+- 🔐 Security & Performance Audit durchgeführt
+- 🔐 Code Quality Check alle Best Practices bestätigt
+
+**Verbesserungen:**
+- 🚀 Sauberer Code ohne Debug-Output
+- 🚀 Default Theme Tool integriert (ersetzt altes Plugin)
+- 📚 Neue SECURITY-PERFORMANCE-REPORT.md mit vollständiger Analyse
+
+---
+
 ## Version 2.0.0 (2025-12-07)
 
 ### 🚀 Großes Update: PSOURCE Katalog & Auto-Discovery
