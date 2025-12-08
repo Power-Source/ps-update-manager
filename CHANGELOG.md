@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 1.1.2 (2025-12-08)
+
+### 🛠 Maintenance
+
+- 🔄 Versionsnummern synchronisiert (Plugin-Header, Konstante, readme Stable Tag)
+- 🏷️ Release-Tag und GitHub Release vorbereitet
+- ℹ️ Keine funktionalen Änderungen – reines Release-Packaging
+
+---
+
 ## Version 1.1.1 (2025-12-08)
 
 ### 🐛 Bugfixes & Sicherheit
