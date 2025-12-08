@@ -155,48 +155,36 @@ class PS_Manager_Tool_Manager {
 	 */
 	public function handle_save() {
 		// Only run on POST
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
+		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
 			return;
 		}
 
-		error_log( 'Tool Manager handle_save called' );
-		
 		if ( ! isset( $_POST['ps_manager_tool_nonce'] ) ) {
-			error_log( 'No nonce found in POST' );
 			return;
 		}
 
 		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ps_manager_tool_nonce'] ) ), 'ps_manager_tool_save' ) ) {
-			error_log( 'Nonce verification failed' );
 			return;
 		}
 
 		$tool_id = isset( $_POST['tool_id'] ) ? sanitize_key( wp_unslash( $_POST['tool_id'] ) ) : null;
-		error_log( 'Tool ID: ' . $tool_id );
 
 		if ( ! $tool_id ) {
-			error_log( 'No tool_id in POST' );
 			return;
 		}
 
 		$tool = $this->get_tool( $tool_id );
 
 		if ( ! $tool ) {
-			error_log( 'Tool not found: ' . $tool_id );
 			return;
 		}
 		
 		if ( ! $tool->is_available() ) {
-			error_log( 'Tool not available: ' . $tool_id );
 			return;
 		}
 
-		error_log( 'Calling save_settings on tool: ' . $tool_id );
-
 		// Call tool's save method
 		$result = $tool->save_settings();
-		
-		error_log( 'Save result: ' . ( $result ? 'true' : 'false' ) );
 
 		// Redirect back to referring page to prevent resubmit and ensure UI refresh
 		$redirect = isset( $_POST['_wp_http_referer'] )

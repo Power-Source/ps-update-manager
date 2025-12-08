@@ -148,19 +148,12 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 	 * Save tool settings
 	 */
 	public function save_settings() {
-		// Debug: Log what we're receiving
-		error_log( 'TOS Tool save_settings called' );
-		error_log( 'POST data: ' . print_r( $_POST, true ) );
-		error_log( 'is_network_admin: ' . ( is_network_admin() ? 'yes' : 'no' ) );
-		
 		$tos_content = isset( $_POST['tos_content'] ) ? wp_kses_post( wp_unslash( $_POST['tos_content'] ) ) : '';
 		$tos_required = isset( $_POST['tos_required'] ) ? true : false;
 
 		// Network Admin: Save network-wide settings
 		if ( is_multisite() && is_network_admin() ) {
 			$mode = isset( $_POST['tos_mode'] ) ? sanitize_text_field( wp_unslash( $_POST['tos_mode'] ) ) : 'global';
-			
-			error_log( 'Saving mode: ' . $mode );
 			
 			// Validate mode
 			if ( ! in_array( $mode, array( 'global', 'global-with-override', 'per-site' ), true ) ) {
@@ -170,8 +163,6 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 			update_site_option( 'ps_manager_tos_mode', $mode );
 			update_site_option( 'ps_manager_tos_content', $tos_content );
 			update_site_option( 'ps_manager_tos_required', $tos_required );
-			
-			error_log( 'Saved mode to DB: ' . get_site_option( 'ps_manager_tos_mode' ) );
 		} 
 		// Site Admin: Save site-level settings (only for override/per-site mode)
 		elseif ( is_multisite() && ! is_network_admin() ) {

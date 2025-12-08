@@ -88,9 +88,8 @@ class PS_Update_Manager {
 			// Scanner initialisieren
 			PS_Update_Manager_Product_Scanner::get_instance();
 			
-			// Tools Manager initialisieren (stellt sicher, dass admin-post Hooks registriert sind)
-			PS_Manager_Tool_Manager::get_instance();
-			error_log( 'PS Manager: Tool Manager instantiated' );
+		// Tools Manager initialisieren (stellt sicher, dass admin-post Hooks registriert sind)
+		PS_Manager_Tool_Manager::get_instance();
 		}
 		
 		// Täglicher Scan-Hook
