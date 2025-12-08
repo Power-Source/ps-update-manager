@@ -12,21 +12,21 @@ title: "PS Update Manager"
 
 ## Zentraler Update-Manager für alle PSource Plugins und Themes
 
-Der **PS Update Manager** ist Deine zentrale Schaltstelle für Updates, Installation und Verwaltung aller offiziellen PSource Produkte. Verwalte Updates direkt von GitHub, entdecke neue Plugins und halte Dein System mit einem Klick aktuell.
+Der **PS Update Manager** ist Deine zentrale Schaltstelle für Updates, Installation und Verwaltung aller offiziellen PSOURCE-Einträge. Verwalte Updates direkt von GitHub, entdecke neue Plugins und halte Dein System mit einem Klick aktuell.
 
 ### 🎯 Hauptfunktionen
 
 #### 🔍 Auto-Discovery System
 Erkennt automatisch alle installierten PSource Plugins und Themes – **keine manuelle Registrierung nötig!** Der intelligente Scanner durchsucht Deine Installation und findet alle offiziellen Produkte.
 
-#### 📦 Product Store mit 1-Klick Installation
+#### 📦 PSOURCE Katalog mit 1-Klick Installation
 Entdecke und installiere neue PSource Plugins direkt aus dem Dashboard. Kein manuelles Herunterladen, Entpacken oder FTP mehr nötig – alles mit einem Klick!
 
 #### 🔄 Automatische Updates von GitHub
 Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manager prüft automatisch auf neue Versionen und benachrichtigt Dich im WordPress Dashboard.
 
 #### 🛡️ Sicherheit First
-- **Manifest-basierte Whitelist** – Nur offizielle PSource Produkte können installiert werden
+- **Manifest-basierte Whitelist** – Nur offizielle PSOURCE-Einträge können installiert werden
 - **Path Traversal Prevention** – Schutz vor Dateisystem-Angriffen
 - **Nonce & Capability Checks** – Vollständige WordPress Security Standards
 - **10/10 Sicherheitsbewertung** nach OWASP Standards
@@ -66,10 +66,10 @@ Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manag
 
 Nach der Aktivierung erscheinen automatisch zwei neue Menüpunkte:
 
-- **Dashboard** – Übersicht aller installierten PSource Produkte mit Update-Status
-- **Alle Produkte** – Product Store zum Entdecken und Installieren neuer Plugins/Themes
+- **Dashboard** – Übersicht aller installierten PSOURCE-Einträge mit Update-Status
+- **PSOURCE** – Katalog zum Entdecken und Installieren neuer Plugins/Themes
 
-Der Scanner erkennt automatisch alle installierten PSource Produkte – keine weiteren Schritte nötig!
+Der Scanner erkennt automatisch alle installierten PSOURCE-Einträge – keine weiteren Schritte nötig!
 
 ---
 
@@ -78,7 +78,7 @@ Der Scanner erkennt automatisch alle installierten PSource Produkte – keine we
 ### Dashboard
 
 Das Dashboard zeigt Dir auf einen Blick:
-- ✅ **Alle installierten Produkte** mit Version und Status
+- ✅ **Alle installierten PSOURCE-Einträge** mit Version und Status
 - 🔄 **Verfügbare Updates** mit Changelog-Link
 - 📊 **Statistiken** – Wie viele Plugins/Themes installiert, aktiv, mit Updates
 - 🔔 **Update-Benachrichtigungen** – Direkt im WordPress Admin
@@ -90,9 +90,9 @@ Das Dashboard zeigt Dir auf einen Blick:
 4. WordPress Standard-Update-Seite öffnet sich
 5. Update mit einem Klick installieren
 
-### Alle Produkte (Product Store)
+### PSOURCE (Katalog)
 
-Der Product Store ist Dein Katalog für alle offiziellen PSource Produkte:
+Der PSOURCE Katalog ist Dein Verzeichnis für alle offiziellen PSOURCE-Einträge:
 
 #### Features
 - 📋 **Vollständiger Katalog** – Alle Plugins und Themes aus dem Manifest
@@ -103,7 +103,7 @@ Der Product Store ist Dein Katalog für alle offiziellen PSource Produkte:
 - 🔗 **Quick-Links** – GitHub, Support, Changelog für jedes Produkt
 
 #### Installation neuer Plugins
-1. "Alle Produkte" öffnen
+1. "PSOURCE" öffnen
 2. Gewünschtes Plugin finden
 3. "Installieren" klicken
 4. Warten bis Download & Installation abgeschlossen
@@ -111,7 +111,7 @@ Der Product Store ist Dein Katalog für alle offiziellen PSource Produkte:
 6. Fertig! 🎉
 
 #### Sicherheit
-- Nur Produkte aus dem offiziellen Manifest können installiert werden
+- Nur Einträge aus dem offiziellen Manifest können installiert werden
 - Repository-URL wird validiert gegen Whitelist
 - Path Traversal Prevention bei Installation
 - Volle WordPress Capability-Checks
@@ -279,7 +279,7 @@ Vollständiger Report: [AUDIT-REPORT.md](AUDIT-REPORT.md)
 
 ### Version 2.0.0 (Aktuell)
 - ✨ Auto-Discovery System
-- 🛒 Product Store mit 1-Klick Installation
+- 🛒 PSOURCE Katalog mit 1-Klick Installation
 - 🔒 Manifest-basierte Sicherheit
 - ⚡ Multi-Layer Performance-Caching
 - 🌐 Network-Modes System für Multisite

@@ -2,14 +2,14 @@
 
 ## Version 2.0.0 (2025-12-07)
 
-### 🚀 Großes Update: Product Store & Auto-Discovery
+### 🚀 Großes Update: PSOURCE Katalog & Auto-Discovery
 
 **Breaking Changes:**
 - Manifest-basierte Auto-Discovery ersetzt manuelle Registrierung
 - `ps_register_product()` weiterhin funktional aber optional
 
 **Neue Features:**
-- ✨ **Product Store** - 1-Click Installation aller PSource Plugins/Themes
+- ✨ **PSOURCE Katalog** - 1-Click Installation aller PSource Plugins/Themes
 - ✨ **Auto-Discovery** - Automatische Erkennung via Manifest (keine manuelle Registrierung)
 - ✨ **Netzwerk-Admin Settings** - Rollenbasierte Zugriffskontrolle für Multisite
 - ✨ **Multisite-optimiert** - Netzwerkweite vs. pro-Site Aktivierung

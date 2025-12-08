@@ -280,13 +280,13 @@ git push origin v1.0.0
 ## 🎨 Was Nutzer sehen
 
 ### 1. **Dashboard** (`/wp-admin/admin.php?page=ps-update-manager`)
-- Schöne Statistiken (Anzahl Produkte, Updates, Aktive)
-- Produkt-Karten mit Status und Links
+- Schöne Statistiken (Anzahl PSOURCE-Einträge, Updates, Aktive)
+- Karten mit Status und Links
 - Update-Button
 - Info-Box über Open Source
 
 ### 2. **Updates-Seite** (`/wp-admin/update-core.php`)
-- PSource-Produkte erscheinen in der Update-Liste
+- PSOURCE-Einträge erscheinen in der Update-Liste
 - Changelog-Link
 - Standard WordPress Update-Prozess
 

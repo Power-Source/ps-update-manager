@@ -66,8 +66,8 @@
 - **Problem:** Scanner lief bei jedem Dashboard-Aufruf (langsam bei vielen Plugins)
 - **Lösung:** Transient-basiertes Throttling - nur alle 5 Minuten
 - **Code:** 
-  - `includes/class-admin-dashboard.php:204-211` (Dashboard)
-  - `includes/class-admin-dashboard.php:378-385` (Alle Produkte)
+   - `includes/class-admin-dashboard.php:204-211` (Dashboard)
+   - `includes/class-admin-dashboard.php:378-385` (PSOURCE Katalog)
 - **Impact:** 
   - ✅ Reduziert Filesystem-Zugriffe um ~95%
   - ✅ Seitenaufbau 2-3x schneller bei wiederholten Aufrufen

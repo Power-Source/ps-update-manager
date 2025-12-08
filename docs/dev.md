@@ -1,10 +1,10 @@
 # PS Update Manager - Developer Documentation
 
-## Products Manifest
+## PSOURCE Manifest (products-manifest.php)
 
 ### Übersicht
 
-Das **Products Manifest** (`includes/products-manifest.php`) ist die zentrale und einzige Quelle für alle offiziellen PSource-Produkte. Nur Produkte, die in dieser Datei definiert sind, werden vom Update Manager erkannt und verwaltet.
+Das **PSOURCE Manifest** (`includes/products-manifest.php`) ist die zentrale und einzige Quelle für alle offiziellen PSOURCE-Einträge. Nur Einträge, die in dieser Datei definiert sind, werden vom Update Manager erkannt und verwaltet.
 
 ### Sicherheitskonzept
 
@@ -61,12 +61,12 @@ Empfohlene Kategorien für bessere Organisation:
 - `theme` - Themes
 - `general` - Allgemeine Plugins
 
-## Neues Produkt hinzufügen
+## Neuen PSOURCE-Eintrag hinzufügen
 
 ### Schritt 1: Repository erstellen
 
 Stelle sicher, dass das Repository in der GitHub-Organisation existiert:
-- **Power-Source** (Organisation für alle Produkte)
+- **Power-Source** (Organisation für alle PSOURCE-Projekte)
 
 ### Schritt 2: Manifest aktualisieren
 
@@ -111,7 +111,7 @@ Das Plugin selbst sollte diese Header-Informationen haben:
 ### Schritt 5: Testen
 
 1. Plugin im WordPress-Verzeichnis installieren
-2. PS Update Manager → "Produkte scannen" klicken
+2. PS Update Manager → "PSOURCE scannen" klicken
 3. Neues Plugin sollte in der Liste erscheinen mit "Auto"-Badge
 
 ## Scanner-Funktionsweise
@@ -138,7 +138,7 @@ Für jedes gefundene Plugin/Theme:
 ### Caching
 
 Scan-Ergebnisse werden gecacht:
-- **Produkte**: 1 Woche (Transient)
+- **PSOURCE Katalog**: 1 Woche (Transient)
 - **Scan-Zeitpunkt**: 1 Woche
 - **Cache löschen**: Automatisch bei neuem Scan
 

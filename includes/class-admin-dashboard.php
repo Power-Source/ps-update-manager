@@ -24,6 +24,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'network_admin_menu', array( $this, 'add_network_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_init', array( $this, 'handle_settings_save' ) );
+		add_action( 'admin_init', array( $this, 'maybe_redirect_legacy_products_page' ) );
 		
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
@@ -45,8 +46,8 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		add_menu_page(
-			__( 'PS Update Manager', 'ps-update-manager' ),
-			__( 'PS Updates', 'ps-update-manager' ),
+			__( 'PSOURCE Manager', 'ps-update-manager' ),
+			__( 'PS Manager', 'ps-update-manager' ),
 			'manage_options',
 			'ps-update-manager',
 			array( $this, 'render_dashboard' ),
@@ -65,11 +66,20 @@ class PS_Update_Manager_Admin_Dashboard {
 		
 		add_submenu_page(
 			'ps-update-manager',
-			__( 'Alle Produkte', 'ps-update-manager' ),
-			__( 'Alle Produkte', 'ps-update-manager' ),
+			__( 'PSOURCE Katalog', 'ps-update-manager' ),
+			__( 'PSOURCE', 'ps-update-manager' ),
 			'manage_options',
-			'ps-update-manager-products',
+			'ps-update-manager-psources',
 			array( $this, 'render_products' )
+		);
+		
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'Tools', 'ps-update-manager' ),
+			__( 'Tools', 'ps-update-manager' ),
+			'manage_options',
+			'ps-update-manager-tools',
+			array( $this, 'render_tools' )
 		);
 	}
 	
@@ -88,8 +98,8 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		add_menu_page(
-			__( 'PS Update Manager', 'ps-update-manager' ),
-			__( 'PS Updates', 'ps-update-manager' ),
+			__( 'PSOURCE Manager', 'ps-update-manager' ),
+			__( 'PS MANAGER', 'ps-update-manager' ),
 			'manage_network_options',
 			'ps-update-manager',
 			array( $this, 'render_dashboard' ),
@@ -108,11 +118,20 @@ class PS_Update_Manager_Admin_Dashboard {
 		
 		add_submenu_page(
 			'ps-update-manager',
-			__( 'Alle Produkte', 'ps-update-manager' ),
-			__( 'Alle Produkte', 'ps-update-manager' ),
+			__( 'PSOURCE Katalog', 'ps-update-manager' ),
+			__( 'PSOURCE', 'ps-update-manager' ),
 			'manage_network_options',
-			'ps-update-manager-products',
+			'ps-update-manager-psources',
 			array( $this, 'render_products' )
+		);
+		
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'Tools', 'ps-update-manager' ),
+			__( 'Tools', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager-tools',
+			array( $this, 'render_tools' )
 		);
 		
 		add_submenu_page(
@@ -164,6 +183,28 @@ class PS_Update_Manager_Admin_Dashboard {
 	 */
 	private function current_user_can_access() {
 		return PS_Update_Manager_Settings::get_instance()->user_can_access_dashboard();
+	}
+
+	/**
+	 * Weiterleitung alter Produkte-URL auf neuen PSOURCE-Slug
+	 */
+	public function maybe_redirect_legacy_products_page() {
+		if ( ! isset( $_GET['page'] ) ) {
+			return;
+		}
+
+		$page = sanitize_key( wp_unslash( $_GET['page'] ) );
+
+		if ( 'ps-update-manager-products' !== $page ) {
+			return;
+		}
+
+		$target = is_network_admin()
+			? network_admin_url( 'admin.php?page=ps-update-manager-psources' )
+			: admin_url( 'admin.php?page=ps-update-manager-psources' );
+
+		wp_safe_redirect( $target );
+		exit;
 	}
 	
 	/**
@@ -224,7 +265,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				<div class="ps-stats">
 					<div class="ps-stat-box">
 						<div class="ps-stat-number"><?php echo count( $products ); ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Gefundene Produkte', 'ps-update-manager' ); ?></div>
+						<div class="ps-stat-label"><?php esc_html_e( 'Gefundene PSOURCE', 'ps-update-manager' ); ?></div>
 					</div>
 					<div class="ps-stat-box">
 						<div class="ps-stat-number"><?php echo $updates_available; ?></div>
@@ -232,7 +273,7 @@ class PS_Update_Manager_Admin_Dashboard {
 					</div>
 					<div class="ps-stat-box">
 						<div class="ps-stat-number"><?php echo $this->count_active( $products ); ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Aktive Produkte', 'ps-update-manager' ); ?></div>
+						<div class="ps-stat-label"><?php esc_html_e( 'Aktive PSOURCE', 'ps-update-manager' ); ?></div>
 					</div>
 				</div>
 				
@@ -261,7 +302,7 @@ class PS_Update_Manager_Admin_Dashboard {
 						<strong><?php esc_html_e( 'Updates verfügbar!', 'ps-update-manager' ); ?></strong>
 						<?php
 						printf(
-							esc_html__( 'Es sind %d Updates für deine PSource Produkte verfügbar.', 'ps-update-manager' ),
+							esc_html__( 'Es sind %d Updates für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' ),
 							$updates_available
 						);
 						?>
@@ -273,7 +314,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			<?php endif; ?>
 			
 			<div class="ps-products-overview">
-				<h2><?php esc_html_e( 'Produkt-Übersicht', 'ps-update-manager' ); ?></h2>
+				<h2><?php esc_html_e( 'PSOURCE-Übersicht', 'ps-update-manager' ); ?></h2>
 				
 				<div class="ps-products-grid">
 					<?php foreach ( $products as $product ) : 
@@ -350,7 +391,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				</p>
 				<p>
 					<strong><?php esc_html_e( 'Open Source & Community:', 'ps-update-manager' ); ?></strong><br>
-					<?php esc_html_e( 'Alle PSource Produkte sind Open Source. Du kannst jederzeit beitragen, Issues melden oder Features vorschlagen.', 'ps-update-manager' ); ?>
+					<?php esc_html_e( 'Alle PSOURCE Projekte sind Open Source. Du kannst jederzeit beitragen, Issues melden oder Features vorschlagen.', 'ps-update-manager' ); ?>
 				</p>
 				<p>
 					<a href="https://github.com/Power-Source" target="_blank" class="button">
@@ -435,10 +476,10 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		?>
-		<div class="wrap ps-update-manager-products">
-			<h1><?php esc_html_e( 'Alle PS Produkte', 'ps-update-manager' ); ?></h1>
+		<div class="wrap ps-update-manager-psources">
+			<h1><?php esc_html_e( 'PSOURCE Katalog', 'ps-update-manager' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Entdecke und installiere offizielle PSource Plugins und Themes aus dem Power-Source Repository.', 'ps-update-manager' ); ?>
+				<?php esc_html_e( 'Entdecke und installiere offizielle PSOURCE Plugins und Themes aus dem Power-Source Repository.', 'ps-update-manager' ); ?>
 			</p>
 			
 			<div class="ps-products-store">
@@ -1150,6 +1191,39 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Tools-Seite rendern
+	 */
+	public function render_tools() {
+		// Zugriffsprüfung
+		if ( ! $this->current_user_can_access() ) {
+			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+		}
+		
+		// Tools Manager laden
+		$tool_manager = PS_Manager_Tool_Manager::get_instance();
+		$available_tools = $tool_manager->get_available_tools();
+		
+		?>
+		<div class="wrap ps-manager-wrap">
+			<h1><?php esc_html_e( 'PS Manager Tools', 'ps-update-manager' ); ?></h1>
+			
+			<?php if ( empty( $available_tools ) ) : ?>
+				<div class="notice notice-info"><p>
+					<?php esc_html_e( 'Keine Tools verfügbar.', 'ps-update-manager' ); ?>
+				</p></div>
+			<?php else : ?>
+				<div class="ps-manager-container">
+					<?php $tool_manager->render_tabs(); ?>
+					<div class="ps-manager-panels">
+						<?php $tool_manager->render_panels(); ?>
+					</div>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
 	}
 }
 

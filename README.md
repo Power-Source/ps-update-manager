@@ -6,9 +6,9 @@ Ein leistungsstarkes WordPress-Plugin zur Verwaltung von Updates für deine eige
 
 ## 🎯 Features
 
-- ✅ **Product Store** - Entdecke und installiere alle PSource Plugins/Themes mit 1-Click
+- ✅ **PSOURCE Katalog** - Entdecke und installiere alle PSource Plugins/Themes mit 1-Click
 - ✅ **Automatische Erkennung** - Keine manuelle Registrierung nötig (Manifest-basiert)
-- ✅ **Zentrales Dashboard** mit Übersicht aller installierten Produkte
+- ✅ **Zentrales Dashboard** mit Übersicht aller installierten PSOURCE-Installationen
 - ✅ **GitHub Integration** - Automatische Updates von GitHub Releases
 - ✅ **Update-Benachrichtigungen** im WordPress Admin
 - ✅ **1-Click Installation** direkt von GitHub
@@ -32,8 +32,8 @@ Ein leistungsstarkes WordPress-Plugin zur Verwaltung von Updates für deine eige
    - Dashboard verfügbar unter "PS Updates"
 
 3. **Fertig!** 🎉
-   - Alle PSource Plugins werden automatisch erkannt
-   - Neue Plugins können im "Alle Produkte" Store installiert werden
+    - Alle PSource Plugins werden automatisch erkannt
+    - Neue Plugins können im "PSOURCE" Katalog installiert werden
 
 ## 📦 Integration in deine Plugins (v2.0)
 
@@ -133,9 +133,9 @@ Der gesamte Registrierungs-Code kann entfernt werden. Trage das Plugin nur ins M
 
 ---
 
-## 🏪 Product Store
+## 🏪 PSOURCE Katalog
 
-Der "Alle Produkte" Bereich zeigt alle im Manifest eingetragenen Plugins/Themes:
+Der "PSOURCE" Bereich zeigt alle im Manifest eingetragenen Plugins/Themes:
 
 - **Nicht installiert** → "Installieren"-Button (Download von GitHub)
 - **Installiert & Inaktiv** → "Aktivieren"-Button
@@ -168,8 +168,8 @@ Unter "Einstellungen" können Network-Admins festlegen, welche Rollen Zugriff ha
 - Auto-Discovery Badge für gescannte Plugins
 - Links zu GitHub, Support, Docs
 
-### **Alle Produkte:**
-- Store-Interface mit Product Cards
+### **PSOURCE Katalog:**
+- Store-Interface mit Karten für deine PSOURCE-Einträge
 - Status-Badges (Nicht installiert / Inaktiv / Aktiv / Update)
 - 1-Click Installation von GitHub
 - Direktlinks zu Changelog, Issues, Repository
@@ -179,7 +179,7 @@ Unter "Einstellungen" können Network-Admins festlegen, welche Rollen Zugriff ha
 ## ⚡ Performance
 
 - **Multi-Layer Caching:**
-  - Products: 1 Woche
+    - PSOURCE Katalog: 1 Woche
   - Update Info: 6 Stunden  
   - Status: 1 Minute
   - GitHub API: 12 Stunden
@@ -265,12 +265,12 @@ GPL v2 oder höher
 ## 📝 Changelog
 
 ### v2.0.0 (2025-12-07)
-- ✨ **Product Store** mit 1-Click Installation
+- ✨ **PSOURCE Katalog** mit 1-Click Installation
 - ✨ **Manifest-basierte Auto-Discovery** (keine manuelle Registrierung)
 - ✨ **Network-Admin Settings** mit rollenbasierter Zugriffskontrolle
 - 🚀 **Performance-Optimierung** mit Multi-Layer Caching
 - 🔐 **Manifest-Authentifizierung** (nur Power-Source Repos)
-- 🎨 **Neues Store-Design** mit Product Cards
+- 🎨 **Neues Katalog-Design** mit PSOURCE Cards
 - 📦 **Self-Update** Fähigkeit
 
 ### v1.0.0

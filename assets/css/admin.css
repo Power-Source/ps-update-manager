@@ -1,7 +1,7 @@
 /* PS Update Manager - Admin Styles */
 
 .ps-update-manager-dashboard,
-.ps-update-manager-products {
+.ps-update-manager-psources {
 	max-width: 1400px;
 }
 
@@ -259,15 +259,15 @@
 }
 
 /* Products Table Page */
-.ps-update-manager-products .wp-list-table {
+.ps-update-manager-psources .wp-list-table {
 	margin-top: 20px;
 }
 
-.ps-update-manager-products .wp-list-table th,
-.ps-update-manager-products .wp-list-table td {
+.ps-update-manager-psources .wp-list-table th,
+.ps-update-manager-psources .wp-list-table td {
 	padding: 12px 10px;
 }
 
-.ps-update-manager-products .dashicons {
+.ps-update-manager-psources .dashicons {
 	vertical-align: text-bottom;
 }

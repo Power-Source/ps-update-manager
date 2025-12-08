@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: PS Update Manager
- * Plugin URI: https://power-source.github.io/ps-update-manager/
- * Description: Zentraler Update-Manager für alle PSource Plugins und Themes. Verwaltet Updates von GitHub oder eigenem Server.
- * Version: 1.0.0
+ * Plugin Name: PS Manager
+ * Plugin URI: https://github.com/Power-Source/ps-update-manager/
+ * Description: PSOURCE Management & Toolbox Hub - Updates, Tools & Netzwerk-Administration
+ * Version: 1.1.0
  * Author: PSource
- * Author URI: https://nerdservice.eimen.net
+ * Author URI: https://github.com/Power-Source
  * Text Domain: ps-update-manager
  * Domain Path: /languages
- * PS Network: required
+ * Network: true
  */
 
 // Direkten Zugriff verhindern
@@ -61,6 +61,10 @@ class PS_Update_Manager {
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-github-api.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-settings.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-admin-dashboard.php';
+		
+		// Tools System (NEU)
+		require_once PS_UPDATE_MANAGER_DIR . 'includes/tools/class-ps-tool.php';
+		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-tool-manager.php';
 	}
 	
 	/**
@@ -83,6 +87,10 @@ class PS_Update_Manager {
 			
 			// Scanner initialisieren
 			PS_Update_Manager_Product_Scanner::get_instance();
+			
+			// Tools Manager initialisieren (stellt sicher, dass admin-post Hooks registriert sind)
+			PS_Manager_Tool_Manager::get_instance();
+			error_log( 'PS Manager: Tool Manager instantiated' );
 		}
 		
 		// Täglicher Scan-Hook

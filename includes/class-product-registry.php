@@ -125,7 +125,7 @@ class PS_Update_Manager_Product_Registry {
 	}
 	
 	/**
-	 * Alle Produkte abrufen
+	 * Alle PSOURCE-Einträge abrufen
 	 */
 	public function get_all() {
 		// Cache für Status aktualisieren (1 Minute)

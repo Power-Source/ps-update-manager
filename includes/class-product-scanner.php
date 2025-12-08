@@ -1,7 +1,7 @@
 <?php
 /**
  * Product Scanner Klasse
- * Scannt Plugin und Theme Verzeichnisse nach PSource Produkten
+ * Scannt Plugin und Theme Verzeichnisse nach PSOURCE-Einträgen
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,7 +13,7 @@ class PS_Update_Manager_Product_Scanner {
 	private static $instance = null;
 	
 	/**
-	 * Offizielle PSource Produkte aus Manifest
+	 * Offizielle PSOURCE-Einträge aus Manifest
 	 */
 	private $official_products = array();
 	
@@ -33,7 +33,7 @@ class PS_Update_Manager_Product_Scanner {
 	}
 	
 	/**
-	 * Offizielle Produkte aus Manifest laden
+	 * Offizielle PSOURCE-Einträge aus Manifest laden
 	 */
 	private function load_manifest() {
 		$manifest_file = PS_UPDATE_MANAGER_DIR . 'includes/products-manifest.php';
@@ -189,7 +189,7 @@ class PS_Update_Manager_Product_Scanner {
 	}
 	
 	/**
-	 * Entdeckte Produkte in Registry speichern
+	 * Entdeckte PSOURCE-Einträge in Registry speichern
 	 */
 	private function save_discovered_products( $discovered ) {
 		if ( empty( $discovered ) ) {
@@ -221,7 +221,7 @@ class PS_Update_Manager_Product_Scanner {
 	}
 	
 	/**
-	 * Gecachte entdeckte Produkte abrufen
+	 * Gecachte entdeckte PSOURCE-Einträge abrufen
 	 */
 	public function get_discovered_products() {
 		$cached = get_transient( 'ps_discovered_products' );
@@ -234,7 +234,7 @@ class PS_Update_Manager_Product_Scanner {
 	}
 	
 	/**
-	 * Offizielle Produkte aus Manifest abrufen
+	 * Offizielle PSOURCE-Einträge aus Manifest abrufen
 	 */
 	public function get_official_products() {
 		return $this->official_products;

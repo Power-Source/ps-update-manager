@@ -1,9 +1,9 @@
 <?php
 /**
- * Offizielle PSource Produkte Manifest
+ * Offizielle PSOURCE Manifest-Datei
  * 
  * Diese Liste definiert alle offiziellen PSource Plugins und Themes.
- * Nur Produkte in dieser Liste werden vom Update Manager erkannt.
+ * Nur Einträge in dieser Liste werden vom Update Manager erkannt.
  * 
  * Quelle: https://github.com/Power-Source
  */
@@ -34,10 +34,10 @@ return array(
 		'icon'        => 'dashicons-format-chat',
 	),
 	
-	'default-theme' => array(
+	'psource-link-checker' => array(
 		'type'        => 'plugin',
-		'name'        => 'Standard Theme',
-		'repo'        => 'Power-Source/default-theme',
+		'name'        => 'PS Link Checker',
+		'repo'        => 'Power-Source/psource-link-checker',
 		'description' => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-admin-appearance',
