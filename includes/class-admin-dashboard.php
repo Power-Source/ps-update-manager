@@ -1149,25 +1149,41 @@ class PS_Update_Manager_Admin_Dashboard {
 		$api = PS_Update_Manager_GitHub_API::get_instance();
 		$release = $api->get_latest_release( $repo );
 		
-		if ( ! $release ) {
+		if ( ! $release || is_wp_error( $release ) ) {
 			return new WP_Error( 'no_release', __( 'Kein Release auf GitHub gefunden', 'ps-update-manager' ) );
 		}
 		
-		// ZIP-Download-URL
-		$download_url = $release['zipball_url'];
+		// ZIP-Download-URL (korrekter Array-Key)
+		$download_url = $release['download_url'];
+		
+		if ( empty( $download_url ) ) {
+			return new WP_Error( 'no_download_url', __( 'Keine Download-URL in GitHub Release gefunden', 'ps-update-manager' ) );
+		}
 		
 		// Temporäres Verzeichnis
 		$temp_file = download_url( $download_url );
 		
 		if ( is_wp_error( $temp_file ) ) {
-			return new WP_Error( 'download_failed', __( 'Download fehlgeschlagen', 'ps-update-manager' ) );
+			return $temp_file;
 		}
 		
 		// Zielverzeichnis
 		$destination = ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes/' : WP_PLUGIN_DIR . '/';
 		
-		// Entpacken
-		WP_Filesystem();
+		// Entpacken - WP_Filesystem initialisieren
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		
+		$wp_filesystem_ok = WP_Filesystem();
+		
+		if ( ! $wp_filesystem_ok ) {
+			if ( file_exists( $temp_file ) ) {
+				wp_delete_file( $temp_file );
+			}
+			return new WP_Error( 'wp_filesystem_error', __( 'Dateisystem konnte nicht initialisiert werden', 'ps-update-manager' ) );
+		}
+		
 		global $wp_filesystem;
 		
 		$unzip_result = unzip_file( $temp_file, $destination );
@@ -1178,7 +1194,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		if ( is_wp_error( $unzip_result ) ) {
-			return new WP_Error( 'unzip_failed', __( 'Entpacken fehlgeschlagen', 'ps-update-manager' ) );
+			return $unzip_result;
 		}
 		
 		// GitHub ZIP hat Ordner wie "Power-Source-ps-chat-abc123"
@@ -1190,8 +1206,18 @@ class PS_Update_Manager_Admin_Dashboard {
 			$slug_safe = sanitize_file_name( $slug );
 			$target_dir = trailingslashit( $destination ) . $slug_safe;
 			
-			// Validiere dass Zielordner innerhalb von destination liegt
-			if ( 0 !== strpos( realpath( dirname( $target_dir ) ), realpath( $destination ) ) ) {
+			// Prüfe ob Destination existiert
+			if ( ! file_exists( $destination ) ) {
+				return new WP_Error( 'destination_not_exists', __( 'Zielverzeichnis existiert nicht', 'ps-update-manager' ) );
+			}
+			
+			$destination_real = realpath( $destination );
+			if ( ! $destination_real ) {
+				return new WP_Error( 'invalid_destination', __( 'Ungültiges Zielverzeichnis', 'ps-update-manager' ) );
+			}
+			
+			$target_real = realpath( dirname( $target_dir ) );
+			if ( ! $target_real || 0 !== strpos( $target_real, $destination_real ) ) {
 				return new WP_Error( 'security_error', __( 'Sicherheitsfehler: Ungültiger Zielpfad', 'ps-update-manager' ) );
 			}
 			
@@ -1208,13 +1234,40 @@ class PS_Update_Manager_Admin_Dashboard {
 	
 	/**
 	 * Extrahierten Ordner finden (GitHub ZIP hat Hash im Namen)
+	 * GitHub erstellt Ordner wie: "Power-Source-repo-name-abc123def456"
 	 */
 	private function find_extracted_directory( $destination, $repo ) {
+		// GitHub ZIP-Format: {owner}-{repo}-{hash}
 		$repo_name = basename( $repo );
-		$files = glob( $destination . '*' . $repo_name . '*' );
 		
-		if ( ! empty( $files ) ) {
-			return $files[0];
+		// Versuche direkten Match mit Glob
+		$pattern = $destination . '*' . $repo_name . '*';
+		$files = @glob( $pattern, GLOB_ONLYDIR );
+		
+		if ( ! empty( $files ) && is_array( $files ) ) {
+			// Filtere nur echte Verzeichnisse
+			foreach ( $files as $file ) {
+				if ( is_dir( $file ) ) {
+					return $file;
+				}
+			}
+		}
+		
+		// Fallback: Scanne das Verzeichnis manuell
+		if ( is_dir( $destination ) ) {
+			$handle = @opendir( $destination );
+			if ( $handle ) {
+				while ( false !== ( $file = readdir( $handle ) ) ) {
+					if ( '.' !== $file && '..' !== $file ) {
+						$path = $destination . $file;
+						if ( is_dir( $path ) && strpos( $file, $repo_name ) !== false ) {
+							closedir( $handle );
+							return $path;
+						}
+					}
+				}
+				closedir( $handle );
+			}
 		}
 		
 		return false;

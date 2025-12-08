@@ -33,23 +33,59 @@ return array(
 		'category'    => 'community',
 		'icon'        => 'dashicons-format-chat',
 	),
+
+	'marketpress' => array(
+		'type'        => 'plugin',
+		'name'        => 'MarketPress',
+		'repo'        => 'Power-Source/marketpress',
+		'description' => 'The complete WordPress ecommerce plugin - works perfectly with BuddyPress and Multisite too to create a social marketplace, where you can take a percentage! Activate the plugin, adjust your settings then add some products to your store.',
+		'category'    => 'ecommerce',
+		'icon'        => 'dashicons-cart',
+	),
 	
 	'psource-link-checker' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS Link Checker',
 		'repo'        => 'Power-Source/psource-link-checker',
-		'description' => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen.',
-		'category'    => 'multisite',
+		'description' => 'Dieses Plugin überwacht Deinen Blog auf defekte Links und teilt Dir mit, ob welche gefunden wurden.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
+	'ps-snapshot' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Snapshot',
+		'repo'        => 'Power-Source/ps-snapshot',
+		'description' => 'Dieses Plugin ermöglicht es Dir, bei Bedarf schnelle Backup-Snapshots Deiner funktionierenden Datenbank zu erstellen. Du kannst aus den standardmäßigen WordPress-Tabellen sowie benutzerdefinierten Plugin-Tabellen innerhalb der Datenbankstruktur auswählen. Alle Snapshots werden protokolliert und Du kannst den Snapshot nach Bedarf wiederherstellen.',
+		'category'    => 'sicherheit',
 		'icon'        => 'dashicons-admin-appearance',
 	),
 
-    'ps-live-debug' => array(
+	'ps-live-debug' => array(
 		'type'        => 'plugin',
 		'name'        => 'PSOURCE Live Debug',
 		'repo'        => 'Power-Source/ps-live-debug',
-		'description' => 'Ermöglicht die einfache Auswahl eines neuen Standardthemes für neue Blog-Anmeldungen.',
+		'description' => 'Aktiviert das Debuggen und fügt dem ClassicPress-Admin einen Bildschirm hinzu, um das debug.log anzuzeigen.',
+		'category'    => 'development',
+		'icon'        => 'dashicons-search',
+	),
+
+	'ps-mitgliedschaften' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Mitgliedschaften',
+		'repo'        => 'Power-Source/ps-mitgliedschaften',
+		'description' => 'Description: Das leistungsstärkste, benutzerfreundlichste und flexibelste Mitgliedschafts-Plugin für ClassicPress-Seiten.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-groups',
+	),
+
+	'ps-bloghosting' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Bloghosting',
+		'repo'        => 'Power-Source/ps-bloghosting',
+		'description' => 'Das ultimative Bloghosting-Plugin für Multisites verwandelt reguläre Websites in mehrere PRO-Webseite-Abonnementstufen, die Zugriff auf Speicherplatz, Premium-Themen, Premium-Plugins und vieles mehr bieten!',
 		'category'    => 'multisite',
-		'icon'        => 'dashicons-admin-appearance',
+		'icon'        => 'dashicons-cloud',
 	),
 	
 	/**

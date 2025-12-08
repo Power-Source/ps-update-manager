@@ -119,13 +119,28 @@
 							location.reload();
 						}, 2000);
 					} else {
-						alert('Installation fehlgeschlagen: ' + response.data);
+						// Fehler-Nachricht aus response.data holen (kann String oder Objekt sein)
+						var errorMsg = response.data;
+						if (typeof response.data === 'object' && response.data.message) {
+							errorMsg = response.data.message;
+						}
+						alert('Installation fehlgeschlagen: ' + errorMsg);
 						$button.prop('disabled', false)
 							.html('<span class="dashicons dashicons-download"></span> Installieren');
 					}
 				},
 				error: function(xhr, status, error) {
-					alert('Ein Fehler ist aufgetreten: ' + error);
+					// Versuche Fehler aus Response zu extrahieren
+					var errorMsg = error || 'Unbekannter Fehler';
+					try {
+						var response = JSON.parse(xhr.responseText);
+						if (response.data) {
+							errorMsg = typeof response.data === 'string' ? response.data : response.data.message || error;
+						}
+					} catch(e) {
+						// JSON Parse Error - nutze default error
+					}
+					alert('Ein Fehler ist aufgetreten: ' + errorMsg);
 					$button.prop('disabled', false)
 						.html('<span class="dashicons dashicons-download"></span> Installieren');
 				}
