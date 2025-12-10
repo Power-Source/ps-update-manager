@@ -47,7 +47,6 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'wp_ajax_ps_test_github_api', array( $this, 'ajax_test_github_api' ) );
 		add_action( 'wp_ajax_ps_clear_github_cache', array( $this, 'ajax_clear_github_cache' ) );
 		add_action( 'wp_ajax_ps_load_products', array( $this, 'ajax_load_products' ) );
-		add_action( 'wp_ajax_ps_get_categories', array( $this, 'ajax_get_categories' ) );
 	}
 
 	/**
@@ -85,11 +84,6 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		// Scripts
 		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
-		
-		// PSources Katalog Script (nur auf der PSources-Seite)
-		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
-			wp_enqueue_script( 'ps-catalog', $base_url . 'assets/js/psources-catalog.js', array( 'jquery' ), '1.0.0', true );
-		}
 
 		// Lokalisierung / Nonces für AJAX
 		wp_localize_script( 'ps-update-manager-admin', 'PSUpdateManager', array(
@@ -453,6 +447,9 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
 		
+		// Aktiver Tab
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'plugins';
+		
 		?>
 		<div class="wrap ps-update-manager-psources">
 			<h1><?php esc_html_e( 'PSOURCE Katalog', 'ps-update-manager' ); ?></h1>
@@ -460,240 +457,573 @@ class PS_Update_Manager_Admin_Dashboard {
 				<?php esc_html_e( 'Entdecke und installiere offizielle PSOURCE Plugins und Themes aus dem Power-Source Repository.', 'ps-update-manager' ); ?>
 			</p>
 
-			<!-- Tabs -->
-			<h2 class="nav-tab-wrapper">
-				<a href="#" class="nav-tab nav-tab-active ps-tab-link" data-tab="plugins">
-					<span class="dashicons dashicons-admin-plugins"></span>
-					<?php esc_html_e( 'Plugins', 'ps-update-manager' ); ?>
-				</a>
-				<a href="#" class="nav-tab ps-tab-link" data-tab="themes">
-					<span class="dashicons dashicons-admin-appearance"></span>
-					<?php esc_html_e( 'Themes', 'ps-update-manager' ); ?>
-				</a>
-			</h2>
+			<form method="get">
+				<input type="hidden" name="page" value="ps-update-manager-psources" />
+				<div class="pssources-section">
+					<h2><?php esc_html_e( 'Plugins', 'ps-update-manager' ); ?></h2>
+					<div class="pssources-controls">
+						<input type="search" name="plugin_q" value="<?php echo isset( $_GET['plugin_q'] ) ? esc_attr( $_GET['plugin_q'] ) : ''; ?>" class="regular-text" placeholder="<?php esc_attr_e( 'Suche…', 'ps-update-manager' ); ?>" />
+						<select name="plugin_cat">
+							<option value="all"><?php esc_html_e( 'Alle Kategorien', 'ps-update-manager' ); ?></option>
+							<?php foreach ( $category_map as $key => $label ) : ?>
+								<option value="<?php echo esc_attr( $key ); ?>" <?php selected( isset( $_GET['plugin_cat'] ) ? $_GET['plugin_cat'] : '', $key ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<?php $pstat = isset( $_GET['plugin_status'] ) ? sanitize_key( $_GET['plugin_status'] ) : 'all'; ?>
+						<select name="plugin_status">
+							<option value="all" <?php selected( $pstat, 'all' ); ?>><?php esc_html_e( 'Alle', 'ps-update-manager' ); ?></option>
+							<option value="installed" <?php selected( $pstat, 'installed' ); ?>><?php esc_html_e( 'Installiert', 'ps-update-manager' ); ?></option>
+							<option value="active" <?php selected( $pstat, 'active' ); ?>><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></option>
+							<option value="available" <?php selected( $pstat, 'available' ); ?>><?php esc_html_e( 'Verfügbar', 'ps-update-manager' ); ?></option>
+							<option value="updates" <?php selected( $pstat, 'updates' ); ?>><?php esc_html_e( 'Update verfügbar', 'ps-update-manager' ); ?></option>
+						</select>
+						<button class="button" type="submit"><?php esc_html_e( 'Filter anwenden', 'ps-update-manager' ); ?></button>
+					</div>
+					<div class="ps-products-store">
+						<?php foreach ( $paged_plugins['slice'] as $slug => $product ) : ?>
+							<div class="ps-store-card" data-slug="<?php echo esc_attr( $slug ); ?>">
+								<div class="ps-store-card-header">
+						<div class="ps-store-card-header">
+							<span class="ps-store-icon">
+								<span class="dashicons <?php echo esc_attr( $product['icon'] ); ?>"></span>
+							</span>
+							<div class="ps-store-title">
+								<h3><?php echo esc_html( $product['name'] ); ?></h3>
+								<span class="ps-store-meta">
+									<?php echo esc_html( ucfirst( $product['type'] ) ); ?> 
+									<?php if ( $product['version'] ) : ?>
+										· v<?php echo esc_html( $product['version'] ); ?>
+									<?php endif; ?>
+								</span>
+							</div>
+							
+							<div class="ps-store-status">
+								<?php if ( ! $product['installed'] ) : ?>
+									<span class="ps-badge ps-badge-not-installed"><?php esc_html_e( 'Nicht installiert', 'ps-update-manager' ); ?></span>
+								<?php elseif ( $product['update_available'] ) : ?>
+									<span class="ps-badge ps-badge-update"><?php printf( __( 'Update: v%s', 'ps-update-manager' ), esc_html( $product['new_version'] ) ); ?></span>
+								<?php elseif ( $product['active'] ) : ?>
+									<?php
+									// Multisite: Prüfe ob netzwerkweit aktiv
+									$is_network_active = false;
+									if ( is_multisite() && isset( $installed_products[ $slug ]['basename'] ) ) {
+										$is_network_active = is_plugin_active_for_network( $installed_products[ $slug ]['basename'] );
+									}
+									?>
+									<?php if ( $is_network_active ) : ?>
+										<span class="ps-badge ps-badge-network-active" title="<?php esc_attr_e( 'Netzwerkweit aktiviert', 'ps-update-manager' ); ?>">
+											<span class="dashicons dashicons-networking" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span>
+											<?php esc_html_e( 'Netzwerkweit', 'ps-update-manager' ); ?>
+										</span>
+									<?php else : ?>
+										<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+									<?php endif; ?>
+								<?php else : ?>
+									<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
+								<?php endif; ?>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-body">
+							<p class="ps-store-description"><?php echo esc_html( $product['description'] ); ?></p>
+							
+							<div class="ps-store-links">
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-admin-site"></span> GitHub
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/issues" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-sos"></span> Support
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/releases" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-media-document"></span> Changelog
+								</a>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-footer">
+							<?php if ( ! $product['installed'] ) : ?>
+								<button class="button button-primary ps-install-product" data-slug="<?php echo esc_attr( $slug ); ?>" data-repo="<?php echo esc_attr( $product['repo'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
+									<span class="dashicons dashicons-download"></span>
+									<?php esc_html_e( 'Installieren', 'ps-update-manager' ); ?>
+								</button>
+							<?php elseif ( $product['update_available'] ) : ?>
+								<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-primary">
+									<span class="dashicons dashicons-update"></span>
+									<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
+								</a>
+							<?php elseif ( ! $product['active'] && 'plugin' === $product['type'] ) : ?>
+								<?php
+								// Basename aus Registry holen (z.B. ps-chat/psource-chat.php)
+								$plugin_basename = isset( $installed_products[ $slug ]['basename'] ) 
+									? $installed_products[ $slug ]['basename'] 
+									: $slug . '/' . $slug . '.php'; // Fallback
+								
+								// Network-Modus aus Registry holen
+								$network_only = isset( $installed_products[ $slug ]['network_only'] ) && $installed_products[ $slug ]['network_only'];
+								$network_mode = isset( $installed_products[ $slug ]['network_mode'] ) ? $installed_products[ $slug ]['network_mode'] : 'none';
+								
+								// Multisite: Prüfe ob wir im Network Admin sind
+								if ( is_multisite() && is_network_admin() ) {
+									// Prüfe ob Plugin netzwerkweit aktivierbar ist
+									if ( 'none' === $network_mode ) {
+										// Site-Only Plugin - nicht im Netzwerk-Admin aktivierbar
+										?>
+										<button class="button" disabled>
+											<span class="dashicons dashicons-admin-site"></span>
+											<?php esc_html_e( 'Nur Unterseiten', 'ps-update-manager' ); ?>
+										</button>
+										<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+											<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+											<?php esc_html_e( 'Nur auf Unterseiten-Ebene aktivierbar (nicht netzwerkweit).', 'ps-update-manager' ); ?>
+										</p>
+										<?php
+									} else {
+										// Netzwerkweite Aktivierung möglich
+										$activate_url = wp_nonce_url(
+											network_admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+											'activate-plugin_' . $plugin_basename
+										);
+										?>
+										<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+											<span class="dashicons dashicons-yes"></span>
+											<?php esc_html_e( 'Netzwerkweit aktivieren', 'ps-update-manager' ); ?>
+										</a>
+										<?php if ( 'wordpress-network' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px; color: #d63638;">
+												<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+												<?php esc_html_e( 'Dieses Plugin kann nur netzwerkweit aktiviert werden.', 'ps-update-manager' ); ?>
+											</p>
+										<?php elseif ( 'multisite-required' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+												<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+												<?php esc_html_e( 'Auf Multisite nur netzwerkweit aktivierbar. Auf Single-Sites normal nutzbar.', 'ps-update-manager' ); ?>
+											</p>
+										<?php elseif ( 'flexible' === $network_mode ) : ?>
+											<p class="description" style="margin-top: 8px; font-size: 12px;">
+												<?php esc_html_e( 'Kann auch site-by-site im Site-Admin aktiviert werden.', 'ps-update-manager' ); ?>
+											</p>
+										<?php endif; ?>
+									<?php
+									}
+								} elseif ( is_multisite() && ! $network_only ) {
+									// Site-Admin auf Multisite: Nur wenn Plugin nicht network-only ist
+									$activate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+										'activate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+										<span class="dashicons dashicons-yes"></span>
+										<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+									</a>
+									<p class="description" style="margin-top: 8px; font-size: 12px;">
+										<?php esc_html_e( 'Aktiviert das Plugin nur für diese Site.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } elseif ( is_multisite() && $network_only ) {
+									// Site-Admin, aber Plugin ist network-only
+									?>
+									<button class="button" disabled>
+										<span class="dashicons dashicons-lock"></span>
+										<?php esc_html_e( 'Nur Netzwerk-Admin', 'ps-update-manager' ); ?>
+									</button>
+									<p class="description" style="margin-top: 8px; font-size: 12px; color: #d63638;">
+										<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+										<?php esc_html_e( 'Dieses Plugin kann nur im Netzwerk-Admin aktiviert werden.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } else {
+									// Single-Site Standard-Aktivierung
+									$activate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
+										'activate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+										<span class="dashicons dashicons-yes"></span>
+										<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } ?>
+							<?php elseif ( $product['active'] && 'plugin' === $product['type'] ) : ?>
+								<?php
+								// Basename aus Registry holen
+								$plugin_basename = isset( $installed_products[ $slug ]['basename'] ) 
+									? $installed_products[ $slug ]['basename'] 
+									: $slug . '/' . $slug . '.php';
+								
+								// Prüfe ob netzwerkweit aktiv
+								$is_network_active = is_multisite() && is_plugin_active_for_network( $plugin_basename );
+								
+								// Deaktivierungs-URLs
+								if ( is_multisite() && is_network_admin() && $is_network_active ) {
+									// Netzwerkweite Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										network_admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Netzwerkweit deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } elseif ( is_multisite() && ! is_network_admin() && ! $is_network_active ) {
+									// Site-spezifische Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } elseif ( is_multisite() && ! is_network_admin() && $is_network_active ) {
+									// Im Site-Admin, aber netzwerkweit aktiv - kann hier nicht deaktiviert werden
+									?>
+									<button class="button" disabled>
+										<span class="dashicons dashicons-admin-network"></span>
+										<?php esc_html_e( 'Netzwerkweit aktiv', 'ps-update-manager' ); ?>
+									</button>
+									<p class="description" style="margin-top: 8px; font-size: 12px; color: #2271b1;">
+										<span class="dashicons dashicons-info" style="font-size: 14px;"></span>
+										<?php esc_html_e( 'Nur im Netzwerk-Admin deaktivierbar.', 'ps-update-manager' ); ?>
+									</p>
+								<?php } else {
+									// Single-Site Deaktivierung
+									$deactivate_url = wp_nonce_url(
+										admin_url( 'plugins.php?action=deactivate&plugin=' . urlencode( $plugin_basename ) ),
+										'deactivate-plugin_' . $plugin_basename
+									);
+									?>
+									<a href="<?php echo esc_url( $deactivate_url ); ?>" class="button">
+										<span class="dashicons dashicons-dismiss"></span>
+										<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
+									</a>
+								<?php } ?>
+							<?php elseif ( $product['active'] ) : ?>
+								<button class="button" disabled>
+									<span class="dashicons dashicons-yes-alt"></span>
+									<?php esc_html_e( 'Aktiv & Aktuell', 'ps-update-manager' ); ?>
+								</button>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
 
-			<!-- Filter -->
-			<form id="ps-catalog-filters" style="margin: 20px 0; padding: 15px; background: #fff; border: 1px solid #ccd0d4; border-radius: 4px;">
-				<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-					<input type="search" id="ps-search" class="regular-text" placeholder="<?php esc_attr_e( 'Suche nach Name oder Beschreibung…', 'ps-update-manager' ); ?>" />
-					
-					<select id="ps-category">
-						<option value="all"><?php esc_html_e( 'Alle Kategorien', 'ps-update-manager' ); ?></option>
-						<!-- Kategorien werden per AJAX geladen je nach aktivem Tab -->
-					</select>
-					
-					<select id="ps-status">
-						<option value="all"><?php esc_html_e( 'Alle', 'ps-update-manager' ); ?></option>
-						<option value="installed"><?php esc_html_e( 'Installiert', 'ps-update-manager' ); ?></option>
-						<option value="active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></option>
-						<option value="available"><?php esc_html_e( 'Verfügbar', 'ps-update-manager' ); ?></option>
-						<option value="updates"><?php esc_html_e( 'Update verfügbar', 'ps-update-manager' ); ?></option>
-					</select>
-					
-					<button type="submit" class="button button-primary">
-						<span class="dashicons dashicons-filter"></span>
-						<?php esc_html_e( 'Filter anwenden', 'ps-update-manager' ); ?>
-					</button>
-					
-					<button type="button" id="ps-reset-filters" class="button">
-						<span class="dashicons dashicons-undo"></span>
-						<?php esc_html_e( 'Zurücksetzen', 'ps-update-manager' ); ?>
-					</button>
+			<?php if ( $paged_plugins['pages'] > 1 ) : ?>
+				<div class="pssources-pagination">
+					<?php for ( $i = 1; $i <= $paged_plugins['pages']; $i++ ) : ?>
+						<?php
+						$url = add_query_arg( array(
+							'page'          => 'ps-update-manager-psources',
+							'plugin_q'      => isset( $_GET['plugin_q'] ) ? sanitize_text_field( wp_unslash( $_GET['plugin_q'] ) ) : '',
+							'plugin_cat'    => isset( $_GET['plugin_cat'] ) ? sanitize_key( $_GET['plugin_cat'] ) : '',
+							'plugin_status' => isset( $_GET['plugin_status'] ) ? sanitize_key( $_GET['plugin_status'] ) : '',
+							'plugin_page'   => $i,
+						), admin_url( 'admin.php' ) );
+						?>
+						<a href="<?php echo esc_url( $url ); ?>" class="button <?php echo ( $i === $paged_plugins['page'] ) ? 'button-primary' : ''; ?>">
+							<?php echo intval( $i ); ?>
+						</a>
+					<?php endfor; ?>
 				</div>
-			</form>
-
-			<!-- Produkt-Grid (AJAX-Container) -->
-			<div id="ps-products-grid" class="ps-products-store"></div>
-
-			<!-- Pagination (AJAX) -->
-			<div id="ps-pagination" style="margin-top: 20px;"></div>
-
-			<style>
-				.ps-loading {
-					text-align: center;
-					padding: 40px;
-					color: #646970;
-				}
-				.ps-no-results {
-					text-align: center;
-					padding: 40px;
-					background: #f6f7f7;
-					border: 1px dashed #ccd0d4;
-					border-radius: 4px;
-					color: #646970;
-				}
-				.ps-pagination {
-					display: flex;
-					gap: 5px;
-					justify-content: center;
-				}
-				.ps-products-store {
-					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-					gap: 20px;
-					margin-top: 20px;
-				}
-				
-				.ps-store-card {
-					background: #fff;
-					border: 1px solid #ccd0d4;
-					border-radius: 4px;
-					box-shadow: 0 1px 1px rgba(0,0,0,.04);
-					display: flex;
-					flex-direction: column;
-					transition: box-shadow 0.2s;
-				}
-				
-				.ps-store-card:hover {
-					box-shadow: 0 2px 4px rgba(0,0,0,.08);
-				}
-				
-				.ps-store-card-header {
-					padding: 20px;
-					border-bottom: 1px solid #f0f0f1;
-					display: flex;
-					align-items: flex-start;
-					gap: 15px;
-				}
-				
-				.ps-store-icon {
-					flex-shrink: 0;
-					width: 48px;
-					height: 48px;
-					background: #f0f0f1;
-					border-radius: 4px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				
-				.ps-store-icon .dashicons {
-					font-size: 28px;
-					width: 28px;
-					height: 28px;
-					color: #2271b1;
-				}
-				
-				.ps-store-title {
-					flex: 1;
-					min-width: 0;
-				}
-				
-				.ps-store-title h3 {
-					margin: 0 0 5px;
-					font-size: 16px;
-					font-weight: 600;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
-				
-				.ps-store-meta {
-					font-size: 13px;
-					color: #646970;
-				}
-				
-				.ps-store-status {
-					flex-shrink: 0;
-				}
-				
-				.ps-badge {
-					display: inline-block;
-					padding: 4px 10px;
-					font-size: 12px;
-					font-weight: 500;
-					border-radius: 3px;
-					white-space: nowrap;
-				}
-				
-				.ps-badge-not-installed {
-					background: #f0f0f1;
-					color: #646970;
-				}
-				
-				.ps-badge-inactive {
-					background: #fcf9e8;
-					color: #8a6d3b;
-				}
-				
-				.ps-badge-active {
-					background: #d4edda;
-					color: #155724;
-				}
-				
-				.ps-badge-network-active {
-					background: #cfe2ff;
-					color: #084298;
-					display: inline-flex;
-					align-items: center;
-					gap: 4px;
-				}
-				
-				.ps-badge-update {
-					background: #fff3cd;
-					color: #856404;
-				}
-				
-				.ps-store-card-body {
-					padding: 20px;
-					flex: 1;
-				}
-				
-				.ps-store-description {
-					margin: 0 0 15px;
-					color: #50575e;
-					line-height: 1.6;
-					font-size: 14px;
-				}
-				
-				.ps-store-links {
-					display: flex;
-					gap: 15px;
-					flex-wrap: wrap;
-				}
-				
-				.ps-link {
-					display: inline-flex;
-					align-items: center;
-					gap: 5px;
-					font-size: 13px;
-					color: #2271b1;
-					text-decoration: none;
-				}
-				
-				.ps-link:hover {
-					color: #135e96;
-				}
-				
-				.ps-link .dashicons {
-					font-size: 16px;
-					width: 16px;
-					height: 16px;
-				}
-				
-				.ps-store-card-footer {
-					padding: 15px 20px;
-					border-top: 1px solid #f0f0f1;
-					background: #f6f7f7;
-				}
-				
-				.ps-store-card-footer .button {
-					width: 100%;
-					justify-content: center;
-					display: flex;
-					align-items: center;
-					gap: 5px;
-				}
-				
-				.nav-tab .dashicons {
-					font-size: 16px;
-					width: 16px;
-					height: 16px;
-					vertical-align: middle;
-					margin-right: 5px;
-				}
-			</style>
+			<?php endif; ?>
 		</div>
+
+		<!-- THEMES SECTION -->
+		<div class="pssources-section">
+			<h2><?php esc_html_e( 'Themes', 'ps-update-manager' ); ?></h2>
+			<div class="pssources-controls">
+				<input type="search" name="theme_q" value="<?php echo isset( $_GET['theme_q'] ) ? esc_attr( $_GET['theme_q'] ) : ''; ?>" class="regular-text" placeholder="<?php esc_attr_e( 'Suche…', 'ps-update-manager' ); ?>" />
+				<select name="theme_cat">
+					<option value="all"><?php esc_html_e( 'Alle Kategorien', 'ps-update-manager' ); ?></option>
+					<?php foreach ( $category_map as $key => $label ) : ?>
+						<option value="<?php echo esc_attr( $key ); ?>" <?php selected( isset( $_GET['theme_cat'] ) ? $_GET['theme_cat'] : '', $key ); ?>><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<?php $tstat = isset( $_GET['theme_status'] ) ? sanitize_key( $_GET['theme_status'] ) : 'all'; ?>
+				<select name="theme_status">
+					<option value="all" <?php selected( $tstat, 'all' ); ?>><?php esc_html_e( 'Alle', 'ps-update-manager' ); ?></option>
+					<option value="installed" <?php selected( $tstat, 'installed' ); ?>><?php esc_html_e( 'Installiert', 'ps-update-manager' ); ?></option>
+					<option value="active" <?php selected( $tstat, 'active' ); ?>><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></option>
+					<option value="available" <?php selected( $tstat, 'available' ); ?>><?php esc_html_e( 'Verfügbar', 'ps-update-manager' ); ?></option>
+					<option value="updates" <?php selected( $tstat, 'updates' ); ?>><?php esc_html_e( 'Update verfügbar', 'ps-update-manager' ); ?></option>
+				</select>
+				<button class="button" type="submit"><?php esc_html_e( 'Filter anwenden', 'ps-update-manager' ); ?></button>
+			</div>
+			<div class="ps-products-store">
+				<?php foreach ( $paged_themes['slice'] as $slug => $product ) : ?>
+					<div class="ps-store-card" data-slug="<?php echo esc_attr( $slug ); ?>">
+						<div class="ps-store-card-header">
+							<span class="ps-store-icon">
+								<span class="dashicons <?php echo esc_attr( $product['icon'] ); ?>"></span>
+							</span>
+							<div class="ps-store-title">
+								<h3><?php echo esc_html( $product['name'] ); ?></h3>
+								<span class="ps-store-meta">
+									<?php echo esc_html( ucfirst( $product['type'] ) ); ?> 
+									<?php if ( $product['version'] ) : ?>
+										· v<?php echo esc_html( $product['version'] ); ?>
+									<?php endif; ?>
+								</span>
+							</div>
+							
+							<div class="ps-store-status">
+								<?php if ( ! $product['installed'] ) : ?>
+									<span class="ps-badge ps-badge-not-installed"><?php esc_html_e( 'Nicht installiert', 'ps-update-manager' ); ?></span>
+								<?php elseif ( $product['update_available'] ) : ?>
+									<span class="ps-badge ps-badge-update"><?php printf( __( 'Update: v%s', 'ps-update-manager' ), esc_html( $product['new_version'] ) ); ?></span>
+								<?php elseif ( $product['active'] ) : ?>
+									<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+								<?php else : ?>
+									<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
+								<?php endif; ?>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-body">
+							<p class="ps-store-description"><?php echo esc_html( $product['description'] ); ?></p>
+							
+							<div class="ps-store-links">
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-admin-site"></span> GitHub
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/issues" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-sos"></span> Support
+								</a>
+								<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/releases" target="_blank" class="ps-link">
+									<span class="dashicons dashicons-media-document"></span> Changelog
+								</a>
+							</div>
+						</div>
+						
+						<div class="ps-store-card-footer">
+							<?php if ( ! $product['installed'] ) : ?>
+								<button class="button button-primary ps-install-product" data-slug="<?php echo esc_attr( $slug ); ?>" data-repo="<?php echo esc_attr( $product['repo'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
+									<span class="dashicons dashicons-download"></span>
+									<?php esc_html_e( 'Installieren', 'ps-update-manager' ); ?>
+								</button>
+							<?php elseif ( $product['update_available'] ) : ?>
+								<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-primary">
+									<span class="dashicons dashicons-update"></span>
+									<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
+								</a>
+							<?php elseif ( ! $product['active'] ) : ?>
+								<?php
+								// Theme-Aktivierung
+								$theme_slug = $slug;
+								$activate_url = wp_nonce_url(
+									is_network_admin() 
+										? network_admin_url( 'themes.php?action=enable&theme=' . urlencode( $theme_slug ) )
+										: admin_url( 'themes.php?action=activate&stylesheet=' . urlencode( $theme_slug ) ),
+									is_network_admin() ? 'enable-theme_' . $theme_slug : 'switch-theme_' . $theme_slug
+								);
+								?>
+								<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+									<span class="dashicons dashicons-yes"></span>
+									<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
+								</a>
+							<?php else : ?>
+								<button class="button" disabled>
+									<span class="dashicons dashicons-yes-alt"></span>
+									<?php esc_html_e( 'Aktiv & Aktuell', 'ps-update-manager' ); ?>
+								</button>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+
+			<?php if ( $paged_themes['pages'] > 1 ) : ?>
+				<div class="pssources-pagination">
+					<?php for ( $i = 1; $i <= $paged_themes['pages']; $i++ ) : ?>
+						<?php
+						$url = add_query_arg( array(
+							'page'         => 'ps-update-manager-psources',
+							'theme_q'      => isset( $_GET['theme_q'] ) ? sanitize_text_field( wp_unslash( $_GET['theme_q'] ) ) : '',
+							'theme_cat'    => isset( $_GET['theme_cat'] ) ? sanitize_key( $_GET['theme_cat'] ) : '',
+							'theme_status' => isset( $_GET['theme_status'] ) ? sanitize_key( $_GET['theme_status'] ) : '',
+							'theme_page'   => $i,
+						), admin_url( 'admin.php' ) );
+						?>
+						<a href="<?php echo esc_url( $url ); ?>" class="button <?php echo ( $i === $paged_themes['page'] ) ? 'button-primary' : ''; ?>">
+							<?php echo intval( $i ); ?>
+						</a>
+					<?php endfor; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+		</form>
+		
+		<style>
+			.pssources-section {
+				margin-bottom: 40px;
+			}
+			.pssources-section h2 {
+				margin-bottom: 15px;
+				font-size: 20px;
+			}
+			.pssources-controls {
+				display: flex;
+				gap: 10px;
+				margin-bottom: 20px;
+				flex-wrap: wrap;
+			}
+			.pssources-controls input[type="search"],
+			.pssources-controls select {
+				flex: 0 1 auto;
+			}
+			.pssources-pagination {
+				margin-top: 20px;
+				display: flex;
+				gap: 5px;
+			}
+			.ps-products-store {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+				gap: 20px;
+				margin-top: 20px;
+			}
+			
+			.ps-store-card {
+				background: #fff;
+				border: 1px solid #ccd0d4;
+				border-radius: 4px;
+				box-shadow: 0 1px 1px rgba(0,0,0,.04);
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.ps-store-card-header {
+				padding: 20px;
+				border-bottom: 1px solid #f0f0f1;
+				display: flex;
+				align-items: flex-start;
+				gap: 15px;
+			}
+			
+			.ps-store-icon {
+				flex-shrink: 0;
+				width: 48px;
+				height: 48px;
+				background: #f0f0f1;
+				border-radius: 4px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.ps-store-icon .dashicons {
+				font-size: 28px;
+				width: 28px;
+				height: 28px;
+				color: #2271b1;
+			}
+			
+			.ps-store-title {
+				flex: 1;
+			}
+			
+			.ps-store-title h3 {
+				margin: 0 0 5px;
+				font-size: 16px;
+				font-weight: 600;
+			}
+			
+			.ps-store-meta {
+				font-size: 13px;
+				color: #646970;
+			}
+			
+			.ps-store-status {
+				flex-shrink: 0;
+			}
+			
+			.ps-badge {
+				display: inline-block;
+				padding: 4px 10px;
+				font-size: 12px;
+				font-weight: 500;
+				border-radius: 3px;
+				white-space: nowrap;
+			}
+			
+			.ps-badge-not-installed {
+				background: #f0f0f1;
+				color: #646970;
+			}
+			
+			.ps-badge-inactive {
+				background: #fcf9e8;
+				color: #8a6d3b;
+			}
+			
+			.ps-badge-active {
+				background: #d4edda;
+				color: #155724;
+			}
+			
+			.ps-badge-network-active {
+				background: #cfe2ff;
+				color: #084298;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+			}
+			
+			.ps-badge-update {
+				background: #fff3cd;
+				color: #856404;
+			}
+			
+			.ps-store-card-body {
+				padding: 20px;
+				flex: 1;
+			}
+			
+			.ps-store-description {
+				margin: 0 0 15px;
+				color: #50575e;
+				line-height: 1.6;
+			}
+			
+			.ps-store-links {
+				display: flex;
+				gap: 15px;
+			}
+			
+			.ps-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				font-size: 13px;
+				color: #2271b1;
+				text-decoration: none;
+			}
+			
+			.ps-link:hover {
+				color: #135e96;
+			}
+			
+			.ps-link .dashicons {
+				font-size: 16px;
+				width: 16px;
+				height: 16px;
+			}
+			
+			.ps-store-card-footer {
+				padding: 15px 20px;
+				border-top: 1px solid #f0f0f1;
+				background: #f6f7f7;
+			}
+			
+			.ps-store-card-footer .button {
+				width: 100%;
+				justify-content: center;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+			}
+		</style>
 		<?php
 	}
 	
@@ -709,299 +1039,6 @@ class PS_Update_Manager_Admin_Dashboard {
 		$release = $github->get_latest_release( $product['github_repo'] );
 		
 		return is_wp_error( $release ) ? false : $release;
-	}
-
-	/**
-	 * AJAX: Produkte laden (für Tab-System)
-	 */
-	public function ajax_load_products() {
-		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
-
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
-		}
-
-		$tab      = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'plugins';
-		$page     = isset( $_POST['page'] ) ? max( 1, intval( $_POST['page'] ) ) : 1;
-		$search   = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
-		$category = isset( $_POST['category'] ) ? sanitize_key( $_POST['category'] ) : 'all';
-		$status   = isset( $_POST['status'] ) ? sanitize_key( $_POST['status'] ) : 'all';
-
-		// Produkte sammeln
-		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$scanner->scan_all();
-
-		$official_products  = $scanner->get_official_products();
-		$registry           = PS_Update_Manager_Product_Registry::get_instance();
-		$installed_products = $registry->get_all();
-
-		// Produkte vorbereiten
-		$all_products = array();
-		foreach ( $official_products as $slug => $manifest ) {
-			$product = array(
-				'slug'             => $slug,
-				'name'             => $manifest['name'],
-				'description'      => $manifest['description'],
-				'type'             => $manifest['type'],
-				'repo'             => $manifest['repo'],
-				'icon'             => $manifest['icon'] ?? 'dashicons-admin-plugins',
-				'category'         => $manifest['category'] ?? 'general',
-				'installed'        => false,
-				'active'           => false,
-				'version'          => null,
-				'update_available' => false,
-				'new_version'      => null,
-				'basename'         => null,
-				'network_mode'     => 'none',
-			);
-
-			if ( isset( $installed_products[ $slug ] ) ) {
-				$installed                  = $installed_products[ $slug ];
-				$product['installed']       = true;
-				$product['active']          = $installed['is_active'];
-				$product['version']         = $installed['version'];
-				$product['basename']        = $installed['basename'] ?? null;
-				$product['network_mode']    = $installed['network_mode'] ?? 'none';
-
-				$update_info = $this->get_product_update_info( $installed );
-				if ( $update_info && version_compare( $update_info['version'], $installed['version'], '>' ) ) {
-					$product['update_available'] = true;
-					$product['new_version']      = $update_info['version'];
-				}
-			}
-
-			$all_products[ $slug ] = $product;
-		}
-
-		// Nach Typ filtern
-		$items = array_filter( $all_products, function( $item ) use ( $tab ) {
-			return $item['type'] === $tab || ( 'plugins' === $tab && 'plugin' === $item['type'] ) || ( 'themes' === $tab && 'theme' === $item['type'] );
-		});
-
-		// Filter anwenden
-		if ( $search ) {
-			$items = array_filter( $items, function( $item ) use ( $search ) {
-				$hay = strtolower( $item['name'] . ' ' . $item['slug'] . ' ' . $item['description'] );
-				return strpos( $hay, strtolower( $search ) ) !== false;
-			});
-		}
-
-		if ( $category && 'all' !== $category ) {
-			$items = array_filter( $items, function( $item ) use ( $category ) {
-				return isset( $item['category'] ) && $item['category'] === $category;
-			});
-		}
-
-		if ( $status && 'all' !== $status ) {
-			$items = array_filter( $items, function( $item ) use ( $status ) {
-				if ( 'installed' === $status ) { return $item['installed']; }
-				if ( 'active' === $status ) { return $item['active']; }
-				if ( 'available' === $status ) { return ! $item['installed']; }
-				if ( 'updates' === $status ) { return $item['update_available']; }
-				return true;
-			});
-		}
-
-		// Pagination
-		$per_page = 12;
-		$total    = count( $items );
-		$pages    = max( 1, ceil( $total / $per_page ) );
-		$page     = min( $page, $pages );
-		$offset   = ( $page - 1 ) * $per_page;
-		$slice    = array_slice( $items, $offset, $per_page, true );
-
-		// HTML rendern
-		ob_start();
-		if ( empty( $slice ) ) {
-			echo '<div class="ps-no-results"><p>' . esc_html__( 'Keine Produkte gefunden.', 'ps-update-manager' ) . '</p></div>';
-		} else {
-			foreach ( $slice as $slug => $product ) {
-				$this->render_product_card( $product, $installed_products );
-			}
-		}
-		$html = ob_get_clean();
-
-		// Pagination HTML
-		$pagination_html = '';
-		if ( $pages > 1 ) {
-			$pagination_html = '<div class="ps-pagination">';
-			for ( $i = 1; $i <= $pages; $i++ ) {
-				$class = ( $i === $page ) ? 'button button-primary' : 'button';
-				$pagination_html .= sprintf(
-					'<a href="#" class="ps-pagination-link %s" data-page="%d">%d</a> ',
-					esc_attr( $class ),
-					intval( $i ),
-					intval( $i )
-				);
-			}
-			$pagination_html .= '</div>';
-		}
-
-		wp_send_json_success( array(
-			'html'       => $html,
-			'pagination' => $pagination_html,
-			'total'      => $total,
-			'pages'      => $pages,
-		) );
-	}
-
-	/**
-	 * AJAX: Kategorien für Tab abrufen
-	 */
-	public function ajax_get_categories() {
-		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
-
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
-		}
-
-		$tab = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'plugins';
-
-		// Kategorie-Mapping laden
-		$category_map_file = PS_UPDATE_MANAGER_DIR . 'includes/category-map.php';
-		$all_categories = file_exists( $category_map_file ) ? include $category_map_file : array();
-
-		// Kategorien für den Tab
-		$categories = array();
-		if ( 'plugins' === $tab && isset( $all_categories['plugins'] ) ) {
-			$categories = $all_categories['plugins'];
-		} elseif ( 'themes' === $tab && isset( $all_categories['themes'] ) ) {
-			$categories = $all_categories['themes'];
-		}
-
-		wp_send_json_success( array( 'categories' => $categories ) );
-	}
-
-	/**
-	 * Einzelne Produkt-Karte rendern (für AJAX)
-	 */
-	private function render_product_card( $product, $installed_products = array() ) {
-		$slug = $product['slug'];
-		$is_network_active = false;
-		if ( is_multisite() && $product['installed'] && isset( $product['basename'] ) && $product['basename'] ) {
-			$is_network_active = is_plugin_active_for_network( $product['basename'] );
-		}
-		?>
-		<div class="ps-store-card" data-slug="<?php echo esc_attr( $slug ); ?>">
-			<div class="ps-store-card-header">
-				<span class="ps-store-icon">
-					<span class="dashicons <?php echo esc_attr( $product['icon'] ); ?>"></span>
-				</span>
-				<div class="ps-store-title">
-					<h3><?php echo esc_html( $product['name'] ); ?></h3>
-					<span class="ps-store-meta">
-						<?php echo esc_html( ucfirst( $product['type'] ) ); ?> 
-						<?php if ( $product['version'] ) : ?>
-							· v<?php echo esc_html( $product['version'] ); ?>
-						<?php endif; ?>
-					</span>
-				</div>
-				
-				<div class="ps-store-status">
-					<?php if ( ! $product['installed'] ) : ?>
-						<span class="ps-badge ps-badge-not-installed"><?php esc_html_e( 'Nicht installiert', 'ps-update-manager' ); ?></span>
-					<?php elseif ( $product['update_available'] ) : ?>
-						<span class="ps-badge ps-badge-update"><?php printf( __( 'Update: v%s', 'ps-update-manager' ), esc_html( $product['new_version'] ) ); ?></span>
-					<?php elseif ( $product['active'] ) : ?>
-						<?php if ( $is_network_active ) : ?>
-							<span class="ps-badge ps-badge-network-active" title="<?php esc_attr_e( 'Netzwerkweit aktiviert', 'ps-update-manager' ); ?>">
-								<span class="dashicons dashicons-networking" style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;"></span>
-								<?php esc_html_e( 'Netzwerkweit', 'ps-update-manager' ); ?>
-							</span>
-						<?php else : ?>
-							<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
-						<?php endif; ?>
-					<?php else : ?>
-						<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
-					<?php endif; ?>
-				</div>
-			</div>
-			
-			<div class="ps-store-card-body">
-				<p class="ps-store-description"><?php echo esc_html( $product['description'] ); ?></p>
-				
-				<div class="ps-store-links">
-					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>" target="_blank" class="ps-link">
-						<span class="dashicons dashicons-admin-site"></span> GitHub
-					</a>
-					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/issues" target="_blank" class="ps-link">
-						<span class="dashicons dashicons-sos"></span> Support
-					</a>
-					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/releases" target="_blank" class="ps-link">
-						<span class="dashicons dashicons-media-document"></span> Changelog
-					</a>
-				</div>
-			</div>
-			
-			<div class="ps-store-card-footer">
-				<?php if ( ! $product['installed'] ) : ?>
-					<button class="button button-primary ps-install-product" data-slug="<?php echo esc_attr( $slug ); ?>" data-repo="<?php echo esc_attr( $product['repo'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
-						<span class="dashicons dashicons-download"></span>
-						<?php esc_html_e( 'Installieren', 'ps-update-manager' ); ?>
-					</button>
-				<?php elseif ( $product['update_available'] ) : ?>
-					<a href="<?php echo esc_url( is_network_admin() ? network_admin_url( 'update-core.php' ) : admin_url( 'update-core.php' ) ); ?>" class="button button-primary">
-						<span class="dashicons dashicons-update"></span>
-						<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
-					</a>
-				<?php elseif ( ! $product['active'] && 'plugin' === $product['type'] ) : ?>
-					<?php
-					$plugin_basename = $product['basename'] ?? $slug . '/' . $slug . '.php';
-					$network_mode    = $product['network_mode'];
-					
-					if ( is_multisite() && is_network_admin() ) {
-						if ( 'none' === $network_mode ) {
-							?>
-							<button class="button" disabled>
-								<span class="dashicons dashicons-admin-site"></span>
-								<?php esc_html_e( 'Nur Unterseiten', 'ps-update-manager' ); ?>
-							</button>
-							<?php
-						} else {
-							$activate_url = wp_nonce_url(
-								network_admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
-								'activate-plugin_' . $plugin_basename
-							);
-							?>
-							<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-								<span class="dashicons dashicons-yes"></span>
-								<?php esc_html_e( 'Netzwerkweit aktivieren', 'ps-update-manager' ); ?>
-							</a>
-							<?php
-						}
-					} else {
-						$activate_url = wp_nonce_url(
-							admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
-							'activate-plugin_' . $plugin_basename
-						);
-						?>
-						<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-							<span class="dashicons dashicons-yes"></span>
-							<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
-						</a>
-					<?php } ?>
-				<?php elseif ( ! $product['active'] && 'theme' === $product['type'] ) : ?>
-					<?php
-					$activate_url = wp_nonce_url(
-						is_network_admin() 
-							? network_admin_url( 'themes.php?action=enable&theme=' . urlencode( $slug ) )
-							: admin_url( 'themes.php?action=activate&stylesheet=' . urlencode( $slug ) ),
-						is_network_admin() ? 'enable-theme_' . $slug : 'switch-theme_' . $slug
-					);
-					?>
-					<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
-						<span class="dashicons dashicons-yes"></span>
-						<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
-					</a>
-				<?php else : ?>
-					<button class="button" disabled>
-						<span class="dashicons dashicons-yes-alt"></span>
-						<?php esc_html_e( 'Aktiv & Aktuell', 'ps-update-manager' ); ?>
-					</button>
-				<?php endif; ?>
-			</div>
-		</div>
-		<?php
 	}
 	
 	/**

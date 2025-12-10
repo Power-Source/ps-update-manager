@@ -91,14 +91,14 @@ return array(
 	/**
 	 * THEMES
 	 */
-	// 'psource-theme' => array(
-	// 	'type'        => 'theme',
-	// 	'name'        => 'PSource Theme',
-	// 	'repo'        => 'Power-Source/psource-theme',
-	// 	'description' => 'Das offizielle PSource WordPress Theme.',
-	// 	'category'    => 'theme',
-	// 	'icon'        => 'dashicons-admin-customizer',
-	// ),
+	'ps-padma' => array(
+	 	'type'        => 'theme',
+	 	'name'        => 'PS Padma',
+	 	'repo'        => 'Power-Source/ps-padma',
+	 	'description' => 'Das offizielle PSource WordPress Theme.',
+	 	'category'    => 'theme',
+	 	'icon'        => 'dashicons-admin-customizer',
+	),
 	
 	/**
 	 * Weitere Produkte können hier hinzugefügt werden:
