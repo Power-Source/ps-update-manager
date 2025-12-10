@@ -541,11 +541,49 @@ class PS_Update_Manager_Admin_Dashboard {
 					box-shadow: 0 1px 1px rgba(0,0,0,.04);
 					display: flex;
 					flex-direction: column;
-					transition: box-shadow 0.2s;
+					transition: all 0.2s;
+					position: relative;
+					overflow: hidden;
 				}
 				
 				.ps-store-card:hover {
 					box-shadow: 0 2px 4px rgba(0,0,0,.08);
+					transform: translateY(-2px);
+				}
+				
+				/* Featured Karten */
+				.ps-store-card-featured {
+					border: 2px solid #2271b1;
+					box-shadow: 0 4px 12px rgba(34, 113, 177, 0.15);
+					background: linear-gradient(135deg, #ffffff 0%, #f6f9fc 100%);
+				}
+				
+				.ps-store-card-featured:hover {
+					box-shadow: 0 8px 20px rgba(34, 113, 177, 0.25);
+					transform: translateY(-4px);
+				}
+				
+				.ps-featured-ribbon {
+					position: absolute;
+					top: 15px;
+					right: -35px;
+					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+					color: white;
+					padding: 5px 40px;
+					transform: rotate(45deg);
+					box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+					font-size: 11px;
+					font-weight: 600;
+					z-index: 10;
+					display: flex;
+					align-items: center;
+					gap: 4px;
+				}
+				
+				.ps-featured-ribbon .dashicons {
+					font-size: 14px;
+					width: 14px;
+					height: 14px;
 				}
 				
 				.ps-store-card-header {
@@ -554,6 +592,10 @@ class PS_Update_Manager_Admin_Dashboard {
 					display: flex;
 					align-items: flex-start;
 					gap: 15px;
+				}
+				
+				.ps-store-card-featured .ps-store-card-header {
+					padding-top: 30px;
 				}
 				
 				.ps-store-icon {
@@ -567,11 +609,24 @@ class PS_Update_Manager_Admin_Dashboard {
 					justify-content: center;
 				}
 				
+				.ps-store-card-featured .ps-store-icon {
+					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+					width: 56px;
+					height: 56px;
+				}
+				
 				.ps-store-icon .dashicons {
 					font-size: 28px;
 					width: 28px;
 					height: 28px;
 					color: #2271b1;
+				}
+				
+				.ps-store-card-featured .ps-store-icon .dashicons {
+					font-size: 32px;
+					width: 32px;
+					height: 32px;
+					color: #ffffff;
 				}
 				
 				.ps-store-title {
@@ -588,9 +643,51 @@ class PS_Update_Manager_Admin_Dashboard {
 					white-space: nowrap;
 				}
 				
+				.ps-store-card-featured .ps-store-title h3 {
+					font-size: 18px;
+					color: #2271b1;
+				}
+				
 				.ps-store-meta {
 					font-size: 13px;
 					color: #646970;
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					flex-wrap: wrap;
+				}
+				
+				.ps-meta-badge {
+					display: inline-flex;
+					align-items: center;
+					gap: 4px;
+					padding: 3px 8px;
+					font-size: 11px;
+					font-weight: 600;
+					border-radius: 3px;
+					text-transform: uppercase;
+					letter-spacing: 0.3px;
+				}
+				
+				.ps-meta-badge .dashicons {
+					font-size: 14px;
+					width: 14px;
+					height: 14px;
+				}
+				
+				.ps-badge-framework {
+					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+					color: white;
+				}
+				
+				.ps-badge-child {
+					background: linear-gradient(135deg, #00a32a 0%, #008a20 100%);
+					color: white;
+				}
+				
+				.ps-badge-template {
+					background: linear-gradient(135deg, #9b51e0 0%, #7c3aaa 100%);
+					color: white;
 				}
 				
 				.ps-store-status {
@@ -753,6 +850,8 @@ class PS_Update_Manager_Admin_Dashboard {
 				'new_version'      => null,
 				'basename'         => null,
 				'network_mode'     => 'none',
+				'featured'         => $manifest['featured'] ?? false,
+				'badge'            => $manifest['badge'] ?? null,
 			);
 
 			if ( isset( $installed_products[ $slug ] ) ) {
@@ -799,6 +898,16 @@ class PS_Update_Manager_Admin_Dashboard {
 				if ( 'available' === $status ) { return ! $item['installed']; }
 				if ( 'updates' === $status ) { return $item['update_available']; }
 				return true;
+			});
+		}
+
+		// Featured-Produkte nach oben sortieren (nur bei Themes und wenn kein Filter aktiv)
+		if ( 'themes' === $tab && empty( $search ) && 'all' === $status ) {
+			uasort( $items, function( $a, $b ) {
+				$a_featured = isset( $a['featured'] ) && $a['featured'];
+				$b_featured = isset( $b['featured'] ) && $b['featured'];
+				if ( $a_featured === $b_featured ) { return 0; }
+				return $a_featured ? -1 : 1;
 			});
 		}
 
@@ -881,8 +990,19 @@ class PS_Update_Manager_Admin_Dashboard {
 		if ( is_multisite() && $product['installed'] && isset( $product['basename'] ) && $product['basename'] ) {
 			$is_network_active = is_plugin_active_for_network( $product['basename'] );
 		}
+		
+		$is_featured = isset( $product['featured'] ) && $product['featured'];
+		$badge_type = isset( $product['badge'] ) ? $product['badge'] : null;
+		$card_class = $is_featured ? 'ps-store-card ps-store-card-featured' : 'ps-store-card';
+		
 		?>
-		<div class="ps-store-card" data-slug="<?php echo esc_attr( $slug ); ?>">
+		<div class="<?php echo esc_attr( $card_class ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+			<?php if ( $is_featured ) : ?>
+				<div class="ps-featured-ribbon">
+					<span class="dashicons dashicons-star-filled"></span>
+					<?php esc_html_e( 'Empfohlen', 'ps-update-manager' ); ?>
+				</div>
+			<?php endif; ?>
 			<div class="ps-store-card-header">
 				<span class="ps-store-icon">
 					<span class="dashicons <?php echo esc_attr( $product['icon'] ); ?>"></span>
@@ -893,6 +1013,24 @@ class PS_Update_Manager_Admin_Dashboard {
 						<?php echo esc_html( ucfirst( $product['type'] ) ); ?> 
 						<?php if ( $product['version'] ) : ?>
 							· v<?php echo esc_html( $product['version'] ); ?>
+						<?php endif; ?>
+						<?php if ( $badge_type ) : ?>
+							<?php if ( 'framework' === $badge_type ) : ?>
+								<span class="ps-meta-badge ps-badge-framework">
+									<span class="dashicons dashicons-welcome-widgets-menus"></span>
+									<?php esc_html_e( 'Pagebuilder', 'ps-update-manager' ); ?>
+								</span>
+							<?php elseif ( 'child-theme' === $badge_type ) : ?>
+								<span class="ps-meta-badge ps-badge-child">
+									<span class="dashicons dashicons-admin-generic"></span>
+									<?php esc_html_e( 'Child Theme', 'ps-update-manager' ); ?>
+								</span>
+							<?php elseif ( 'template' === $badge_type ) : ?>
+								<span class="ps-meta-badge ps-badge-template">
+									<span class="dashicons dashicons-admin-page"></span>
+									<?php esc_html_e( 'Template', 'ps-update-manager' ); ?>
+								</span>
+							<?php endif; ?>
 						<?php endif; ?>
 					</span>
 				</div>

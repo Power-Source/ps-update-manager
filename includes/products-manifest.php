@@ -87,17 +87,39 @@ return array(
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-cloud',
 	),
+
+	'ps-smart-crm' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Smart CRM',
+		'repo'        => 'Power-Source/ps-smart-crm',
+		'description' => 'Fügt WordPress ein leistungsstarkes CRM hinzu. Verwalten Sie Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden',
+		'category'    => 'ecommerce',
+		'icon'        => 'dashicons-businessperson',
+	),
 	
 	/**
 	 * THEMES
 	 */
 	'ps-padma' => array(
+		'type'        => 'theme',
+		'name'        => 'PS Padma',
+		'repo'        => 'Power-Source/ps-padma',
+		'description' => 'Leistungsstarker Drag & Drop Pagebuilder für WordPress. Erstelle professionelle Websites mit visuellem Editor, exportiere und importiere Templates.',
+		'category'    => 'pagebuilder',
+		'icon'        => 'dashicons-layout',
+		'featured'    => true,
+		'badge'       => 'framework',
+	),
+
+	'ps-padma-child' => array(
 	 	'type'        => 'theme',
-	 	'name'        => 'PS Padma',
-	 	'repo'        => 'Power-Source/ps-padma',
-	 	'description' => 'Das offizielle PSource WordPress Theme.',
-	 	'category'    => 'theme',
+	 	'name'        => 'PS Padma Child',
+	 	'repo'        => 'Power-Source/ps-padma-child',
+	 	'description' => 'Sicheres Child Theme für PS Padma. Perfekt für eigene Anpassungen und Custom Code, ohne Updates des Parent-Themes zu verlieren.',
+	 	'category'    => 'pagebuilder',
 	 	'icon'        => 'dashicons-admin-customizer',
+	 	'featured'    => true,
+	 	'badge'       => 'child-theme',
 	),
 	
 	/**

@@ -15,11 +15,13 @@ return array(
 		'seo'         => 'SEO',
 	),
 	'themes' => array(
+		'pagebuilder' => '⚡ Pagebuilder Framework',
 		'business'    => 'Business',
 		'blog'        => 'Blog',
 		'portfolio'   => 'Portfolio',
 		'ecommerce'   => 'e-Commerce',
 		'multipurpose'=> 'Mehrzweck',
 		'magazine'    => 'Magazin',
+		'template'    => 'Templates',
 	),
 );
