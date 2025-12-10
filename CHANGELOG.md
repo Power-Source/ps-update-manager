@@ -1,5 +1,83 @@
 # Changelog
 
+## Version 1.2.0 (2025-12-10)
+
+### 🎨 Große UI-Überarbeitung: PSOURCE Katalog
+
+**Tab-basierte Navigation:**
+- ✨ **Moderne Tab-UI** – Wechsel zwischen Plugins und Themes ohne Reload
+- ⚡ **Vollständig AJAX-basiert** – Filter, Suche und Pagination ohne Seiten-Reload
+- 🎯 **Cleaner Code** – 330 Zeilen chaotischer Code entfernt, saubere neue Architektur
+
+**Featured Pagebuilder System:**
+- 🌟 **PS Padma & Child hervorgehoben** – Visuell hervorgehobene Featured-Karten
+- 🏆 **Ribbon-Banner** – "Empfohlen" Banner mit Stern-Icon
+- 🎨 **Visual Enhancements:**
+  - Größere Icons (56px statt 48px) mit Gradient-Hintergrund
+  - Blauer Rand (2px) und Gradient-Hintergrund für Featured
+  - Stärkerer Schatten und Hover-Animationen (translateY)
+  - Blaue Überschriften für Featured-Produkte
+
+**Badge-System:**
+- 🔷 **"PAGEBUILDER"** Badge – Blauer Gradient für Framework
+- 🟢 **"CHILD THEME"** Badge – Grüner Gradient für Child Themes
+- 🟣 **"TEMPLATE"** Badge – Violetter Gradient für Templates (vorbereitet)
+- 💎 Alle Badges mit Icons und Uppercase-Styling
+
+**Kategorien-System:**
+- 📂 **Getrennte Kategorien** – Plugins und Themes haben eigene Kategorielisten
+- 🔄 **Dynamischer Filter** – Kategorie-Dropdown lädt automatisch per AJAX beim Tab-Wechsel
+- ⚡ **Neue Pagebuilder-Kategorie** – Eigene Kategorie für Framework-Produkte
+- 📋 Category-Map erweitert: Plugins (8 Kategorien), Themes (7 Kategorien)
+
+**Technische Verbesserungen:**
+- 🚀 **AJAX-Handler** `ajax_load_products()` – Lädt Produkte gefiltert und paginiert
+- 🎯 **AJAX-Handler** `ajax_get_categories()` – Lädt Kategorien dynamisch pro Tab
+- 🔧 **Neue JS-Datei** `psources-catalog.js` – Komplettes Client-Side Management
+- 📦 **Automatische Sortierung** – Featured-Produkte immer zuerst (nur Themes)
+- 🎨 **Responsives Grid** – CSS Grid mit minmax(380px, 1fr)
+
+**UX-Verbesserungen:**
+- 🔍 **Verbesserte Suche** – Durchsucht Name, Slug und Beschreibung
+- 🏷️ **Status-Filter** – Alle, Installiert, Aktiv, Verfügbar, Updates
+- 🔄 **Reset-Button** – Filter schnell zurücksetzen
+- 📄 **Pagination** – 12 Produkte pro Seite mit Seitennummern
+- ⚡ **Loading-States** – Spinner während AJAX-Requests
+- 📭 **Empty States** – "Keine Produkte gefunden" Nachricht
+
+**Manifest-Updates:**
+- 📝 **PS Padma** – Als Featured Pagebuilder mit verbesserter Beschreibung
+- 📝 **PS Padma Child** – Als Featured Child Theme markiert
+- 🎯 **Featured-Flag** – Neue `featured` und `badge` Properties im Manifest
+- 📂 **Pagebuilder-Kategorie** – Eigene Kategorie statt generisches "theme"
+
+### 🛠️ Weitere Verbesserungen
+
+**Admin Dashboard:**
+- ✅ **Fehlende Methoden hinzugefügt:**
+  - `enqueue_assets()` – Lädt CSS/JS nur auf Plugin-Seiten
+  - `current_user_can_access()` – Capability-Checks für Single/Network
+  - `ajax_get_categories()` – Dynamische Kategorie-Ladung
+  - `render_product_card()` – Einzelne Produktkarte mit Featured-Support
+- 🔧 **Konstanten-Fix** – `PS_UPDATE_MANAGER_PATH` → `PS_UPDATE_MANAGER_DIR`
+- 🎨 **Inline CSS** – Umfangreiches Featured-Card Styling hinzugefügt
+
+**Multisite Privacy Tool:**
+- 🌐 **AJAX Batch-Sync** – Synchronisiert Privacy-Settings für alle Sites
+- 📊 **Progress-Anzeige** – Zeigt Fortschritt während Sync
+- ✅ **Success/Error Handling** – Detaillierte Rückmeldungen
+
+**Code Quality:**
+- 🧹 **Aufgeräumt** – Entfernte 330+ Zeilen redundanten/kaputten Code
+- 📏 **Reduziert** – Von 1846 auf 1514 Zeilen in admin-dashboard.php
+- ✨ **Sauber** – Keine Parse-Errors, alle Methoden implementiert
+- 🔒 **Security** – Alle AJAX-Handler mit Nonce-Checks
+
+### 🎯 Breaking Changes
+- Keine! Vollständig abwärtskompatibel
+
+---
+
 ## Version 1.1.2 (2025-12-08)
 
 ### 🛠 Maintenance

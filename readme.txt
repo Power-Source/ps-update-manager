@@ -4,7 +4,7 @@ Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,18 @@ Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatisc
 4. Plugin-Info Popup mit Changelog
 
 == Changelog ==
+
+= 1.2.0 (2025-12-10) =
+* 🎨 **PSOURCE Katalog komplett überarbeitet** - Moderne Tab-basierte UI
+* ⚡ **AJAX-System** - Filter und Pagination ohne Seiten-Reload
+* 🎯 **Featured System** - PS Padma als Pagebuilder-Framework hervorgehoben
+* 🏷️ **Badge-System** - Framework, Child Theme und Template Badges
+* 🎨 **Visual Upgrades** - Ribbon-Banner, Gradients, Animationen
+* 📂 **Getrennte Kategorien** - Plugins und Themes haben eigene Kategorien
+* 🔄 **Dynamische Filter** - Kategorie-Dropdown lädt automatisch per AJAX
+* 🌐 **Multisite Privacy Tool** - AJAX Batch-Sync für alle Sites
+* 🛠️ **Improved Scanner** - Bessere Erkennung und Registry-Cleanup
+* 🎭 **Pagebuilder-Präsentation** - PS Padma & Child visuell hervorgehoben
 
 = 1.0.0 (2025-12-05) =
 * 🎉 Erstes Release
