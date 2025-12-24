@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: PS Manager
+ * Plugin Name: PSOURCE Manager
  * Plugin URI: https://github.com/Power-Source/ps-update-manager/
  * Description: PSOURCE Management & Toolbox Hub - Updates, Tools & Netzwerk-Administration
  * Version: 1.2.0

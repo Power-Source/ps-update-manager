@@ -1,4 +1,4 @@
-=== PS Update Manager ===
+=== PSOURCE Manager ===
 Contributors: PSource
 Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0

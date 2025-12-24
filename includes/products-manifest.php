@@ -96,6 +96,15 @@ return array(
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-businessperson',
 	),
+
+	'ps-custom-post-widget' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS-Beitrags-Widget',
+		'repo'        => 'Power-Source/ps-custom-post-widget',
+		'description' => 'Ermöglicht die Anzeige von benutzerdefinierten Beitragstypen und normalen Beiträgen mit Beitragsbildern und Auszügen als Widget',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
 	
 	/**
 	 * THEMES
