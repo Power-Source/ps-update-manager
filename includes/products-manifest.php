@@ -114,6 +114,15 @@ return array(
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
+
+	'ps-community' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Community',
+		'repo'        => 'Power-Source/ps-community',
+		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!',
+		'category'    => 'community',
+		'icon'        => 'dashicons-groups',
+	),
 	
 	/**
 	 * THEMES

@@ -208,7 +208,7 @@ Für automatische Updates muss dein Plugin GitHub Releases nutzen:
 
 Beispiel-Release-URL:
 ```
-https://github.com/Power-Source/ps-chat/releases/tag/v1.2.0
+https://github.com/Power-Source/ps-chat/releases/tag/v1.2.1
 ```
 
 ---

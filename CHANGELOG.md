@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.2.0 (2025-12-10)
+## Version 1.2.1 (2025-12-10)
 
 ### 🎨 Große UI-Überarbeitung: PSOURCE Katalog
 

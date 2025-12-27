@@ -4,7 +4,7 @@ Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,7 +155,7 @@ Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatisc
 
 == Changelog ==
 
-= 1.2.0 (2025-12-10) =
+= 1.2.1 (2025-12-10) =
 * 🎨 **PSOURCE Katalog komplett überarbeitet** - Moderne Tab-basierte UI
 * ⚡ **AJAX-System** - Filter und Pagination ohne Seiten-Reload
 * 🎯 **Featured System** - PS Padma als Pagebuilder-Framework hervorgehoben
