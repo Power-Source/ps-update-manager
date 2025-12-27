@@ -1459,32 +1459,41 @@ class PS_Update_Manager_Admin_Dashboard {
 		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		
+
 		// GitHub API: Latest Release holen
 		$api = PS_Update_Manager_GitHub_API::get_instance();
 		$release = $api->get_latest_release( $repo );
-		
+
 		// Debug: Fehler spezifisch handeln
 		if ( is_wp_error( $release ) ) {
 			// Preserve the actual error from GitHub API
 			return $release;
 		}
-		
+
 		if ( ! $release || ! is_array( $release ) ) {
 			return new WP_Error( 'invalid_release', sprintf(
 				__( 'Ungültiges Release-Format für "%s"', 'ps-update-manager' ),
 				esc_html( $repo )
 			) );
 		}
-		
+
 		// ZIP-Download-URL (korrekter Array-Key)
 		$download_url = $release['download_url'] ?? '';
-		
+
 		if ( empty( $download_url ) ) {
 			return new WP_Error( 'no_download_url', sprintf(
 				__( 'Keine Download-URL in GitHub Release "%s" gefunden', 'ps-update-manager' ),
 				esc_html( $repo )
 			) );
+		}
+
+		// Zielverzeichnis und Zielordner vorbereiten
+		$destination = ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes/' : WP_PLUGIN_DIR . '/';
+		$slug_safe = sanitize_file_name( $slug );
+		$target_dir = trailingslashit( $destination ) . $slug_safe;
+		// Vorhandenen Zielordner vorab löschen
+		if ( file_exists( $target_dir ) ) {
+			$this->delete_directory_recursive( $target_dir );
 		}
 		
 		// Temporäres Verzeichnis
@@ -1501,8 +1510,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			return new WP_Error( 'temp_file_not_exists', __( 'Temporäre Datei konnte nicht erstellt werden', 'ps-update-manager' ) );
 		}
 		
-		// Zielverzeichnis
-		$destination = ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes/' : WP_PLUGIN_DIR . '/';
+		// Zielverzeichnis ist oben bereits gesetzt
 		
 		// Entpacken - WP_Filesystem initialisieren
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
@@ -1540,33 +1548,53 @@ class PS_Update_Manager_Admin_Dashboard {
 		
 		if ( $extracted_dir ) {
 			// SICHERHEIT: Path Traversal Prevention
-			$slug_safe = sanitize_file_name( $slug );
-			$target_dir = trailingslashit( $destination ) . $slug_safe;
-			
+			// $slug_safe und $target_dir sind oben bereits gesetzt
 			// Prüfe ob Destination existiert
 			if ( ! file_exists( $destination ) ) {
 				return new WP_Error( 'destination_not_exists', __( 'Zielverzeichnis existiert nicht', 'ps-update-manager' ) );
 			}
-			
+
 			$destination_real = realpath( $destination );
 			if ( ! $destination_real ) {
 				return new WP_Error( 'invalid_destination', __( 'Ungültiges Zielverzeichnis', 'ps-update-manager' ) );
 			}
-			
+
 			$target_real = realpath( dirname( $target_dir ) );
 			if ( ! $target_real || 0 !== strpos( $target_real, $destination_real ) ) {
 				return new WP_Error( 'security_error', __( 'Sicherheitsfehler: Ungültiger Zielpfad', 'ps-update-manager' ) );
 			}
-			
+
 			if ( ! file_exists( $target_dir ) ) {
 				$rename_result = rename( $extracted_dir, $target_dir );
 				if ( ! $rename_result ) {
 					return new WP_Error( 'rename_failed', __( 'Umbenennen des Verzeichnisses fehlgeschlagen', 'ps-update-manager' ) );
 				}
 			}
+			// Nach erfolgreichem Umbenennen: Ursprünglichen extrahierten Ordner löschen, falls noch vorhanden und nicht identisch mit Ziel
+			if ( file_exists( $extracted_dir ) && $extracted_dir !== $target_dir ) {
+				$this->delete_directory_recursive( $extracted_dir );
+			}
 		}
-		
+
 		return true;
+	}
+
+	/**
+	 * Hilfsfunktion: Verzeichnis rekursiv löschen
+	 */
+	private function delete_directory_recursive( $dir ) {
+		if ( ! file_exists( $dir ) ) {
+			return;
+		}
+		if ( is_file( $dir ) || is_link( $dir ) ) {
+			@unlink( $dir );
+			return;
+		}
+		$files = array_diff( scandir( $dir ), array( '.', '..' ) );
+		foreach ( $files as $file ) {
+			$this->delete_directory_recursive( $dir . DIRECTORY_SEPARATOR . $file );
+		}
+		@rmdir( $dir );
 	}
 	
 	/**
