@@ -9,6 +9,45 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class PS_Update_Manager_Admin_Dashboard {
+	/**
+	 * AJAX: Produkt von GitHub installieren
+	 */
+	public function ajax_install_product() {
+		// Sicherheits- und Parameter-Checks
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
+		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( $_POST['repo'] ) : '';
+		$type = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'plugin';
+
+		if ( empty( $slug ) || empty( $repo ) ) {
+			wp_send_json_error( __( 'Ungültige Parameter', 'ps-update-manager' ) );
+		}
+
+		// SICHERHEIT: Manifest-Validierung - nur erlaubte Repos dürfen installiert werden
+		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
+		$official_product = $scanner->get_official_product( $slug );
+		if ( ! $official_product || $official_product['repo'] !== $repo ) {
+			wp_send_json_error( __( 'Sicherheitsfehler: Produkt nicht im offiziellen Manifest', 'ps-update-manager' ) );
+		}
+
+		// Type-Validierung
+		if ( ! in_array( $type, array( 'plugin', 'theme' ), true ) ) {
+			wp_send_json_error( __( 'Ungültiger Produkttyp', 'ps-update-manager' ) );
+		}
+
+		// Installationslogik
+		$result = $this->install_from_github( $slug, $repo, $type );
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array(
+				'message' => $result->get_error_message(),
+				'code'    => $result->get_error_code(),
+			) );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( '%s erfolgreich installiert!', 'ps-update-manager' ), $slug ),
+		) );
+	}
 
 	private static $instance = null;
 

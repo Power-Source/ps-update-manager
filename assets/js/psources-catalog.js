@@ -153,10 +153,7 @@
 		},
 
 		installProduct(slug, repo, type, $btn) {
-			if (!confirm(`${type === 'plugin' ? 'Plugin' : 'Theme'} "${slug}" installieren?`)) {
-				return;
-			}
-
+			// Keine Bestätigungsabfrage mehr
 			const originalText = $btn.html();
 			$btn.prop('disabled', true).html('<span class="spinner is-active" style="float:none;margin:0"></span> Installiere...');
 
@@ -172,20 +169,33 @@
 				},
 				success: (response) => {
 					if (response.success) {
-						alert('✓ Installation erfolgreich!');
 						this.loadProducts(); // Neu laden
 					} else {
-						alert('✗ Fehler: ' + (response.data.message || 'Installation fehlgeschlagen'));
+						this.showNotice('error', '✗ Fehler: ' + (response.data.message || 'Installation fehlgeschlagen'));
 						$btn.prop('disabled', false).html(originalText);
 					}
 				},
 				error: () => {
-					alert('✗ Verbindungsfehler bei der Installation');
+					this.showNotice('error', '✗ Verbindungsfehler bei der Installation');
 					$btn.prop('disabled', false).html(originalText);
 				}
 			});
+		},
+
+		showNotice(type, message) {
+			// type: 'success' oder 'error'
+			let $notice = $(`#ps-catalog-notice`);
+			if (!$notice.length) {
+				$notice = $('<div id="ps-catalog-notice"></div>').prependTo('body');
+			}
+			$notice
+				.removeClass('ps-catalog-success ps-catalog-error')
+				.addClass(type === 'success' ? 'ps-catalog-success' : 'ps-catalog-error')
+				.html(`<div style="padding:10px 20px;font-size:16px;">${message}</div>`)
+				.fadeIn(200);
+			setTimeout(() => { $notice.fadeOut(400); }, 2500);
 		}
-	};
+	}
 
 	// Init beim Laden
 	$(document).ready(() => {

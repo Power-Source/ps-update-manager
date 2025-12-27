@@ -18,31 +18,31 @@
 			// Button State
 			$button.prop('disabled', true)
 				.addClass('checking')
-				.html('<span class="dashicons dashicons-update"></span> ' + psUpdateManager.strings.checking);
+				.html('<span class="dashicons dashicons-update"></span> ' + PSUpdateManager.strings.checking);
 			
 			// AJAX Request
 			$.ajax({
-				url: psUpdateManager.ajaxUrl,
+				url: PSUpdateManager.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'ps_force_update_check',
-					nonce: psUpdateManager.nonce
+					nonce: PSUpdateManager.nonce
 				},
 				success: function(response) {
 					if (response.success) {
-						$button.html('<span class="dashicons dashicons-yes"></span> ' + psUpdateManager.strings.success);
+						$button.html('<span class="dashicons dashicons-yes"></span> ' + PSUpdateManager.strings.success);
 						
 						// Seite nach 1 Sekunde neu laden
 						setTimeout(function() {
 							location.reload();
 						}, 1000);
 					} else {
-						showError(response.data.message || psUpdateManager.strings.error);
+						showError(response.data.message || PSUpdateManager.strings.error);
 						resetButton();
 					}
 				},
 				error: function() {
-					showError(psUpdateManager.strings.error);
+					showError(PSUpdateManager.strings.error);
 					resetButton();
 				}
 			});
@@ -90,20 +90,18 @@
 			var $card = $button.closest('.ps-store-card');
 			
 			// Bestätigung
-			if (!confirm('Möchten Sie "' + slug + '" von GitHub installieren?')) {
-				return;
-			}
+			// Bestätigungsabfrage entfernt
 			
 			// Button State
 			$button.prop('disabled', true)
 				.html('<span class="dashicons dashicons-update spin"></span> Installiere...');
 			
 			$.ajax({
-				url: psUpdateManager.ajaxUrl,
+				url: PSUpdateManager.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'ps_install_product',
-					nonce: psUpdateManager.nonce,
+					nonce: PSUpdateManager.nonce,
 					slug: slug,
 					repo: repo,
 					type: type
@@ -164,11 +162,11 @@
 				.html('<span class="dashicons dashicons-update spin"></span> Wird gelöscht...');
 			
 			$.ajax({
-				url: psUpdateManager.ajaxUrl,
+				url: PSUpdateManager.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'ps_clear_github_cache',
-					nonce: psUpdateManager.nonce
+					nonce: PSUpdateManager.nonce
 				},
 				success: function(response) {
 					if (response.success) {
@@ -201,11 +199,11 @@
 			var original = $button.html();
 			$button.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> ' + 'Bereinige...');
 			$.ajax({
-				url: psUpdateManager.ajaxUrl,
+				url: PSUpdateManager.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'ps_clean_registry',
-					nonce: psUpdateManager.nonce
+					nonce: PSUpdateManager.nonce
 				},
 				success: function(response) {
 					if (response.success) {

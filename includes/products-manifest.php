@@ -105,6 +105,15 @@ return array(
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
+
+	'ps-postindexer' => array(
+		'type'        => 'plugin',
+		'name'        => 'Multisite Index',
+		'repo'        => 'Power-Source/ps-postindexer',
+		'description' => 'Ein mächtiges Multisite-Index Plugin - Bringe deinen Content dahin wo du ihn brauchst!',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
 	
 	/**
 	 * THEMES
