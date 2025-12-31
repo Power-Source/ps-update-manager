@@ -123,6 +123,42 @@ return array(
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
 	),
+
+	'ps-wiki' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Wiki',
+		'repo'        => 'Power-Source/ps-wiki',
+		'description' => 'Ein simples aber mächtiges Wiki-Plugin für Deine ClassicPress Seite, inkl. Multisitesupport, Frontend-Editor, Rechtemanagment',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'custompress' => array(
+		'type'        => 'plugin',
+		'name'        => 'CustomPress',
+		'repo'        => 'Power-Source/custompress',
+		'description' => 'CustomPress - Benutzerdefinierter Post-, Taxonomie- und Feldmanager',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'in-post-ads' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS BeitragsAds',
+		'repo'        => 'Power-Source/in-post-ads',
+		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'psource-branding' => array(
+		'type'        => 'plugin',
+		'name'        => 'PSOURCE Toolkit',
+		'repo'        => 'Power-Source/psource-branding',
+		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
 	
 	/**
 	 * THEMES
