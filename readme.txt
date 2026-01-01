@@ -155,7 +155,7 @@ Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatisc
 
 == Changelog ==
 
-= 1.2.2 (2026-01-01) =
+= 1.2.3 (2026-01-01) =
 
 * Add: More PSOURCE Plugins
 
