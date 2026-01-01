@@ -4,7 +4,7 @@ Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,10 @@ Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatisc
 4. Plugin-Info Popup mit Changelog
 
 == Changelog ==
+
+= 1.2.2 (2026-01-01) =
+
+* Add: More PSOURCE Plugins
 
 = 1.2.2 (2025-12-31) =
 

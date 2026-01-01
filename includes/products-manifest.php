@@ -168,6 +168,33 @@ return array(
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
+
+	'ps-dsgvo' => array(
+		'type'        => 'plugin',
+		'name'        => 'PSOURCE DSGVO',
+		'repo'        => 'Power-Source/ps-dsgvo',
+		'description' => 'Dieses Plugin unterstützt Website- und Webshop-Besitzer bei der Einhaltung der europäischen Datenschutzbestimmungen, die als DSGVO bekannt sind',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-shield-alt',
+	),
+
+	'e-newsletter' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS e-Newsletter',
+		'repo'        => 'Power-Source/e-newsletter',
+		'description' => 'Das ultimative Newsletter Plugin für ClassicPress. Keine Drittanbieterdienste oder Abo-Kosten, Newsletter direkt aus dem ClassicPress-Dashboard managen und versenden',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
+	'benutzerdefinierte-seitenleisten' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Power-Seitenleisten',
+		'repo'        => 'Power-Source/benutzerdefinierte-seitenleisten',
+		'description' => 'Ermöglicht das Erstellen von Widget-Bereichen und benutzerdefinierten Seitenleisten. Ersetze ganze Seitenleisten oder einzelne Widgets für bestimmte Beiträge und Seiten.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
 	
 	/**
 	 * THEMES
