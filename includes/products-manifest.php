@@ -159,6 +159,15 @@ return array(
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
 	),
+
+	'coursepress' => array(
+		'type'        => 'plugin',
+		'name'        => 'CoursePress',
+		'repo'        => 'Power-Source/coursepress',
+		'description' => 'CoursePress vereinfacht die Online-Ausbildung mit Kursseiten, Paywalls, Social Sharing und einer interaktiven Lernumgebung, mit der mehr Schüler miteinander verbunden werden können',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
 	
 	/**
 	 * THEMES

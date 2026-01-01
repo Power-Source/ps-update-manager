@@ -12,7 +12,7 @@ return array(
 		'tools'       => 'Tools',
 		'sicherheit'  => 'Sicherheit',
 		'media'       => 'Media',
-		'seo'         => 'SEO',
+		'content'     => 'Content',
 	),
 	'themes' => array(
 		'pagebuilder' => '⚡ Pagebuilder Framework',
