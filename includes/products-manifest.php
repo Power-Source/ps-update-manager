@@ -38,7 +38,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'MarketPress',
 		'repo'        => 'Power-Source/marketpress',
-		'description' => 'The complete WordPress ecommerce plugin - works perfectly with BuddyPress and Multisite too to create a social marketplace, where you can take a percentage! Activate the plugin, adjust your settings then add some products to your store.',
+		'description' => 'Das komplette ClassicPress E-Commerce-Plugin – funktioniert auch perfekt mit Multisite, um einen sozialen Marktplatz zu erstellen, auf dem Sie eine Provision einbehalten können! Aktivieren Sie das Plugin, passen Sie Ihre Einstellungen an und fügen Sie dann Produkte zu Ihrem Shop hinzu.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-cart',
 	),
@@ -207,7 +207,7 @@ return array(
 
 	'ps-stats' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS Security',
+		'name'        => 'PS Stats',
 		'repo'        => 'Power-Source/ps-stats',
 		'description' => 'Kompaktes, benutzerfreundliches und datenschutzkonformes Statistik-Plugin für ClassicPress.',
 		'category'    => 'tools',
