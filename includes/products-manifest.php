@@ -195,6 +195,15 @@ return array(
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
 	),
+
+	'cp-defender' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Security',
+		'repo'        => 'Power-Source/cp-defender',
+		'description' => 'Erhalte regelmäßige Sicherheitsüberprüfungen, Schwachstellenberichte, Sicherheitsempfehlungen und individuelle Sicherheitsmaßnahmen für Deine Webseite – mit nur wenigen Klicks. PS Security ist Dein Analyst und Sicherheitsexperte, der rund um die Uhr für Dich da ist.',
+		'category'    => 'sicherheit',
+		'icon'        => 'dashicons-admin-appearance',
+	),
 	
 	/**
 	 * THEMES
