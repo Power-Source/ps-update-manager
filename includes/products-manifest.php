@@ -204,6 +204,24 @@ return array(
 		'category'    => 'sicherheit',
 		'icon'        => 'dashicons-admin-appearance',
 	),
+
+	'ps-stats' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Security',
+		'repo'        => 'Power-Source/ps-stats',
+		'description' => 'Kompaktes, benutzerfreundliches und datenschutzkonformes Statistik-Plugin für ClassicPress.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
+	'events-and-bookings' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Events',
+		'repo'        => 'Power-Source/events-and-bookings',
+		'description' => 'PS Events bietet Dir ein flexibles System zur Organisation von Partys, Abendessen, Spendenaktionen – was auch immer Du Dir vorstellen kannst.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
 	
 	/**
 	 * THEMES
