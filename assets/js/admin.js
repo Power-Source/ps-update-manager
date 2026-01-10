@@ -149,41 +149,6 @@
 			});
 		});
 		
-		/**
-		 * Registry bereinigen Button (Settings)
-		 */
-		$('#ps-clean-registry').on('click', function(e) {
-			e.preventDefault();
-			var $button = $(this);
-			var original = $button.html();
-			$button.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> ' + 'Bereinige...');
-			$.ajax({
-				url: PSUpdateManager.ajaxUrl,
-				type: 'POST',
-				data: {
-					action: 'ps_clean_registry',
-					nonce: PSUpdateManager.nonce
-				},
-				success: function(response) {
-					if (response.success) {
-						alert(response.data.message);
-						$button.html('<span class="dashicons dashicons-yes"></span> ' + 'Fertig');
-						setTimeout(function(){
-							$button.prop('disabled', false).html(original);
-							location.reload();
-						}, 1000);
-					} else {
-						alert('Fehler: ' + (response.data && response.data.message ? response.data.message : 'Unbekannter Fehler'));
-						$button.prop('disabled', false).html(original);
-					}
-				},
-				error: function(){
-					alert('Fehler beim Bereinigen');
-					$button.prop('disabled', false).html(original);
-				}
-			});
-		});
-		
 		// Spin-Animation für Ladezeichen
 		if (!$('style#ps-spin-animation').length) {
 			$('<style id="ps-spin-animation">.spin { animation: spin 1s linear infinite; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>').appendTo('head');

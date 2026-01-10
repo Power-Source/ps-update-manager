@@ -82,7 +82,6 @@ class PS_Update_Manager_Admin_Dashboard {
 		// AJAX Handlers
 		add_action( 'wp_ajax_ps_force_update_check', array( $this, 'ajax_force_update_check' ) );
 		add_action( 'wp_ajax_ps_install_product', array( $this, 'ajax_install_product' ) );
-		add_action( 'wp_ajax_ps_clean_registry', array( $this, 'ajax_clean_registry' ) );
 		add_action( 'wp_ajax_ps_test_github_api', array( $this, 'ajax_test_github_api' ) );
 		add_action( 'wp_ajax_ps_load_products', array( $this, 'ajax_load_products' ) );
 		add_action( 'wp_ajax_ps_get_categories', array( $this, 'ajax_get_categories' ) );
@@ -136,7 +135,6 @@ class PS_Update_Manager_Admin_Dashboard {
 			'networkAdmin'     => is_network_admin(),
 			'forceCheckAction' => 'ps_force_update_check',
 			'installAction'    => 'ps_install_product',
-			'cleanRegistry'    => 'ps_clean_registry',
 			'testGithub'       => 'ps_test_github_api',
 			'strings'          => array(
 				'checking' => __( 'Wird geprüft...', 'ps-update-manager' ),
@@ -1234,17 +1232,6 @@ class PS_Update_Manager_Admin_Dashboard {
 			</div>
 			
 			<div class="ps-settings-section" style="margin-top:20px;">
-				<h2><?php esc_html_e( 'Registry-Wartung', 'ps-update-manager' ); ?></h2>
-				<p class="description">
-					<?php esc_html_e( 'Bereinigt verwaiste Einträge (gelöschte Plugins/Themes werden aus der Registry entfernt).', 'ps-update-manager' ); ?>
-				</p>
-				<button type="button" id="ps-clean-registry" class="button">
-					<span class="dashicons dashicons-trash"></span>
-					<?php esc_html_e( 'Registry bereinigen', 'ps-update-manager' ); ?>
-				</button>
-			</div>
-
-			<div class="ps-info-box">
 				<h3><?php esc_html_e( '💡 Hinweise', 'ps-update-manager' ); ?></h3>
 				<ul>
 					<li><?php esc_html_e( 'Der Netzwerk-Administrator hat immer Zugriff auf das Dashboard.', 'ps-update-manager' ); ?></li>
