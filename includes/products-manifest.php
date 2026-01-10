@@ -222,6 +222,33 @@ return array(
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
+
+	'rss-autoblog' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS RSS AutoBlog',
+		'repo'        => 'Power-Source/rss-autoblog',
+		'description' => 'Dieses Plugin veröffentlicht automatisch Inhalte aus RSS-Feeds in verschiedenen Blogs auf Deiner WordPress Seite oder in Deiner Multisite.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'ps-maps' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Maps',
+		'repo'        => 'Power-Source/ps-maps',
+		'description' => 'Google Maps lässt sich ganz einfach in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'ps-pretty-plugins' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Pretty Plugins',
+		'repo'        => 'Power-Source/ps-pretty-plugins',
+		'description' => 'Verleihe Deinen Plugin-Seiten in Multisite-Netzwerken das Aussehen eines App Stores mit ausgewählten Bildern, Kategorien und einer erstaunlichen Suche.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
 	
 	/**
 	 * THEMES
