@@ -37,7 +37,11 @@
 							location.reload();
 						}, 1000);
 					} else {
-						showError(response.data.message || PSUpdateManager.strings.error);
+						var errorMsg = PSUpdateManager.strings.error;
+						if (response.data && response.data.message) {
+							errorMsg = response.data.message;
+						}
+						showError(errorMsg);
 						resetButton();
 					}
 				},
@@ -145,51 +149,6 @@
 			});
 		});
 		
-		/**
-		 * Cache löschen Button
-		 */
-		$('#ps-clear-cache').on('click', function(e) {
-			e.preventDefault();
-			
-			if (!confirm('GitHub Cache wirklich löschen? Dies könnte kurz zu langsameren Abfragen führen.')) {
-				return;
-			}
-			
-			var $button = $(this);
-			var originalText = $button.html();
-			
-			$button.prop('disabled', true)
-				.html('<span class="dashicons dashicons-update spin"></span> Wird gelöscht...');
-			
-			$.ajax({
-				url: PSUpdateManager.ajaxUrl,
-				type: 'POST',
-				data: {
-					action: 'ps_clear_github_cache',
-					nonce: PSUpdateManager.nonce
-				},
-				success: function(response) {
-					if (response.success) {
-						alert(response.data.message);
-						$button.html('<span class="dashicons dashicons-yes"></span> Cache gelöscht!');
-						setTimeout(function() {
-							$button.prop('disabled', false)
-								.html(originalText);
-						}, 2000);
-					} else {
-						alert('Fehler: ' + (response.data || 'Unbekannter Fehler'));
-						$button.prop('disabled', false)
-							.html(originalText);
-					}
-				},
-				error: function() {
-					alert('Fehler bei Cache-Löschung');
-					$button.prop('disabled', false)
-						.html(originalText);
-				}
-			});
-		});
-
 		/**
 		 * Registry bereinigen Button (Settings)
 		 */

@@ -84,7 +84,6 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'wp_ajax_ps_install_product', array( $this, 'ajax_install_product' ) );
 		add_action( 'wp_ajax_ps_clean_registry', array( $this, 'ajax_clean_registry' ) );
 		add_action( 'wp_ajax_ps_test_github_api', array( $this, 'ajax_test_github_api' ) );
-		add_action( 'wp_ajax_ps_clear_github_cache', array( $this, 'ajax_clear_github_cache' ) );
 		add_action( 'wp_ajax_ps_load_products', array( $this, 'ajax_load_products' ) );
 		add_action( 'wp_ajax_ps_get_categories', array( $this, 'ajax_get_categories' ) );
 	}
@@ -139,7 +138,11 @@ class PS_Update_Manager_Admin_Dashboard {
 			'installAction'    => 'ps_install_product',
 			'cleanRegistry'    => 'ps_clean_registry',
 			'testGithub'       => 'ps_test_github_api',
-			'clearGithub'      => 'ps_clear_github_cache',
+			'strings'          => array(
+				'checking' => __( 'Wird geprüft...', 'ps-update-manager' ),
+				'success'  => __( 'Erfolgreich!', 'ps-update-manager' ),
+				'error'    => __( 'Ein Fehler ist aufgetreten', 'ps-update-manager' ),
+			),
 		) );
 	}
 
@@ -357,10 +360,6 @@ class PS_Update_Manager_Admin_Dashboard {
 					<button type="button" id="ps-force-check" class="button button-primary">
 						<span class="dashicons dashicons-update"></span>
 						<?php esc_html_e( 'Updates prüfen', 'ps-update-manager' ); ?>
-					</button>
-					<button type="button" id="ps-clear-cache" class="button" style="margin-left: 5px;">
-						<span class="dashicons dashicons-trash"></span>
-						<?php esc_html_e( 'Cache löschen', 'ps-update-manager' ); ?>
 					</button>
 				</div>
 			</div>
@@ -1363,91 +1362,25 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * AJAX: Update-Check erzwingen
 	 */
 	public function ajax_force_update_check() {
-		// Nur für Single-Site Admin, Multisite nutzt network_admin_menu
-		if ( is_multisite() ) {
-			return;
-		}
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
 		if ( ! $this->current_user_can_access() ) {
-			return;
+			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
 		}
 
-		add_menu_page(
-			__( 'PSOURCE Manager', 'ps-update-manager' ),
-			__( 'PS MANAGER', 'ps-update-manager' ),
-			'manage_options',
-			'ps-update-manager',
-			array( $this, 'render_dashboard' ),
-			'dashicons-update',
-			59
-		);
-
-		add_submenu_page(
-			'ps-update-manager',
-			__( 'Dashboard', 'ps-update-manager' ),
-			__( 'Dashboard', 'ps-update-manager' ),
-			'manage_options',
-			'ps-update-manager',
-			array( $this, 'render_dashboard' )
-		);
-
-		add_submenu_page(
-			'ps-update-manager',
-			__( 'PSOURCE Katalog', 'ps-update-manager' ),
-			__( 'PSOURCE', 'ps-update-manager' ),
-			'manage_options',
-			'ps-update-manager-psources',
-			array( $this, 'render_products' )
-		);
-
-		add_submenu_page(
-			'ps-update-manager',
-			__( 'Tools', 'ps-update-manager' ),
-			__( 'Tools', 'ps-update-manager' ),
-			'manage_options',
-			'ps-update-manager-tools',
-			array( $this, 'render_tools' )
-		);
-
-		add_submenu_page(
-			'ps-update-manager',
-			__( 'Einstellungen', 'ps-update-manager' ),
-			__( 'Einstellungen', 'ps-update-manager' ),
-			'manage_options',
-			'ps-update-manager-settings',
-			array( $this, 'render_settings' )
-		);
-		
-		if ( empty( $slug ) || empty( $repo ) ) {
-			wp_send_json_error( __( 'Ungültige Parameter', 'ps-update-manager' ) );
-		}
-		
-		// SICHERHEIT: Manifest-Validierung - nur erlaubte Repos dürfen installiert werden
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$official_product = $scanner->get_official_product( $slug );
-		
-		if ( ! $official_product || $official_product['repo'] !== $repo ) {
-			wp_send_json_error( __( 'Sicherheitsfehler: Produkt nicht im offiziellen Manifest', 'ps-update-manager' ) );
-		}
-		
-		// Type-Validierung
-		if ( ! in_array( $type, array( 'plugin', 'theme' ), true ) ) {
-			wp_send_json_error( __( 'Ungültiger Produkttyp', 'ps-update-manager' ) );
-		}
-		
-		// Installationslogik
-		$result = $this->install_from_github( $slug, $repo, $type );
-		
-		if ( is_wp_error( $result ) ) {
-			// WP_Error: Fehler-Code und Message separate zurückgeben
-			wp_send_json_error( array(
-				'message' => $result->get_error_message(),
-				'code'    => $result->get_error_code(),
-			) );
-		}
-		
+		$scanner->scan_all();
+
+		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
+		$updates_available = $this->count_available_updates( $products );
+
 		wp_send_json_success( array(
-			'message' => sprintf( __( '%s erfolgreich installiert!', 'ps-update-manager' ), $slug ),
+			'updates_available' => $updates_available,
+			'total_products'    => count( $products ),
+			'message'           => sprintf(
+				__( 'Überprüfung abgeschlossen: %d Updates verfügbar', 'ps-update-manager' ),
+				$updates_available
+			),
 		) );
 	}
 	
@@ -1703,35 +1636,6 @@ class PS_Update_Manager_Admin_Dashboard {
 			'tag_name'       => $release['tag_name'] ?? 'N/A',
 			'download_url'   => $release['download_url'] ?? 'N/A',
 			'has_zip'        => ! empty( $release['download_url'] ),
-		) );
-	}
-	
-	/**
-	 * Cache für GitHub API löschen
-	 */
-	public function ajax_clear_github_cache() {
-		check_ajax_referer( 'ps_update_manager', 'nonce' );
-		
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
-		}
-		
-		$api = PS_Update_Manager_GitHub_API::get_instance();
-		
-		// Repo optional
-		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : null;
-		
-		if ( method_exists( $api, 'clear_cache' ) ) {
-			$api->clear_cache( $repo );
-		}
-		
-		// Zusätzliche Transients löschen
-		global $wpdb;
-		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_ps_github_%'" );
-		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_ps_github_%'" );
-		
-		wp_send_json_success( array(
-			'message' => $repo ? sprintf( __( 'Cache für %s gelöscht', 'ps-update-manager' ), $repo ) : __( 'Gesamter GitHub Cache gelöscht', 'ps-update-manager' ),
 		) );
 	}
 }
