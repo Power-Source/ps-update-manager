@@ -3,8 +3,9 @@ Contributors: PSource
 Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
 Tested up to: 6.4
+ClassicPress: 2.6.0
 Requires PHP: 7.4
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,56 +147,43 @@ Ja! Funktioniert mit Plugins UND Themes.
 
 Die Plugins/Themes funktionieren normal weiter. Du bekommst nur keine automatischen Updates. Optional kannst du eine Admin Notice anzeigen die zur Installation auffordert.
 
-== Screenshots ==
-
-1. Dashboard mit Produkt-Übersicht und Statistiken
-2. Produkt-Karten mit Update-Status
-3. WordPress Update-Seite mit PSource-Updates
-4. Plugin-Info Popup mit Changelog
 
 == Changelog ==
 
-= 1.2.4 (2026-01-01) =
+= 1.2.5 =
+
+* Bugfixes
+* Veraltete Betafunktionen entfernt
+* Mehr PSOURCE hinzugefügt!
+
+= 1.2.4 =
 
 * Add: More PSOURCE Plugins
 
-= 1.2.3 (2026-01-01) =
+= 1.2.3 =
 
 * Add: More PSOURCE Plugins
 
-= 1.2.2 (2025-12-31) =
+= 1.2.2 =
 
 * Add: More PSOURCE Plugins
 
-= 1.2.1 (2025-12-10) =
-* 🎨 **PSOURCE Katalog komplett überarbeitet** - Moderne Tab-basierte UI
-* ⚡ **AJAX-System** - Filter und Pagination ohne Seiten-Reload
-* 🎯 **Featured System** - PS Padma als Pagebuilder-Framework hervorgehoben
-* 🏷️ **Badge-System** - Framework, Child Theme und Template Badges
-* 🎨 **Visual Upgrades** - Ribbon-Banner, Gradients, Animationen
-* 📂 **Getrennte Kategorien** - Plugins und Themes haben eigene Kategorien
-* 🔄 **Dynamische Filter** - Kategorie-Dropdown lädt automatisch per AJAX
-* 🌐 **Multisite Privacy Tool** - AJAX Batch-Sync für alle Sites
-* 🛠️ **Improved Scanner** - Bessere Erkennung und Registry-Cleanup
-* 🎭 **Pagebuilder-Präsentation** - PS Padma & Child visuell hervorgehoben
+= 1.2.1 =
+* **PSOURCE Katalog komplett überarbeitet** - Moderne Tab-basierte UI
+* **AJAX-System** - Filter und Pagination ohne Seiten-Reload
+* **Featured System** - PS Padma als Pagebuilder-Framework hervorgehoben
+* **Badge-System** - Framework, Child Theme und Template Badges
+* **Visual Upgrades** - Ribbon-Banner, Gradients, Animationen
+* **Getrennte Kategorien** - Plugins und Themes haben eigene Kategorien
+* **Dynamische Filter** - Kategorie-Dropdown lädt automatisch per AJAX
+* **Multisite Privacy Tool** - AJAX Batch-Sync für alle Sites
+* **Improved Scanner** - Bessere Erkennung und Registry-Cleanup
+* **Pagebuilder-Präsentation** - PS Padma & Child visuell hervorgehoben
 
 = 1.0.0 (2025-12-05) =
-* 🎉 Erstes Release
-* ✅ Zentrales Dashboard für alle PSource Plugins/Themes
-* ✅ Automatische Update-Prüfung von GitHub Releases
-* ✅ Custom Update-Server Support
-* ✅ Leichtgewichtige Integration
-* ✅ Plugin-Info Popup mit Changelog
-* ✅ Multisite-Unterstützung
-* ✅ Admin Notices
-* ✅ Caching für bessere Performance
+* Erstes Release
 
 Vollständiger Changelog: [CHANGELOG.md](https://github.com/Power-Source/ps-update-manager/blob/master/CHANGELOG.md)
-
-== Upgrade Notice ==
-
-= 1.0.0 =
-Erstes Release - keine Upgrades nötig.
 
 == Support ==
 
