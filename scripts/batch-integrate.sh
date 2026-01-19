@@ -63,7 +63,7 @@ add_action( 'plugins_loaded', function() {
             'type'          => 'plugin',
             'file'          => __FILE__,
             'github_repo'   => '$github_repo',
-            'docs_url'      => 'https://Power-Source.github.io/$slug/',
+            'docs_url'      => 'https://power-source.github.io/$slug/',
             'support_url'   => 'https://github.com/$github_repo/issues',
             'changelog_url' => 'https://github.com/$github_repo/releases',
         ) );
@@ -77,7 +77,7 @@ add_action( 'admin_notices', function() {
         if ( \$screen && in_array( \$screen->id, array( 'plugins', 'plugins-network' ) ) ) {
             echo '<div class="notice notice-info is-dismissible"><p>';
             echo '<strong>$name:</strong> ';
-            echo 'Installiere den <a href="https://github.com/Power-Source/ps-update-manager">PS Update Manager</a> für Updates.';
+            echo 'Installiere den <a href="https://github.com/power-source/ps-update-manager">PS Update Manager</a> für Updates.';
             echo '</p></div>';
         }
     }

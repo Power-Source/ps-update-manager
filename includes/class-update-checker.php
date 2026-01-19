@@ -244,12 +244,12 @@ class PS_Update_Manager_Update_Checker {
 					);
 				}
 				
-				// Changelog Link
-				if ( ! empty( $product['changelog_url'] ) ) {
+				// Docs Link
+				if ( ! empty( $product['docs_url'] ) ) {
 					$links[] = sprintf(
 						'<a href="%s" target="_blank">%s</a>',
-						esc_url( $product['changelog_url'] ),
-						__( 'Changelog', 'ps-update-manager' )
+						esc_url( $product['docs_url'] ),
+						__( 'Handbuch', 'ps-update-manager' )
 					);
 				}
 				

@@ -18,20 +18,43 @@ return array(
 	 */
 	'ps-update-manager' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS Update Manager',
+		'name'        => 'PSOURCE Manager',
 		'repo'        => 'Power-Source/ps-update-manager',
-		'description' => 'Zentraler Update-Manager für alle PSource Plugins und Themes. Installiere, aktualisiere und verwalte alle PSource Produkte direkt aus dem ClassicPress-Dashboard. Inklusive Multisite-Unterstützung und hilfreichen Multisite-Tools.',
+		'description' => 'Zentraler Update-Manager für alle PSource Plugins und Themes. Installiere, aktualisiere und verwalte alle PSource Produkte direkt aus dem ClassicPress-Dashboard. Inklusive Multisite-Unterstützung und hilfreichen Multisite-Tools. Unser Ziel: PSOURCE Open-Source für ClassicPress nach Deutschen Bedürfnissen.',
 		'category'    => 'development',
 		'icon'        => 'dashicons-update',
+		'featured'    => true,
 	),
-	
-	'ps-chat' => array(
+
+
+	'ps-snapshot' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS Chat',
-		'repo'        => 'Power-Source/ps-chat',
-		'description' => 'Echtzeit-Chat für ClassicPress Multisite Netzwerke. Ermögliche es Deinen Benutzern, in Echtzeit zu kommunizieren, private Nachrichten zu senden und Gruppen-Chats zu erstellen. Alles bleibt auf Deinem eigenen Server – keine Drittanbieter erforderlich!',
+		'name'        => 'PS Snapshot',
+		'repo'        => 'Power-Source/ps-snapshot',
+		'description' => 'Dieses Plugin ermöglicht es Dir, bei Bedarf schnelle Backup-Snapshots Deiner funktionierenden Datenbank zu erstellen. Du kannst aus den standardmäßigen ClassicPress-Tabellen sowie benutzerdefinierten Plugin-Tabellen innerhalb der Datenbankstruktur auswählen. Alle Snapshots werden protokolliert und Du kannst den Snapshot nach Bedarf wiederherstellen.',
+		'category'    => 'sicherheit',
+		'icon'        => 'dashicons-admin-appearance',
+		'featured'    => true,
+	),
+
+
+	'ps-mitgliedschaften' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Mitgliedschaften',
+		'repo'        => 'Power-Source/ps-mitgliedschaften',
+		'description' => 'Description: Das leistungsstärkste, benutzerfreundlichste und flexibelste Mitgliedschafts-Plugin für ClassicPress-Seiten. Erstelle und verwalte Mitgliedschaftspläne, schütze Inhalte und akzeptiere Zahlungen – alles direkt von Deinem ClassicPress-Dashboard aus! Die perfekte Lösung für Abonnements, Online-Kurse, Premium-Communities und mehr.',
 		'category'    => 'community',
-		'icon'        => 'dashicons-format-chat',
+		'icon'        => 'dashicons-groups',
+		'featured'    => true,
+	),
+
+	'ps-dsgvo' => array(
+		'type'        => 'plugin',
+		'name'        => 'PSOURCE DSGVO',
+		'repo'        => 'Power-Source/ps-dsgvo',
+		'description' => 'Dieses Plugin unterstützt Website- und Webshop-Besitzer bei der Einhaltung der europäischen Datenschutzbestimmungen, die als DSGVO bekannt sind. Es bietet Werkzeuge zur Verwaltung von Einwilligungen, Datenschutzrichtlinien und Benutzeranfragen, um sicherzustellen, dass Deine Webseite den gesetzlichen Anforderungen entspricht. Für beliebte Embedded-Dienste wie YouTube, Google Maps und Facebook sind Voreinstellungen enthalten.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-shield-alt',
 	),
 
 	'marketpress' => array(
@@ -42,48 +65,21 @@ return array(
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-cart',
 	),
-	
-	'psource-link-checker' => array(
+
+	'psource-branding' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS Link Checker',
-		'repo'        => 'Power-Source/psource-link-checker',
-		'description' => 'Dieses Plugin überwacht Deinen Blog auf defekte Links und teilt Dir mit, ob welche gefunden wurden. Du kannst dann die defekten Links ganz einfach in Deinem Dashboard anzeigen und korrigieren.',
+		'name'        => 'PSOURCE Toolkit',
+		'repo'        => 'Power-Source/psource-branding',
+		'description' => 'Eine komplette White-Label- und Branding-Lösung für Multisite. Adminbar, Loginsreens, Wartungsmodus, Favicons, Entfernen von ClassicPress-Links und Branding und vielem mehr. Schalte Deine Webseite in den Wartungsmodus, um anstehende Updates oder Wartungsarbeiten anzukündigen. Nutze SMTP-Einstellungen, oder gib anderen Nutzern in deiner Multisite Tipps vom Admin-Dashboard aus.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
-	),
-
-	'ps-snapshot' => array(
-		'type'        => 'plugin',
-		'name'        => 'PS Snapshot',
-		'repo'        => 'Power-Source/ps-snapshot',
-		'description' => 'Dieses Plugin ermöglicht es Dir, bei Bedarf schnelle Backup-Snapshots Deiner funktionierenden Datenbank zu erstellen. Du kannst aus den standardmäßigen ClassicPress-Tabellen sowie benutzerdefinierten Plugin-Tabellen innerhalb der Datenbankstruktur auswählen. Alle Snapshots werden protokolliert und Du kannst den Snapshot nach Bedarf wiederherstellen.',
-		'category'    => 'sicherheit',
-		'icon'        => 'dashicons-admin-appearance',
-	),
-
-	'ps-live-debug' => array(
-		'type'        => 'plugin',
-		'name'        => 'PSOURCE Live Debug',
-		'repo'        => 'Power-Source/ps-live-debug',
-		'description' => 'Aktiviert das Debuggen und fügt dem ClassicPress-Admin einen Bildschirm hinzu, um das debug.log anzuzeigen.',
-		'category'    => 'development',
-		'icon'        => 'dashicons-search',
-	),
-
-	'ps-mitgliedschaften' => array(
-		'type'        => 'plugin',
-		'name'        => 'PS Mitgliedschaften',
-		'repo'        => 'Power-Source/ps-mitgliedschaften',
-		'description' => 'Description: Das leistungsstärkste, benutzerfreundlichste und flexibelste Mitgliedschafts-Plugin für ClassicPress-Seiten.',
-		'category'    => 'community',
-		'icon'        => 'dashicons-groups',
 	),
 
 	'ps-bloghosting' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS Bloghosting',
 		'repo'        => 'Power-Source/ps-bloghosting',
-		'description' => 'Das ultimative Bloghosting-Plugin für Multisites verwandelt reguläre Websites in mehrere PRO-Webseite-Abonnementstufen, die Zugriff auf Speicherplatz, Premium-Themen, Premium-Plugins und vieles mehr bieten!',
+		'description' => 'Das ultimative Bloghosting-Plugin für Multisites verwandelt reguläre Webseiten in mehrere PRO-Webseite-Abonnementstufen, die Zugriff auf Speicherplatz, Premium-Themen, Premium-Plugins und vieles mehr bieten! Ideal für Agenturen und Entwickler, die ihren Kunden hochwertige Bloghosting-Dienste anbieten möchten. In Verbindung mit anderen PSOURCE-Produkten wie PS Mitgliedschaften und MarketPress kannst Du ein komplettes Bloghosting-Geschäftsmodell erstellen.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-cloud',
 	),
@@ -92,7 +88,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS Smart CRM',
 		'repo'        => 'Power-Source/ps-smart-crm',
-		'description' => 'Fügt ClassicPress ein leistungsstarkes CRM hinzu. Verwalten Sie Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden',
+		'description' => 'Fügt ClassicPress ein leistungsstarkes CRM hinzu. Verwalten Sie Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden. Halte Deine Buchaltung und Kundenbeziehungen direkt in Deinem ClassicPress-Dashboard im Griff! Die PSOURCE Lösung für kleine und mittlere Unternehmen.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-businessperson',
 	),
@@ -101,7 +97,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS-Beitrags-Widget',
 		'repo'        => 'Power-Source/ps-custom-post-widget',
-		'description' => 'Ermöglicht die Anzeige von benutzerdefinierten Beitragstypen und normalen Beiträgen mit Beitragsbildern und Auszügen als Widget',
+		'description' => 'Ermöglicht die Anzeige von benutzerdefinierten Beitragstypen und normalen Beiträgen mit Beitragsbildern und Auszügen als Widget. Ideal für Seitenleisten und Fußzeilen. Bringe Deinen Content dorthin, wo Deine Besucher ihn sehen sollen!',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
@@ -110,7 +106,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'Multisite Index',
 		'repo'        => 'Power-Source/ps-postindexer',
-		'description' => 'Ein mächtiges Multisite-Index Plugin - Bringe deinen Content dahin wo du ihn brauchst!',
+		'description' => 'Ein mächtiges Multisite-Index Plugin - Bringe deinen Content dahin wo du ihn brauchst! Multisite-weite Suche, Anzeige von Beiträgen aus dem gesamten Netzwerk, Filteroptionen und vieles mehr. Ideal für Netzwerke mit vielen Blogs und umfangreichem Content. Inklusive hilfreicher Widgets und Monitoring-Tools.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
@@ -119,7 +115,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS Community',
 		'repo'        => 'Power-Source/ps-community',
-		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu!',
+		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu! PS Comunity ist unsere Community-Lösung für ClassicPress mit Benutzerprofilen, Freundschaften, privaten Nachrichten, Aktivitäts-Feeds, Gruppen und vielem mehr. Erstelle eine lebendige Community rund um Deine Webseite und binde Deine Benutzer mit sozialen Funktionen ein.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
 	),
@@ -128,7 +124,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS Wiki',
 		'repo'        => 'Power-Source/ps-wiki',
-		'description' => 'Ein simples aber mächtiges Wiki-Plugin für Deine ClassicPress Seite, inkl. Multisitesupport, Frontend-Editor, Rechtemanagment',
+		'description' => 'Ein simples aber mächtiges Wiki-Plugin für Deine ClassicPress Seite, inkl. Multisitesupport, Frontend-Editor, Rechtemanagment. und vielem mehr. Erstelle und verwalte Wissensdatenbanken, Dokumentationen oder kollaborative Inhalte direkt auf Deiner Webseite.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
@@ -137,7 +133,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'CustomPress',
 		'repo'        => 'Power-Source/custompress',
-		'description' => 'CustomPress - Benutzerdefinierter Post-, Taxonomie- und Feldmanager',
+		'description' => 'CustomPress - Benutzerdefinierter Post-, Taxonomie- und Feldmanager für ClassicPress. Erstelle und verwalte benutzerdefinierte Beitragstypen, Taxonomien und benutzerdefinierte Felder mit Leichtigkeit – alles direkt aus Deinem ClassicPress-Dashboard heraus.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
@@ -146,45 +142,36 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS BeitragsAds',
 		'repo'        => 'Power-Source/in-post-ads',
-		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten',
+		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten. Integriert sich nahtlos in Dein ClassicPress-Dashboard und bietet flexible Platzierungsoptionen für maximale Sichtbarkeit und Einnahmen.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
-	),
-
-	'psource-branding' => array(
-		'type'        => 'plugin',
-		'name'        => 'PSOURCE Toolkit',
-		'repo'        => 'Power-Source/psource-branding',
-		'description' => 'Eine komplette White-Label- und Branding-Lösung für Multisite. Adminbar, Loginsreens, Wartungsmodus, Favicons, Entfernen von ClassicPress-Links und Branding und vielem mehr',
-		'category'    => 'tools',
-		'icon'        => 'dashicons-admin-links',
 	),
 
 	'coursepress' => array(
 		'type'        => 'plugin',
 		'name'        => 'CoursePress',
 		'repo'        => 'Power-Source/coursepress',
-		'description' => 'CoursePress vereinfacht die Online-Ausbildung mit Kursseiten, Paywalls, Social Sharing und einer interaktiven Lernumgebung, mit der mehr Schüler miteinander verbunden werden können',
+		'description' => 'CoursePress vereinfacht die Online-Ausbildung mit Kursseiten, Paywalls, Social Sharing und einer interaktiven Lernumgebung, mit der mehr Schüler miteinander verbunden werden können. Erstelle und verwalte Online-Kurse direkt von Deinem ClassicPress-Dashboard aus – ideal für Lehrer, Trainer und Bildungseinrichtungen.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
-	),
-
-	'ps-dsgvo' => array(
-		'type'        => 'plugin',
-		'name'        => 'PSOURCE DSGVO',
-		'repo'        => 'Power-Source/ps-dsgvo',
-		'description' => 'Dieses Plugin unterstützt Website- und Webshop-Besitzer bei der Einhaltung der europäischen Datenschutzbestimmungen, die als DSGVO bekannt sind',
-		'category'    => 'tools',
-		'icon'        => 'dashicons-shield-alt',
 	),
 
 	'e-newsletter' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS e-Newsletter',
 		'repo'        => 'Power-Source/e-newsletter',
-		'description' => 'Das ultimative Newsletter Plugin für ClassicPress. Keine Drittanbieterdienste oder Abo-Kosten, Newsletter direkt aus dem ClassicPress-Dashboard managen und versenden',
+		'description' => 'Das ultimative Newsletter Plugin für ClassicPress. Keine Drittanbieterdienste oder Abo-Kosten, Newsletter direkt aus dem ClassicPress-Dashboard managen und versenden.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
+	),
+	
+	'ps-chat' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Chat',
+		'repo'        => 'Power-Source/ps-chat',
+		'description' => 'Echtzeit-Chat für ClassicPress Multisite Netzwerke. Ermögliche es Deinen Benutzern, in Echtzeit zu kommunizieren, private Nachrichten zu senden und Gruppen-Chats zu erstellen. Alles bleibt auf Deinem eigenen Server – keine Drittanbieter erforderlich!',
+		'category'    => 'community',
+		'icon'        => 'dashicons-format-chat',
 	),
 
 	'benutzerdefinierte-seitenleisten' => array(
@@ -249,6 +236,24 @@ return array(
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
 	),
+			
+	'psource-link-checker' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Link Checker',
+		'repo'        => 'Power-Source/psource-link-checker',
+		'description' => 'Dieses Plugin überwacht Deinen Blog auf defekte Links und teilt Dir mit, ob welche gefunden wurden. Du kannst dann die defekten Links ganz einfach in Deinem Dashboard anzeigen und korrigieren.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
+	'ps-live-debug' => array(
+		'type'        => 'plugin',
+		'name'        => 'PSOURCE Live Debug',
+		'repo'        => 'Power-Source/ps-live-debug',
+		'description' => 'Aktiviert das Debuggen und fügt dem ClassicPress-Admin einen Bildschirm hinzu, um das debug.log anzuzeigen.',
+		'category'    => 'development',
+		'icon'        => 'dashicons-search',
+	),
 	
 	/**
 	 * THEMES
@@ -274,6 +279,7 @@ return array(
 	 	'featured'    => true,
 	 	'badge'       => 'child-theme',
 	),
+
 	
 	/**
 	 * Weitere Produkte können hier hinzugefügt werden:

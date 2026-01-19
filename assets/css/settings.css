@@ -1,0 +1,81 @@
+/**
+ * PS Update Manager - Settings Page Styles
+ * Styles für die Einstellungen-Seite
+ */
+
+.ps-settings-container {
+	max-width: 800px;
+	margin-top: 20px;
+	background: white;
+	padding: 20px;
+	border-radius: 4px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ps-settings-section {
+	margin-bottom: 30px;
+}
+
+.ps-settings-section h2 {
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 18px;
+	color: #333;
+}
+
+.ps-settings-section .description {
+	margin-bottom: 20px;
+	color: #666;
+}
+
+.ps-roles-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.ps-roles-table td {
+	padding: 12px 10px;
+	border-bottom: 1px solid #eee;
+}
+
+.ps-roles-table tr:last-child td {
+	border-bottom: none;
+}
+
+.ps-roles-table td:first-child {
+	flex: 1;
+}
+
+.ps-role-caption {
+	text-align: right;
+	width: 200px;
+	color: #999;
+	font-size: 12px;
+}
+
+.ps-roles-table input[type="checkbox"] {
+	margin-right: 8px;
+}
+
+.ps-info-box {
+	margin-top: 30px;
+	background: #f0f6fc;
+	padding: 15px 20px;
+	border-left: 4px solid #0073aa;
+	border-radius: 4px;
+}
+
+.ps-info-box h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	color: #0073aa;
+}
+
+.ps-info-box ul {
+	margin: 10px 0;
+	padding-left: 20px;
+}
+
+.ps-info-box li {
+	margin: 5px 0;
+}

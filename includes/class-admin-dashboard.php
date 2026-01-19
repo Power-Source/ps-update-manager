@@ -119,6 +119,16 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		// Styles
 		wp_enqueue_style( 'ps-update-manager-admin', $base_url . 'assets/css/admin.css', array(), '1.0.0' );
+		
+		// PSources Katalog CSS (nur auf der PSources-Seite)
+		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
+			wp_enqueue_style( 'ps-catalog', $base_url . 'assets/css/psources-catalog.css', array(), '1.0.0' );
+		}
+		
+		// Settings CSS (nur auf der Settings-Seite)
+		if ( in_array( $current_page, array( 'ps-update-manager-settings' ), true ) ) {
+			wp_enqueue_style( 'ps-settings', $base_url . 'assets/css/settings.css', array(), '1.0.0' );
+		}
 
 		// Scripts
 		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
@@ -443,17 +453,9 @@ class PS_Update_Manager_Admin_Dashboard {
 							
 							<div class="ps-product-links">
 								<?php
-								$slug      = $product['slug'] ?? '';
-								$base_docs = 'https://power-source.github.io/' . ( $slug ? rawurlencode( $slug ) . '/' : '' );
-								$docs_url  = $base_docs;
-
-								if ( ! empty( $product['docs_url'] ) ) {
-									$docs_url_candidate = $product['docs_url'];
-									// Wenn die hinterlegte URL auf GitHub zeigt, stattdessen die GitHub-Pages-Variante nutzen.
-									if ( false === strpos( $docs_url_candidate, 'github.com/' ) ) {
-										$docs_url = $docs_url_candidate;
-									}
-								}
+								$docs_url = ! empty( $product['docs_url'] ) 
+									? $product['docs_url'] 
+									: 'https://power-source.github.io/' . rawurlencode( $product['slug'] );
 								?>
 								<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="button button-small">
 										<span class="dashicons dashicons-book"></span>
@@ -489,8 +491,8 @@ class PS_Update_Manager_Admin_Dashboard {
 					<?php esc_html_e( 'Alle PSOURCE Projekte sind Open Source. Du kannst jederzeit beitragen, Issues melden oder Features vorschlagen.', 'ps-update-manager' ); ?>
 				</p>
 				<p>
-					<a href="https://github.com/Power-Source" target="_blank" class="button">
-						<?php esc_html_e( 'Auf GitHub mitarbeiten', 'ps-update-manager' ); ?>
+					<a href="https://github.com/power-source" target="_blank" class="button">
+						<?php esc_html_e( 'Auf GitHub mitwirken um Dein Projekt zu verbessern', 'ps-update-manager' ); ?>
 					</a>
 				</p>
 			</div>
@@ -504,7 +506,7 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function render_products() {
 		// Zugriffsprüfung
 		if ( ! $this->current_user_can_access() ) {
-			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+			wp_die( esc_html__( 'Du hast keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
 		
 		?>
@@ -561,289 +563,6 @@ class PS_Update_Manager_Admin_Dashboard {
 
 			<!-- Pagination (AJAX) -->
 			<div id="ps-pagination" style="margin-top: 20px;"></div>
-
-			<style>
-				.ps-loading {
-					text-align: center;
-					padding: 40px;
-					color: #646970;
-				}
-				.ps-no-results {
-					text-align: center;
-					padding: 40px;
-					background: #f6f7f7;
-					border: 1px dashed #ccd0d4;
-					border-radius: 4px;
-					color: #646970;
-				}
-				.ps-pagination {
-					display: flex;
-					gap: 5px;
-					justify-content: center;
-				}
-				.ps-products-store {
-					display: grid;
-					grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-					gap: 20px;
-					margin-top: 20px;
-				}
-				
-				.ps-store-card {
-					background: #fff;
-					border: 1px solid #ccd0d4;
-					border-radius: 4px;
-					box-shadow: 0 1px 1px rgba(0,0,0,.04);
-					display: flex;
-					flex-direction: column;
-					transition: all 0.2s;
-					position: relative;
-					overflow: hidden;
-				}
-				
-				.ps-store-card:hover {
-					box-shadow: 0 2px 4px rgba(0,0,0,.08);
-					transform: translateY(-2px);
-				}
-				
-				/* Featured Karten */
-				.ps-store-card-featured {
-					border: 2px solid #2271b1;
-					box-shadow: 0 4px 12px rgba(34, 113, 177, 0.15);
-					background: linear-gradient(135deg, #ffffff 0%, #f6f9fc 100%);
-				}
-				
-				.ps-store-card-featured:hover {
-					box-shadow: 0 8px 20px rgba(34, 113, 177, 0.25);
-					transform: translateY(-4px);
-				}
-				
-				.ps-featured-ribbon {
-					position: absolute;
-					top: 15px;
-					right: -35px;
-					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
-					color: white;
-					padding: 5px 40px;
-					transform: rotate(45deg);
-					box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-					font-size: 11px;
-					font-weight: 600;
-					z-index: 10;
-					display: flex;
-					align-items: center;
-					gap: 4px;
-				}
-				
-				.ps-featured-ribbon .dashicons {
-					font-size: 14px;
-					width: 14px;
-					height: 14px;
-				}
-				
-				.ps-store-card-header {
-					padding: 20px;
-					border-bottom: 1px solid #f0f0f1;
-					display: flex;
-					align-items: flex-start;
-					gap: 15px;
-				}
-				
-				.ps-store-card-featured .ps-store-card-header {
-					padding-top: 30px;
-				}
-				
-				.ps-store-icon {
-					flex-shrink: 0;
-					width: 48px;
-					height: 48px;
-					background: #f0f0f1;
-					border-radius: 4px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				
-				.ps-store-card-featured .ps-store-icon {
-					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
-					width: 56px;
-					height: 56px;
-				}
-				
-				.ps-store-icon .dashicons {
-					font-size: 28px;
-					width: 28px;
-					height: 28px;
-					color: #2271b1;
-				}
-				
-				.ps-store-card-featured .ps-store-icon .dashicons {
-					font-size: 32px;
-					width: 32px;
-					height: 32px;
-					color: #ffffff;
-				}
-				
-				.ps-store-title {
-					flex: 1;
-					min-width: 0;
-				}
-				
-				.ps-store-title h3 {
-					margin: 0 0 5px;
-					font-size: 16px;
-					font-weight: 600;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
-				
-				.ps-store-card-featured .ps-store-title h3 {
-					font-size: 18px;
-					color: #2271b1;
-				}
-				
-				.ps-store-meta {
-					font-size: 13px;
-					color: #646970;
-					display: flex;
-					align-items: center;
-					gap: 8px;
-					flex-wrap: wrap;
-				}
-				
-				.ps-meta-badge {
-					display: inline-flex;
-					align-items: center;
-					gap: 4px;
-					padding: 3px 8px;
-					font-size: 11px;
-					font-weight: 600;
-					border-radius: 3px;
-					text-transform: uppercase;
-					letter-spacing: 0.3px;
-				}
-				
-				.ps-meta-badge .dashicons {
-					font-size: 14px;
-					width: 14px;
-					height: 14px;
-				}
-				
-				.ps-badge-framework {
-					background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
-					color: white;
-				}
-				
-				.ps-badge-child {
-					background: linear-gradient(135deg, #00a32a 0%, #008a20 100%);
-					color: white;
-				}
-				
-				.ps-badge-template {
-					background: linear-gradient(135deg, #9b51e0 0%, #7c3aaa 100%);
-					color: white;
-				}
-				
-				.ps-store-status {
-					flex-shrink: 0;
-				}
-				
-				.ps-badge {
-					display: inline-block;
-					padding: 4px 10px;
-					font-size: 12px;
-					font-weight: 500;
-					border-radius: 3px;
-					white-space: nowrap;
-				}
-				
-				.ps-badge-not-installed {
-					background: #f0f0f1;
-					color: #646970;
-				}
-				
-				.ps-badge-inactive {
-					background: #fcf9e8;
-					color: #8a6d3b;
-				}
-				
-				.ps-badge-active {
-					background: #d4edda;
-					color: #155724;
-				}
-				
-				.ps-badge-network-active {
-					background: #cfe2ff;
-					color: #084298;
-					display: inline-flex;
-					align-items: center;
-					gap: 4px;
-				}
-				
-				.ps-badge-update {
-					background: #fff3cd;
-					color: #856404;
-				}
-				
-				.ps-store-card-body {
-					padding: 20px;
-					flex: 1;
-				}
-				
-				.ps-store-description {
-					margin: 0 0 15px;
-					color: #50575e;
-					line-height: 1.6;
-					font-size: 14px;
-				}
-				
-				.ps-store-links {
-					display: flex;
-					gap: 15px;
-					flex-wrap: wrap;
-				}
-				
-				.ps-link {
-					display: inline-flex;
-					align-items: center;
-					gap: 5px;
-					font-size: 13px;
-					color: #2271b1;
-					text-decoration: none;
-				}
-				
-				.ps-link:hover {
-					color: #135e96;
-				}
-				
-				.ps-link .dashicons {
-					font-size: 16px;
-					width: 16px;
-					height: 16px;
-				}
-				
-				.ps-store-card-footer {
-					padding: 15px 20px;
-					border-top: 1px solid #f0f0f1;
-					background: #f6f7f7;
-				}
-				
-				.ps-store-card-footer .button {
-					width: 100%;
-					justify-content: center;
-					display: flex;
-					align-items: center;
-					gap: 5px;
-				}
-				
-				.nav-tab .dashicons {
-					font-size: 16px;
-					width: 16px;
-					height: 16px;
-					vertical-align: middle;
-					margin-right: 5px;
-				}
-			</style>
 		</div>
 		<?php
 	}
@@ -955,8 +674,8 @@ class PS_Update_Manager_Admin_Dashboard {
 			});
 		}
 
-		// Featured-Produkte nach oben sortieren (nur bei Themes und wenn kein Filter aktiv)
-		if ( 'themes' === $tab && empty( $search ) && 'all' === $status ) {
+		// Featured-Produkte nach oben sortieren (wenn kein Filter aktiv)
+		if ( empty( $search ) && 'all' === $status ) {
 			uasort( $items, function( $a, $b ) {
 				$a_featured = isset( $a['featured'] ) && $a['featured'];
 				$b_featured = isset( $b['featured'] ) && $b['featured'];
@@ -976,7 +695,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		// HTML rendern
 		ob_start();
 		if ( empty( $slice ) ) {
-			echo '<div class="ps-no-results"><p>' . esc_html__( 'Keine Produkte gefunden.', 'ps-update-manager' ) . '</p></div>';
+			echo '<div class="ps-no-results"><p>' . esc_html__( 'Keine PSOURCE gefunden.', 'ps-update-manager' ) . '</p></div>';
 		} else {
 			foreach ( $slice as $slug => $product ) {
 				$this->render_product_card( $product, $installed_products );
@@ -1119,8 +838,13 @@ class PS_Update_Manager_Admin_Dashboard {
 					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/issues" target="_blank" class="ps-link">
 						<span class="dashicons dashicons-sos"></span> Support
 					</a>
-					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>/releases" target="_blank" class="ps-link">
-						<span class="dashicons dashicons-media-document"></span> Changelog
+					<?php
+					$docs_url = ! empty( $product['docs_url'] ) 
+						? $product['docs_url'] 
+						: 'https://power-source.github.io/' . rawurlencode( $product['slug'] );
+					?>
+					<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="ps-link">
+						<span class="dashicons dashicons-media-document"></span> Handbuch
 					</a>
 				</div>
 			</div>
@@ -1258,85 +982,6 @@ class PS_Update_Manager_Admin_Dashboard {
 				</ul>
 			</div>
 		</div>
-		
-		<style>
-			.ps-settings-container {
-				max-width: 800px;
-				margin-top: 20px;
-				background: white;
-				padding: 20px;
-				border-radius: 4px;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-			}
-			
-			.ps-settings-section {
-				margin-bottom: 30px;
-			}
-			
-			.ps-settings-section h2 {
-				margin-top: 0;
-				margin-bottom: 15px;
-				font-size: 18px;
-				color: #333;
-			}
-			
-			.ps-settings-section .description {
-				margin-bottom: 20px;
-				color: #666;
-			}
-			
-			.ps-roles-table {
-				width: 100%;
-				border-collapse: collapse;
-			}
-			
-			.ps-roles-table td {
-				padding: 12px 10px;
-				border-bottom: 1px solid #eee;
-			}
-			
-			.ps-roles-table tr:last-child td {
-				border-bottom: none;
-			}
-			
-			.ps-roles-table td:first-child {
-				flex: 1;
-			}
-			
-			.ps-role-caption {
-				text-align: right;
-				width: 200px;
-				color: #999;
-				font-size: 12px;
-			}
-			
-			.ps-roles-table input[type="checkbox"] {
-				margin-right: 8px;
-			}
-			
-			.ps-info-box {
-				margin-top: 30px;
-				background: #f0f6fc;
-				padding: 15px 20px;
-				border-left: 4px solid #0073aa;
-				border-radius: 4px;
-			}
-			
-			.ps-info-box h3 {
-				margin-top: 0;
-				margin-bottom: 10px;
-				color: #0073aa;
-			}
-			
-			.ps-info-box ul {
-				margin: 10px 0;
-				padding-left: 20px;
-			}
-			
-			.ps-info-box li {
-				margin: 5px 0;
-			}
-		</style>
 		<?php
 	}
 	

@@ -149,7 +149,7 @@ Scan-Ergebnisse werden gecacht:
 Basierend auf dem `repo`-Feld werden automatisch generiert:
 
 ```php
-'docs_url'      => 'https://github.com/' . $manifest['repo'],
+'docs_url'      => 'https://power-source.github.io/' . $manifest['repo'],
 'support_url'   => 'https://github.com/' . $manifest['repo'] . '/issues',
 'changelog_url' => 'https://github.com/' . $manifest['repo'] . '/releases',
 'author_url'    => 'https://github.com/Power-Source',
