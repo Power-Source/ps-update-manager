@@ -155,7 +155,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PSOURCE Toolkit',
 		'repo'        => 'Power-Source/psource-branding',
-		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten',
+		'description' => 'Eine komplette White-Label- und Branding-Lösung für Multisite. Adminbar, Loginsreens, Wartungsmodus, Favicons, Entfernen von ClassicPress-Links und Branding und vielem mehr',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
 	),
