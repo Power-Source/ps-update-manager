@@ -378,10 +378,14 @@ class PS_Update_Manager_Admin_Dashboard {
 					<p>
 						<strong><?php esc_html_e( 'Updates verfügbar!', 'ps-update-manager' ); ?></strong>
 						<?php
-						printf(
-							esc_html__( 'Es sind %d Updates für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' ),
-							$updates_available
-						);
+						if ( $updates_available === 1 ) {
+							esc_html_e( 'Es ist ein Update für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' );
+						} else {
+							printf(
+								esc_html__( 'Es sind %d Updates für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' ),
+								$updates_available
+							);
+						}
 						?>
 						<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-small">
 							<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
@@ -391,7 +395,10 @@ class PS_Update_Manager_Admin_Dashboard {
 			<?php endif; ?>
 			
 			<div class="ps-products-overview">
-				<h2><?php esc_html_e( 'PSOURCE-Übersicht', 'ps-update-manager' ); ?></h2>
+				<h2><?php esc_html_e( 'Deine PSOURCE-Übersicht', 'ps-update-manager' ); ?></h2>
+				<p>
+					<?php esc_html_e( 'Hier findest du alle PSOURCE Plugins und Themes, die auf deiner Webseite installiert sind. Du kannst den Status, die Version und verfügbare Updates auf einen Blick sehen.', 'ps-update-manager' ); ?>
+				</p>
 				
 				<div class="ps-products-grid">
 					<?php foreach ( $products as $product ) : 
