@@ -28,7 +28,7 @@ return array(
         'repo'        => 'Power-Source/repo-name', // GitHub Repo
         'description' => 'Beschreibung',     // Kurzbeschreibung
         'category'    => 'category',         // Kategorie für UI
-        'icon'        => 'dashicons-name',   // WordPress Dashicon
+        'icon'        => 'dashicons-name',   // ClassicPress Dashicon
     ),
 );
 ```
@@ -47,7 +47,7 @@ return array(
 | Feld | Typ | Standard | Beschreibung |
 |------|-----|----------|--------------|
 | `category` | string | `'general'` | Kategorie für Sortierung/Filterung |
-| `icon` | string | `'dashicons-admin-plugins'` | WordPress Dashicon-Name |
+| `icon` | string | `'dashicons-admin-plugins'` | ClassicPress Dashicon-Name |
 
 ### Kategorien
 
@@ -77,7 +77,7 @@ Füge das neue Produkt in `includes/products-manifest.php` hinzu:
     'type'        => 'plugin',
     'name'        => 'Mein Neues Plugin',
     'repo'        => 'Power-Source/mein-neues-plugin',
-    'description' => 'Ein tolles neues Plugin für WordPress.',
+    'description' => 'Ein tolles neues Plugin für ClassicPress.',
     'category'    => 'content',
     'icon'        => 'dashicons-admin-post',
 ),
@@ -91,7 +91,7 @@ Das Plugin selbst sollte diese Header-Informationen haben:
 /**
  * Plugin Name: Mein Neues Plugin
  * Plugin URI: https://github.com/Power-Source/mein-neues-plugin
- * Description: Ein tolles neues Plugin für WordPress.
+ * Description: Ein tolles neues Plugin für ClassicPress.
  * Version: 1.0.0
  * Author: PSource
  * Author URI: https://github.com/Power-Source
@@ -110,7 +110,7 @@ Das Plugin selbst sollte diese Header-Informationen haben:
 
 ### Schritt 5: Testen
 
-1. Plugin im WordPress-Verzeichnis installieren
+1. Plugin im ClassicPress-Verzeichnis installieren
 2. PS Update Manager → "PSOURCE scannen" klicken
 3. Neues Plugin sollte in der Liste erscheinen mit "Auto"-Badge
 
@@ -157,7 +157,7 @@ Basierend auf dem `repo`-Feld werden automatisch generiert:
 
 ### Icon-System
 
-Icons werden aus WordPress Dashicons ausgewählt:
+Icons werden aus ClassicPress Dashicons ausgewählt:
 - [Dashicons Übersicht](https://developer.wordpress.org/resource/dashicons/)
 
 Beispiele:

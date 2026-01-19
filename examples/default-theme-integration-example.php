@@ -54,7 +54,7 @@ add_action( 'wpmu_new_blog', 'default_theme_switch_theme', 1, 1 );
 //------------------------------------------------------------------------//
 
 function default_theme_localization() {
-	// Load up the localization file if we're using WordPress in a different language
+	// Load up the localization file if we're using ClassicPress in a different language
 	// Place it in this plugin's "languages" folder and name it "defaulttheme-[value in wp-config].mo"
 	load_plugin_textdomain( 'defaulttheme', false, '/default-theme/languages' );
 }

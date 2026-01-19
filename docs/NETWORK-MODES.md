@@ -2,13 +2,13 @@
 
 ## Übersicht
 
-PSource Plugins können verschiedene Network-Modi unterstützen, die steuern, wie sie auf WordPress Single-Site und Multisite-Installationen aktiviert werden können.
+PSource Plugins können verschiedene Network-Modi unterstützen, die steuern, wie sie auf ClassicPress Single-Site und Multisite-Installationen aktiviert werden können.
 
 ## Unterstützte Modi
 
-### 1. WordPress Network Only (Immer nur Netzwerkweit)
+### 1. ClassicPress Network Only (Immer nur Netzwerkweit)
 
-**Verwendung:** WordPress Standard für Plugins die **NUR** auf Multisite funktionieren und dort nur netzwerkweit aktivierbar sein sollen.
+**Verwendung:** ClassicPress Standard für Plugins die **NUR** auf Multisite funktionieren und dort nur netzwerkweit aktivierbar sein sollen.
 
 **Plugin-Header:**
 ```php
@@ -21,7 +21,7 @@ Network: true
 **Verhalten:**
 - ❌ Auf Single-Sites: Nicht installierbar/aktivierbar
 - ✅ Auf Multisite: Nur netzwerkweit aktivierbar
-- 🔒 Striktester Modus - WordPress Standard
+- 🔒 Striktester Modus - ClassicPress Standard
 
 **Beispiele:**
 - Domain Mapping Plugins
@@ -170,7 +170,7 @@ Nutze keinen Network-Header wenn:
 
 ### Im Netzwerk-Admin (Multisite)
 
-**WordPress Network (`Network: true`):**
+**ClassicPress Network (`Network: true`):**
 ```
 [Netzwerkweit aktivieren]
 ⚠️ Dieses Plugin kann nur netzwerkweit aktiviert werden.
@@ -196,7 +196,7 @@ Nutze keinen Network-Header wenn:
 
 ### Im Site-Admin (Multisite)
 
-**WordPress Network oder Multisite Required:**
+**ClassicPress Network oder Multisite Required:**
 ```
 [🔒 Nur Netzwerk-Admin] (deaktiviert)
 ⚠️ Dieses Plugin kann nur im Netzwerk-Admin aktiviert werden.
@@ -216,7 +216,7 @@ Nutze keinen Network-Header wenn:
 
 ### Auf Single-Sites
 
-**WordPress Network (`Network: true`):**
+**ClassicPress Network (`Network: true`):**
 ```
 ❌ Plugin kann nicht aktiviert werden
 ```
@@ -283,7 +283,7 @@ PS Network: flexible
 Der PS Update Manager Scanner erkennt automatisch:
 
 1. **PSource Spezifisch:** `PS Network: required|flexible` Header (hat Vorrang)
-2. **WordPress Standard:** `Network: true` Header
+2. **ClassicPress Standard:** `Network: true` Header
 3. **Fallback:** Kein Header = Site-Only
 
 Die erkannten Werte werden in der Registry gespeichert:
@@ -317,7 +317,7 @@ array(
 ### Header-Priorität
 
 1. `PS Network` Header (PSource-spezifisch)
-2. `Network` Header (WordPress Standard)
+2. `Network` Header (ClassicPress Standard)
 3. Kein Header = Site-Only
 
 ### get_file_data() Implementation
@@ -340,6 +340,6 @@ $file_data = get_file_data( $plugin_file, array(
 
 ## Siehe auch
 
-- [WordPress Multisite Network Plugin](https://developer.wordpress.org/plugins/wordpress-org/plugin-developer-faq/#what-does-network-true-mean)
+- [ClassicPress Multisite Network Plugin](https://developer.wordpress.org/plugins/wordpress-org/plugin-developer-faq/#what-does-network-true-mean)
 - [Plugin Integration Guide](PLUGIN-INTEGRATION.md)
 - [Security & Performance Guide](SECURITY-PERFORMANCE.md)

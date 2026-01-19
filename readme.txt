@@ -13,12 +13,12 @@ Zentraler Installations & Update-Manager für alle PSOURCE Plugins und Themes.
 
 == Description ==
 
-Der **PS Manager** ist deine zentrale Lösung für die Verwaltung von PSOURCE Plugins und Themes auf deiner WordPress Installation, egal ob Single oder Multiiste.
+Der **PS Manager** ist deine zentrale Lösung für die Verwaltung von PSOURCE Plugins und Themes auf deiner ClassicPress Installation, egal ob Single oder Multiiste.
 
 = Features =
 
 * **Zentrales Dashboard** mit Übersicht aller registrierten PSOURCE Plugins/Themes
-* **Update-Benachrichtigungen** im WordPress Admin
+* **Update-Benachrichtigungen** im ClassicPress Admin
 * **Plugin-Info Popup** mit Changelog aus GitHub Releases
 * **Multisite-kompatibel** - funktioniert netzwerkweit
 * **Links zu Docs, Support, Changelog** direkt im Dashboard
@@ -43,7 +43,7 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 == Installation ==
 
 1. Plugin hochladen in `/wp-content/plugins/ps-update-manager/`
-2. Plugin im WordPress Admin aktivieren
+2. Plugin im ClassicPress Admin aktivieren
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==

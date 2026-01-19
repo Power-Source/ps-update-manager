@@ -79,7 +79,7 @@ class PS_Update_Manager_Product_Scanner {
 	 * Plugins scannen
 	 */
 	private function scan_plugins() {
-		// WordPress Plugin-Funktionen laden
+		// ClassicPress Plugin-Funktionen laden
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -244,7 +244,7 @@ class PS_Update_Manager_Product_Scanner {
 	 * Network-Modus aus Plugin-Header auslesen
 	 * 
 	 * Unterstützte Header:
-	 * - Network: true = Nur netzwerkweit aktivierbar (WordPress Standard)
+	 * - Network: true = Nur netzwerkweit aktivierbar (ClassicPress Standard)
 	 * - PS Network: flexible = Beide Modi möglich (netzwerkweit ODER site-by-site)
 	 * - PS Network: required = Nur netzwerkweit (explizit für PSource)
 	 * - Kein Header = Nur site-by-site möglich
@@ -262,7 +262,7 @@ class PS_Update_Manager_Product_Scanner {
 			return $default;
 		}
 		
-		// Plugin-Header auslesen (erste 8KB wie WordPress es macht)
+		// Plugin-Header auslesen (erste 8KB wie ClassicPress es macht)
 		$file_data = get_file_data( $plugin_file, array(
 			'Network' => 'Network',
 			'PSNetwork' => 'PS Network',
@@ -286,7 +286,7 @@ class PS_Update_Manager_Product_Scanner {
 			}
 		}
 		
-		// WordPress Standard "Network: true" Header
+		// ClassicPress Standard "Network: true" Header
 		// Immer nur netzwerkweit, auch auf Single-Sites
 		if ( ! empty( $file_data['Network'] ) ) {
 			$network = strtolower( trim( $file_data['Network'] ) );
@@ -294,7 +294,7 @@ class PS_Update_Manager_Product_Scanner {
 			if ( 'true' === $network ) {
 				return array(
 					'network_only' => true,
-					'mode' => 'wordpress-network', // WordPress Standard - immer nur netzwerkweit
+					'mode' => 'wordpress-network', // ClassicPress Standard - immer nur netzwerkweit
 				);
 			}
 		}

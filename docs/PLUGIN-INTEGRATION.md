@@ -46,7 +46,7 @@ add_action( 'admin_notices', function() {
             $is_installed = isset( $all_plugins[ $plugin_file ] );
             
             echo '<div class="notice notice-warning is-dismissible"><p>';
-            echo '<strong>Dein Plugin:</strong> ';
+            echo '<strong>Bekomme Updates und mehr PSOURCE mit dem PSOURCE Manager:</strong> ';
             
             if ( $is_installed ) {
                 // Aktivierungs-Link
@@ -55,13 +55,13 @@ add_action( 'admin_notices', function() {
                     'activate-plugin_' . $plugin_file
                 );
                 echo sprintf(
-                    __( 'Aktiviere den <a href="%s">PS Update Manager</a> für automatische Updates.', 'textdomain' ),
+                    __( 'Aktiviere den <a href="%s">PSOURCE Manager</a> für automatische Updates.', 'textdomain' ),
                     esc_url( $activate_url )
                 );
             } else {
                 // Download-Link
                 echo sprintf(
-                    __( 'Installiere den <a href="%s" target="_blank">PS Update Manager</a> für automatische Updates.', 'textdomain' ),
+                    __( 'Installiere den <a href="%s" target="_blank">PSOURCE Manager</a> für automatische Updates.', 'textdomain' ),
                     'https://github.com/Power-Source/ps-update-manager/releases/latest'
                 );
             }
@@ -72,47 +72,8 @@ add_action( 'admin_notices', function() {
 });
 ```
 
-**Fertig!** 🎉
+**Fertig!**
 
----
-
-## 🔄 Migration von v1.0
-
-Falls dein Plugin noch die alte `ps_register_product()` Methode nutzt:
-
-### **ALT (v1.0) - NICHT MEHR NÖTIG:**
-```php
-add_action( 'plugins_loaded', function() {
-    if ( function_exists( 'ps_register_product' ) ) {
-        ps_register_product( array(
-            'slug'          => 'mein-plugin',
-            'name'          => 'Mein Plugin',
-            'version'       => '1.0.0',
-            'type'          => 'plugin',
-            'file'          => __FILE__,
-            'github_repo'   => 'Power-Source/mein-plugin',
-            // ... viele weitere Felder
-        ) );
-    }
-}, 5 );
-```
-
-### **NEU (v2.0) - Einfach löschen!**
-
-Der gesamte Registrierungs-Code kann entfernt werden. Der Scanner findet dein Plugin automatisch, solange es im Manifest eingetragen ist.
-
----
-
-## 🎁 Vorteile der neuen Methode
-
-| Vorher (v1.0) | Jetzt (v2.0) |
-|---------------|--------------|
-| ❌ Manuelle Registrierung in jedem Plugin | ✅ Automatische Erkennung |
-| ❌ 20+ Zeilen Boilerplate-Code | ✅ Nur Admin-Hinweis |
-| ❌ Plugin muss aktiv sein für Updates | ✅ Updates auch wenn inaktiv |
-| ❌ Doppelte Datenpflege (Code + Manifest) | ✅ Single Source of Truth (Manifest) |
-
----
 
 ## 📦 GitHub Release erstellen
 

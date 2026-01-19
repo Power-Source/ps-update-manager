@@ -442,12 +442,23 @@ class PS_Update_Manager_Admin_Dashboard {
 							<?php endif; ?>
 							
 							<div class="ps-product-links">
-								<?php if ( ! empty( $product['docs_url'] ) ) : ?>
-									<a href="<?php echo esc_url( $product['docs_url'] ); ?>" target="_blank" class="button button-small">
+								<?php
+								$slug      = $product['slug'] ?? '';
+								$base_docs = 'https://power-source.github.io/' . ( $slug ? rawurlencode( $slug ) . '/' : '' );
+								$docs_url  = $base_docs;
+
+								if ( ! empty( $product['docs_url'] ) ) {
+									$docs_url_candidate = $product['docs_url'];
+									// Wenn die hinterlegte URL auf GitHub zeigt, stattdessen die GitHub-Pages-Variante nutzen.
+									if ( false === strpos( $docs_url_candidate, 'github.com/' ) ) {
+										$docs_url = $docs_url_candidate;
+									}
+								}
+								?>
+								<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="button button-small">
 										<span class="dashicons dashicons-book"></span>
 										<?php esc_html_e( 'Docs', 'ps-update-manager' ); ?>
 									</a>
-								<?php endif; ?>
 								
 								<?php if ( ! empty( $product['support_url'] ) ) : ?>
 									<a href="<?php echo esc_url( $product['support_url'] ); ?>" target="_blank" class="button button-small">
@@ -458,7 +469,7 @@ class PS_Update_Manager_Admin_Dashboard {
 								
 								<?php if ( ! empty( $product['github_repo'] ) ) : ?>
 									<a href="<?php echo esc_url( 'https://github.com/' . $product['github_repo'] ); ?>" target="_blank" class="button button-small">
-										<span class="dashicons dashicons-github"></span>
+										<span class="dashicons dashicons-admin-site-alt3"></span>
 										<?php esc_html_e( 'GitHub', 'ps-update-manager' ); ?>
 									</a>
 								<?php endif; ?>
@@ -1450,7 +1461,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			if ( file_exists( $temp_file ) ) {
 				wp_delete_file( $temp_file );
 			}
-			return new WP_Error( 'wp_filesystem_error', __( 'WordPress Dateisystem konnte nicht initialisiert werden. Bitte prüfe die Dateisystem-Berechtigungen.', 'ps-update-manager' ) );
+			return new WP_Error( 'wp_filesystem_error', __( 'ClassicPress Dateisystem konnte nicht initialisiert werden. Bitte prüfe die Dateisystem-Berechtigungen.', 'ps-update-manager' ) );
 		}
 		
 		global $wp_filesystem;

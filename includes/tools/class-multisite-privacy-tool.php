@@ -66,7 +66,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		// Handle settings save from tool tab
 		add_action( 'admin_init', array( $this, 'save_settings' ) );
 
-		// Add privacy options to wpmu_options (network admin) - für WordPress native integration
+		// Add privacy options to wpmu_options (network admin) - für ClassicPress native integration
 		add_action( 'wpmu_options', array( $this, 'render_privacy_options' ) );
 		add_action( 'update_wpmu_options', array( $this, 'save_privacy_options' ) );
 

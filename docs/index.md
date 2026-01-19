@@ -14,21 +14,21 @@ title: "PS Update Manager"
 
 Der **PS Update Manager** ist Deine zentrale Schaltstelle für Updates, Installation und Verwaltung aller offiziellen PSOURCE-Einträge. Verwalte Updates direkt von GitHub, entdecke neue Plugins und halte Dein System mit einem Klick aktuell.
 
-### 🎯 Hauptfunktionen
+### Hauptfunktionen
 
-#### 🔍 Auto-Discovery System
+#### Auto-Discovery System
 Erkennt automatisch alle installierten PSource Plugins und Themes – **keine manuelle Registrierung nötig!** Der intelligente Scanner durchsucht Deine Installation und findet alle offiziellen Produkte.
 
-#### 📦 PSOURCE Katalog mit 1-Klick Installation
+#### PSOURCE Katalog mit 1-Klick Installation
 Entdecke und installiere neue PSource Plugins direkt aus dem Dashboard. Kein manuelles Herunterladen, Entpacken oder FTP mehr nötig – alles mit einem Klick!
 
-#### 🔄 Automatische Updates von GitHub
-Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manager prüft automatisch auf neue Versionen und benachrichtigt Dich im WordPress Dashboard.
+#### Automatische Updates von GitHub
+Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manager prüft automatisch auf neue Versionen und benachrichtigt Dich im ClassicPress Dashboard.
 
 #### 🛡️ Sicherheit First
 - **Manifest-basierte Whitelist** – Nur offizielle PSOURCE-Einträge können installiert werden
 - **Path Traversal Prevention** – Schutz vor Dateisystem-Angriffen
-- **Nonce & Capability Checks** – Vollständige WordPress Security Standards
+- **Nonce & Capability Checks** – Vollständige ClassicPress Security Standards
 - **10/10 Sicherheitsbewertung** nach OWASP Standards
 
 #### ⚡ High Performance
@@ -49,7 +49,7 @@ Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manag
 ## 🚀 Installation
 
 ### Anforderungen
-- WordPress 5.0 oder höher
+- ClassicPress 5.0 oder höher
 - PHP 7.4 oder höher
 - Multisite-kompatibel (optional)
 
@@ -58,7 +58,7 @@ Erhalte Updates direkt von den offiziellen GitHub-Repositories. Der Update Manag
 1. **Download** das Plugin von [GitHub Releases](https://github.com/Power-Source/ps-update-manager/releases)
 2. **Entpacke** die ZIP-Datei
 3. **Lade** den `ps-update-manager` Ordner nach `/wp-content/plugins/` hoch
-4. **Aktiviere** das Plugin in WordPress:
+4. **Aktiviere** das Plugin in ClassicPress:
    - **Single-Site:** Dashboard → Plugins → PS Update Manager aktivieren
    - **Multisite:** Netzwerkadmin → Plugins → Netzwerkweit aktivieren
 
@@ -81,13 +81,13 @@ Das Dashboard zeigt Dir auf einen Blick:
 - ✅ **Alle installierten PSOURCE-Einträge** mit Version und Status
 - 🔄 **Verfügbare Updates** mit Changelog-Link
 - 📊 **Statistiken** – Wie viele Plugins/Themes installiert, aktiv, mit Updates
-- 🔔 **Update-Benachrichtigungen** – Direkt im WordPress Admin
+- 🔔 **Update-Benachrichtigungen** – Direkt im ClassicPress Admin
 
 #### Update-Prozess
 1. Dashboard öffnen
 2. "Update verfügbar" Badge bei betroffenen Produkten
 3. Klick auf "Jetzt aktualisieren"
-4. WordPress Standard-Update-Seite öffnet sich
+4. ClassicPress Standard-Update-Seite öffnet sich
 5. Update mit einem Klick installieren
 
 ### PSOURCE (Katalog)
@@ -114,7 +114,7 @@ Der PSOURCE Katalog ist Dein Verzeichnis für alle offiziellen PSOURCE-Einträge
 - Nur Einträge aus dem offiziellen Manifest können installiert werden
 - Repository-URL wird validiert gegen Whitelist
 - Path Traversal Prevention bei Installation
-- Volle WordPress Capability-Checks
+- Volle ClassicPress Capability-Checks
 
 ### Einstellungen
 
@@ -199,7 +199,7 @@ Steuere, wie Dein Plugin auf Multisite aktiviert werden kann:
 - **Multisite:** Beide Modi möglich (netzwerkweit ODER site-by-site)
 - **Verwendung:** Plugins die optional netzwerkweit sein sollen
 
-#### 3. WordPress Network Only
+#### 3. ClassicPress Network Only
 ```php
 /*
  * Network: true

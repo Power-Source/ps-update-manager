@@ -1,7 +1,7 @@
 <?php
 /**
  * Update Checker Klasse
- * Integriert sich in WordPress Update-System
+ * Integriert sich in ClassicPress Update-System
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

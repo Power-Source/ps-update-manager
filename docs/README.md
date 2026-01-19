@@ -2,7 +2,7 @@
 
 **Zentraler Update-Manager für alle PSource Plugins und Themes**
 
-Ein leistungsstarkes WordPress-Plugin zur Verwaltung von Updates für deine eigenen Plugins und Themes direkt von GitHub - unabhängig vom WordPress.org Repository. Mit automatischer Erkennung via Manifest-System!
+Ein leistungsstarkes ClassicPress-Plugin zur Verwaltung von Updates für deine eigenen Plugins und Themes direkt von GitHub - unabhängig vom ClassicPress.org Repository. Mit automatischer Erkennung via Manifest-System!
 
 ## 🎯 Features
 
@@ -10,7 +10,7 @@ Ein leistungsstarkes WordPress-Plugin zur Verwaltung von Updates für deine eige
 - ✅ **Automatische Erkennung** - Keine manuelle Registrierung nötig (Manifest-basiert)
 - ✅ **Zentrales Dashboard** mit Übersicht aller installierten PSOURCE-Installationen
 - ✅ **GitHub Integration** - Automatische Updates von GitHub Releases
-- ✅ **Update-Benachrichtigungen** im WordPress Admin
+- ✅ **Update-Benachrichtigungen** im ClassicPress Admin
 - ✅ **1-Click Installation** direkt von GitHub
 - ✅ **Plugin-Info Popup** mit Changelog und Release-Notes
 - ✅ **Multisite-kompatibel** mit Netzwerk-Admin Unterstützung
@@ -27,7 +27,7 @@ Ein leistungsstarkes WordPress-Plugin zur Verwaltung von Updates für deine eige
    unzip ps-update-manager.zip
    ```
 
-2. **Im WordPress Admin aktivieren:**
+2. **Im ClassicPress Admin aktivieren:**
    - Plugin unter "Plugins" aktivieren
    - Dashboard verfügbar unter "PS Updates"
 
