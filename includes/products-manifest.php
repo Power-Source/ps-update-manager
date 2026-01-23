@@ -42,7 +42,7 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS Mitgliedschaften',
 		'repo'        => 'Power-Source/ps-mitgliedschaften',
-		'description' => 'Description: Das leistungsstärkste, benutzerfreundlichste und flexibelste Mitgliedschafts-Plugin für ClassicPress-Seiten. Erstelle und verwalte Mitgliedschaftspläne, schütze Inhalte und akzeptiere Zahlungen – alles direkt von Deinem ClassicPress-Dashboard aus! Die perfekte Lösung für Abonnements, Online-Kurse, Premium-Communities und mehr.',
+		'description' => 'Das leistungsstärkste, benutzerfreundlichste und flexibelste Mitgliedschafts-Plugin für ClassicPress-Seiten. Erstelle und verwalte Mitgliedschaftspläne, schütze Inhalte und akzeptiere Zahlungen – alles direkt von Deinem ClassicPress-Dashboard aus! Die perfekte Lösung für Abonnements, Online-Kurse, Premium-Communities und mehr.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
 		'featured'    => true,
@@ -68,13 +68,13 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'MarketPress',
 		'repo'        => 'Power-Source/marketpress',
-		'description' => 'Das komplette ClassicPress E-Commerce-Plugin – funktioniert auch perfekt mit Multisite, um einen sozialen Marktplatz zu erstellen, auf dem Sie eine Provision einbehalten können! Aktivieren Sie das Plugin, passe Deine Einstellungen an und fügen Sie dann Produkte zu Deinem Shop hinzu.',
+		'description' => 'Das komplette ClassicPress E-Commerce-Plugin – funktioniert auch perfekt mit Multisite, um einen sozialen Marktplatz zu erstellen, auf dem Du eine Provision einbehalten kannst! Aktiviere das Plugin, passe Deine Einstellungen an und füge dann Produkte zu Deinem Shop hinzu.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-cart',
 		'compatible_with' => array(
 			'ps-mitgliedschaften' => 'Integriere Mitgliedschaften & Rabatte',
-			'ps-dsgvo'           => 'DSGVO-konform verkaufen',
-			'ps-smart-crm'       => 'Kundenverwaltung & CRM',
+			'ps-dsgvo'            => 'DSGVO-konform verkaufen',
+			'ps-smart-crm'        => 'Kundenverwaltung & CRM',
 		),
 	),
 
@@ -100,9 +100,12 @@ return array(
 		'type'        => 'plugin',
 		'name'        => 'PS Smart CRM',
 		'repo'        => 'Power-Source/ps-smart-crm',
-		'description' => 'Fügt ClassicPress ein leistungsstarkes CRM hinzu. Verwalten Sie Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden. Halte Deine Buchaltung und Kundenbeziehungen direkt in Deinem ClassicPress-Dashboard im Griff! Die PSOURCE Lösung für kleine und mittlere Unternehmen.',
+		'description' => 'Fügt ClassicPress ein leistungsstarkes CRM hinzu. Verwalte Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden. Halte Deine Buchhaltung und Kundenbeziehungen direkt in Deinem ClassicPress-Dashboard im Griff! Die PSOURCE Lösung für kleine und mittlere Unternehmen.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-businessperson',
+		'compatible_with' => array(
+			'marketpress' => 'Buche erfolgreiche Verkäufe direkt im CRM',
+		),
 	),
 
 	'ps-custom-post-widget' => array(

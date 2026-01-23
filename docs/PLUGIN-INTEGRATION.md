@@ -93,6 +93,7 @@ Füge `compatible_with` in deine Plugin-Definition ein:
     'description' => '...',
     'category'    => 'community',
     'icon'        => 'dashicons-groups',
+    'featured'    => true,
     'compatible_with' => array(
         'marketpress' => 'Verwalte Zahlungen & Abrechnungen für Mitgliedschaften',
         'ps-dsgvo'    => 'DSGVO-konforme Mitgliedschaftsverwaltung',
