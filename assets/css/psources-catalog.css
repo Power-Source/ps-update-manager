@@ -83,6 +83,27 @@
 	height: 14px;
 }
 
+.ps-store-card-logo {
+	width: 100%;
+	height: 180px;
+	background: #f0f0f1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border-bottom: 1px solid #e5e5e6;
+	padding: 15px;
+	box-sizing: border-box;
+}
+
+.ps-store-card-logo img {
+	width: auto;
+	height: auto;
+	max-width: calc(100% - 30px);
+	max-height: 150px;
+	object-fit: contain;
+}
+
 .ps-store-card-header {
 	padding: 20px;
 	border-bottom: 1px solid #f0f0f1;

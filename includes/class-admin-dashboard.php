@@ -625,6 +625,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				'network_mode'     => 'none',
 				'featured'         => $manifest['featured'] ?? false,
 				'badge'            => $manifest['badge'] ?? null,
+				'logo'             => $this->get_product_logo_url( $slug ),
 			);
 
 			if ( isset( $installed_products[ $slug ] ) ) {
@@ -774,6 +775,11 @@ class PS_Update_Manager_Admin_Dashboard {
 				<div class="ps-featured-ribbon">
 					<span class="dashicons dashicons-star-filled"></span>
 					<?php esc_html_e( 'Empfohlen', 'ps-update-manager' ); ?>
+				</div>
+			<?php endif; ?>
+			<?php if ( ! empty( $product['logo'] ) ) : ?>
+				<div class="ps-store-card-logo">
+					<img src="<?php echo esc_url( $product['logo'] ); ?>" alt="<?php echo esc_attr( $product['name'] ); ?>" />
 				</div>
 			<?php endif; ?>
 			<div class="ps-store-card-header">
@@ -1287,6 +1293,35 @@ class PS_Update_Manager_Admin_Dashboard {
 			'download_url'   => $release['download_url'] ?? 'N/A',
 			'has_zip'        => ! empty( $release['download_url'] ),
 		) );
+	}
+
+	/**
+	 * Produkt-Logo URL auflösen
+	 * Prüft ob Logo.png im Plugin-Verzeichnis existiert, sonst Fallback auf psource-logo.png
+	 *
+	 * @param string $slug Plugin/Theme Slug
+	 * @return string|null Logo URL oder null
+	 */
+	private function get_product_logo_url( $slug ) {
+		// Prüfe zunächst ob das Plugin/Theme installiert ist
+		$plugin_dir = WP_PLUGIN_DIR . '/' . $slug;
+		$theme_dir  = WP_CONTENT_DIR . '/themes/' . $slug;
+
+		// Logo.png Prüfung
+		if ( file_exists( $plugin_dir . '/Logo.png' ) ) {
+			return plugins_url( 'Logo.png', $plugin_dir . '/' . $slug . '.php' );
+		} elseif ( file_exists( $theme_dir . '/Logo.png' ) ) {
+			return get_theme_file_uri( $slug . '/Logo.png' );
+		}
+
+		// Fallback auf psource-logo.png
+		if ( file_exists( $plugin_dir . '/psource-logo.png' ) ) {
+			return plugins_url( 'psource-logo.png', $plugin_dir . '/' . $slug . '.php' );
+		} elseif ( file_exists( $theme_dir . '/psource-logo.png' ) ) {
+			return get_theme_file_uri( $slug . '/psource-logo.png' );
+		}
+
+		return null;
 	}
 }
 
