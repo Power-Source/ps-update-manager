@@ -210,6 +210,15 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'ps-fundraising' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Fundraising',
+		'repo'        => 'Power-Source/ps-fundraising',
+		'description' => 'PS Fundraising ist das ultimative WordPress-Plugin zur Verwaltung von Spendenaktionen, Crowdfunding-Kampagnen und Fundraising-Initiativen direkt auf Deiner Website. Mit voller Integration in BuddyPress und einer beeindruckenden Bandbreite an Features bietet es eine sichere, flexible und benutzerfreundliche Lösung für alle Fundraising-Anforderungen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'rss-autoblog' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS RSS AutoBlog',
