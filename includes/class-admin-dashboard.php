@@ -85,6 +85,9 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'wp_ajax_ps_test_github_api', array( $this, 'ajax_test_github_api' ) );
 		add_action( 'wp_ajax_ps_load_products', array( $this, 'ajax_load_products' ) );
 		add_action( 'wp_ajax_ps_get_categories', array( $this, 'ajax_get_categories' ) );
+		add_action( 'wp_ajax_ps_deactivate_plugin', array( $this, 'ajax_deactivate_plugin' ) );
+		add_action( 'wp_ajax_ps_activate_plugin', array( $this, 'ajax_activate_plugin' ) );
+		add_action( 'wp_ajax_ps_update_product', array( $this, 'ajax_update_product' ) );
 	}
 
 	/**
@@ -862,10 +865,10 @@ class PS_Update_Manager_Admin_Dashboard {
 						<?php esc_html_e( 'Installieren', 'ps-update-manager' ); ?>
 					</button>
 				<?php elseif ( $product['update_available'] ) : ?>
-					<a href="<?php echo esc_url( is_network_admin() ? network_admin_url( 'update-core.php' ) : admin_url( 'update-core.php' ) ); ?>" class="button button-primary">
+					<button class="button button-primary ps-update-product" data-slug="<?php echo esc_attr( $slug ); ?>" data-basename="<?php echo esc_attr( $product['basename'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>" data-new-version="<?php echo esc_attr( $product['new_version'] ); ?>">
 						<span class="dashicons dashicons-update"></span>
 						<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
-					</a>
+					</button>
 				<?php elseif ( ! $product['active'] && 'plugin' === $product['type'] ) : ?>
 					<?php
 					$plugin_basename = $product['basename'] ?? $slug . '/' . $slug . '.php';
@@ -880,27 +883,19 @@ class PS_Update_Manager_Admin_Dashboard {
 							</button>
 							<?php
 						} else {
-							$activate_url = wp_nonce_url(
-								network_admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
-								'activate-plugin_' . $plugin_basename
-							);
 							?>
-							<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+							<button class="button button-primary ps-activate-plugin" data-slug="<?php echo esc_attr( $slug ); ?>" data-basename="<?php echo esc_attr( $plugin_basename ); ?>" data-network="true">
 								<span class="dashicons dashicons-yes"></span>
 								<?php esc_html_e( 'Netzwerkweit aktivieren', 'ps-update-manager' ); ?>
-							</a>
+							</button>
 							<?php
 						}
 					} else {
-						$activate_url = wp_nonce_url(
-							admin_url( 'plugins.php?action=activate&plugin=' . urlencode( $plugin_basename ) ),
-							'activate-plugin_' . $plugin_basename
-						);
 						?>
-						<a href="<?php echo esc_url( $activate_url ); ?>" class="button button-primary">
+						<button class="button button-primary ps-activate-plugin" data-slug="<?php echo esc_attr( $slug ); ?>" data-basename="<?php echo esc_attr( $plugin_basename ); ?>" data-network="false">
 							<span class="dashicons dashicons-yes"></span>
 							<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
-						</a>
+						</button>
 					<?php } ?>
 				<?php elseif ( ! $product['active'] && 'theme' === $product['type'] ) : ?>
 					<?php
@@ -916,9 +911,9 @@ class PS_Update_Manager_Admin_Dashboard {
 						<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
 					</a>
 				<?php else : ?>
-					<button class="button" disabled>
-						<span class="dashicons dashicons-yes-alt"></span>
-						<?php esc_html_e( 'Aktiv & Aktuell', 'ps-update-manager' ); ?>
+					<button class="button button-secondary ps-deactivate-plugin" data-slug="<?php echo esc_attr( $slug ); ?>" data-basename="<?php echo esc_attr( $product['basename'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
+						<span class="dashicons dashicons-dismiss"></span>
+						<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
 					</button>
 				<?php endif; ?>
 			</div>
@@ -1323,6 +1318,133 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		// Ultimativer Fallback: psource-logo.png aus PS Update Manager Plugin
 		return PS_UPDATE_MANAGER_URL . 'psource-logo.png';
+	}
+
+	/**
+	 * AJAX: Plugin deaktivieren
+	 */
+	public function ajax_deactivate_plugin() {
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+
+		if ( ! $this->current_user_can_access() ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		}
+
+		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
+		$basename = isset( $_POST['basename'] ) ? sanitize_text_field( $_POST['basename'] ) : '';
+
+		if ( empty( $slug ) || empty( $basename ) ) {
+			wp_send_json_error( array( 'message' => __( 'Ungültige Parameter', 'ps-update-manager' ) ) );
+		}
+
+		// ClassicPress Plugin-Funktionen laden
+		if ( ! function_exists( 'deactivate_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Plugin deaktivieren
+		if ( is_multisite() && is_network_admin() ) {
+			deactivate_plugins( $basename, false, true ); // Network-wide deactivation
+		} else {
+			deactivate_plugins( $basename );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( '%s wurde erfolgreich deaktiviert.', 'ps-update-manager' ), $slug ),
+		) );
+	}
+
+	/**
+	 * AJAX: Plugin aktivieren
+	 */
+	public function ajax_activate_plugin() {
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+
+		if ( ! $this->current_user_can_access() ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		}
+
+		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
+		$basename = isset( $_POST['basename'] ) ? sanitize_text_field( $_POST['basename'] ) : '';
+		$network = isset( $_POST['network'] ) && $_POST['network'] === 'true';
+
+		if ( empty( $slug ) || empty( $basename ) ) {
+			wp_send_json_error( array( 'message' => __( 'Ungültige Parameter', 'ps-update-manager' ) ) );
+		}
+
+		// ClassicPress Plugin-Funktionen laden
+		if ( ! function_exists( 'activate_plugin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// Plugin aktivieren
+		$result = activate_plugin( $basename, '', $network );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array(
+				'message' => $result->get_error_message(),
+			) );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( '%s wurde erfolgreich aktiviert.', 'ps-update-manager' ), $slug ),
+		) );
+	}
+
+	/**
+	 * AJAX: Produkt aktualisieren
+	 */
+	public function ajax_update_product() {
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+
+		if ( ! $this->current_user_can_access() ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		}
+
+		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
+		$basename = isset( $_POST['basename'] ) ? sanitize_text_field( $_POST['basename'] ) : '';
+		$type = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'plugin';
+
+		if ( empty( $slug ) || empty( $basename ) ) {
+			wp_send_json_error( array( 'message' => __( 'Ungültige Parameter', 'ps-update-manager' ) ) );
+		}
+
+		// WordPress Update-Funktionen laden
+		if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if ( ! class_exists( 'Plugin_Upgrader' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		}
+
+		if ( 'plugin' === $type ) {
+			// Plugin-Update
+			$upgrader = new Plugin_Upgrader( new WP_Ajax_Upgrader_Skin() );
+			$result = $upgrader->upgrade( $basename );
+		} else {
+			// Theme-Update
+			if ( ! class_exists( 'Theme_Upgrader' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+			}
+			$upgrader = new Theme_Upgrader( new WP_Ajax_Upgrader_Skin() );
+			$result = $upgrader->upgrade( $slug );
+		}
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array(
+				'message' => $result->get_error_message(),
+			) );
+		}
+
+		if ( $result === false ) {
+			wp_send_json_error( array(
+				'message' => __( 'Update fehlgeschlagen', 'ps-update-manager' ),
+			) );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf( __( '%s wurde erfolgreich aktualisiert.', 'ps-update-manager' ), $slug ),
+		) );
 	}
 }
 

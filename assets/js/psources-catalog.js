@@ -54,6 +54,36 @@
 				const type = $btn.data('type');
 				this.installProduct(slug, repo, type, $btn);
 			});
+
+			// Update
+			$(document).on('click', '.ps-update-product', (e) => {
+				e.preventDefault();
+				const $btn = $(e.currentTarget);
+				const slug = $btn.data('slug');
+				const basename = $btn.data('basename');
+				const type = $btn.data('type');
+				this.updateProduct(slug, basename, type, $btn);
+			});
+
+			// Aktivierung
+			$(document).on('click', '.ps-activate-plugin', (e) => {
+				e.preventDefault();
+				const $btn = $(e.currentTarget);
+				const slug = $btn.data('slug');
+				const basename = $btn.data('basename');
+				const network = $btn.data('network');
+				this.activatePlugin(slug, basename, network, $btn);
+			});
+
+			// Deaktivierung
+			$(document).on('click', '.ps-deactivate-plugin', (e) => {
+				e.preventDefault();
+				const $btn = $(e.currentTarget);
+				const slug = $btn.data('slug');
+				const basename = $btn.data('basename');
+				const type = $btn.data('type');
+				this.deactivatePlugin(slug, basename, type, $btn);
+			});
 		},
 
 		switchTab(tab) {
@@ -177,6 +207,95 @@
 				},
 				error: () => {
 					this.showNotice('error', '✗ Verbindungsfehler bei der Installation');
+					$btn.prop('disabled', false).html(originalText);
+				}
+			});
+		},
+
+		updateProduct(slug, basename, type, $btn) {
+			const originalText = $btn.html();
+			$btn.prop('disabled', true).html('<span class="spinner is-active" style="float:none;margin:0"></span> Aktualisiere...');
+
+			$.ajax({
+				url: PSUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_update_product',
+					nonce: PSUpdateManager.nonce,
+					slug: slug,
+					basename: basename,
+					type: type
+				},
+				success: (response) => {
+					if (response.success) {
+						this.showNotice('success', '✓ Update erfolgreich installiert');
+						this.loadProducts(); // Grid neu laden
+					} else {
+						this.showNotice('error', '✗ Fehler: ' + (response.data.message || 'Update fehlgeschlagen'));
+						$btn.prop('disabled', false).html(originalText);
+					}
+				},
+				error: () => {
+					this.showNotice('error', '✗ Verbindungsfehler beim Update');
+					$btn.prop('disabled', false).html(originalText);
+				}
+			});
+		},
+
+		activatePlugin(slug, basename, network, $btn) {
+			const originalText = $btn.html();
+			$btn.prop('disabled', true).html('<span class="spinner is-active" style="float:none;margin:0"></span> Aktiviere...');
+
+			$.ajax({
+				url: PSUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_activate_plugin',
+					nonce: PSUpdateManager.nonce,
+					slug: slug,
+					basename: basename,
+					network: network
+				},
+				success: (response) => {
+					if (response.success) {
+						this.showNotice('success', '✓ Plugin wurde aktiviert');
+						this.loadProducts(); // Grid neu laden
+					} else {
+						this.showNotice('error', '✗ Fehler: ' + (response.data.message || 'Aktivierung fehlgeschlagen'));
+						$btn.prop('disabled', false).html(originalText);
+					}
+				},
+				error: () => {
+					this.showNotice('error', '✗ Verbindungsfehler bei der Aktivierung');
+					$btn.prop('disabled', false).html(originalText);
+				}
+			});
+		},
+
+		deactivatePlugin(slug, basename, type, $btn) {
+			const originalText = $btn.html();
+			$btn.prop('disabled', true).html('<span class="spinner is-active" style="float:none;margin:0"></span> Deaktiviere...');
+
+			$.ajax({
+				url: PSUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_deactivate_plugin',
+					nonce: PSUpdateManager.nonce,
+					slug: slug,
+					basename: basename
+				},
+				success: (response) => {
+					if (response.success) {
+						this.showNotice('success', '✓ Plugin wurde deaktiviert');
+						this.loadProducts(); // Grid neu laden
+					} else {
+						this.showNotice('error', '✗ Fehler: ' + (response.data.message || 'Deaktivierung fehlgeschlagen'));
+						$btn.prop('disabled', false).html(originalText);
+					}
+				},
+				error: () => {
+					this.showNotice('error', '✗ Verbindungsfehler bei der Deaktivierung');
 					$btn.prop('disabled', false).html(originalText);
 				}
 			});
