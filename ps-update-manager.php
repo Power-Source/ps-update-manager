@@ -60,6 +60,7 @@ class PS_Update_Manager {
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-update-checker.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-github-api.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-settings.php';
+		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-dependency-manager.php';
 		require_once PS_UPDATE_MANAGER_DIR . 'includes/class-admin-dashboard.php';
 		
 		// Tools System (NEU)

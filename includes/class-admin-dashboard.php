@@ -840,6 +840,12 @@ class PS_Update_Manager_Admin_Dashboard {
 			<div class="ps-store-card-body">
 				<p class="ps-store-description"><?php echo esc_html( $product['description'] ); ?></p>
 				
+				<?php
+				// "Erweitert durch" Banner anzeigen
+				$dependency_manager = PS_Update_Manager_Dependency_Manager::get_instance();
+				echo $dependency_manager->render_extends_banner( $slug );
+				?>
+				
 				<div class="ps-store-links">
 					<a href="https://github.com/<?php echo esc_attr( $product['repo'] ); ?>" target="_blank" class="ps-link">
 						<span class="dashicons dashicons-admin-site"></span> GitHub
@@ -978,7 +984,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				<h3><?php esc_html_e( '💡 Hinweise', 'ps-update-manager' ); ?></h3>
 				<ul>
 					<li><?php esc_html_e( 'Der Netzwerk-Administrator hat immer Zugriff auf das Dashboard.', 'ps-update-manager' ); ?></li>
-					<li><?php esc_html_e( 'Wählen Sie mindestens eine Rolle aus, damit andere Benutzer Zugriff haben.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Wähle mindestens eine Rolle aus, damit andere Benutzer Zugriff haben.', 'ps-update-manager' ); ?></li>
 					<li><?php esc_html_e( 'Diese Einstellung gilt netzwerkweit für alle Seiten.', 'ps-update-manager' ); ?></li>
 				</ul>
 			</div>

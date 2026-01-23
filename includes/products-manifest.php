@@ -46,6 +46,9 @@ return array(
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
 		'featured'    => true,
+		'compatible_with' => array(
+			'marketpress' => 'Verwalte Zahlungen & Abrechnungen für Mitgliedschaften',
+		),
 	),
 
 	'ps-dsgvo' => array(
@@ -55,6 +58,10 @@ return array(
 		'description' => 'Dieses Plugin unterstützt Website- und Webshop-Besitzer bei der Einhaltung der europäischen Datenschutzbestimmungen, die als DSGVO bekannt sind. Es bietet Werkzeuge zur Verwaltung von Einwilligungen, Datenschutzrichtlinien und Benutzeranfragen, um sicherzustellen, dass Deine Webseite den gesetzlichen Anforderungen entspricht. Für beliebte Embedded-Dienste wie YouTube, Google Maps und Facebook sind Voreinstellungen enthalten.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-shield-alt',
+		'compatible_with' => array(
+			'marketpress'      => 'E-Commerce DSGVO-konform',
+			'ps-mitgliedschaften' => 'Datenschutz für Mitgliedschaften',
+		),
 	),
 
 	'marketpress' => array(
@@ -64,6 +71,11 @@ return array(
 		'description' => 'Das komplette ClassicPress E-Commerce-Plugin – funktioniert auch perfekt mit Multisite, um einen sozialen Marktplatz zu erstellen, auf dem Sie eine Provision einbehalten können! Aktivieren Sie das Plugin, passe Deine Einstellungen an und fügen Sie dann Produkte zu Deinem Shop hinzu.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-cart',
+		'compatible_with' => array(
+			'ps-mitgliedschaften' => 'Integriere Mitgliedschaften & Rabatte',
+			'ps-dsgvo'           => 'DSGVO-konform verkaufen',
+			'ps-smart-crm'       => 'Kundenverwaltung & CRM',
+		),
 	),
 
 	'psource-branding' => array(

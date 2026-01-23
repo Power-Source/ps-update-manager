@@ -45,6 +45,18 @@
 				this.resetFilters();
 			});
 
+			// Plugin-Navigation über Compatibility/Extends Links
+			$(document).on('click', '.ps-extends-link, .ps-compatibility-pill:not(.ps-extends-link)', (e) => {
+				const $el = $(e.currentTarget);
+				
+				// Prüfe ob es ein Link ist (extends) oder nur ein Badge
+				if ( $el.hasClass('ps-extends-link') ) {
+					e.preventDefault();
+					const slug = $el.data('slug');
+					this.scrollToProduct(slug);
+				}
+			});
+
 			// Installation
 			$(document).on('click', '.ps-install-product', (e) => {
 				e.preventDefault();
@@ -84,6 +96,28 @@
 				const type = $btn.data('type');
 				this.deactivatePlugin(slug, basename, type, $btn);
 			});
+		},
+
+		scrollToProduct(slug) {
+			// Suche die Card mit dem Slug
+			const $card = $(`.ps-store-card[data-slug="${slug}"]`);
+			
+			if ( $card.length ) {
+				// Scroll zur Card mit sanfter Animation
+				$('html, body').animate({
+					scrollTop: $card.offset().top - 100
+				}, 500);
+
+				// Kurze Highlight-Animation
+				$card.css({
+					boxShadow: '0 0 0 3px rgba(34, 113, 177, 0.3)',
+					transition: 'box-shadow 0.3s ease'
+				});
+
+				setTimeout(() => {
+					$card.css({ boxShadow: '' });
+				}, 2000);
+			}
 		},
 
 		switchTab(tab) {
