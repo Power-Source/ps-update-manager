@@ -1297,31 +1297,32 @@ class PS_Update_Manager_Admin_Dashboard {
 
 	/**
 	 * Produkt-Logo URL auflösen
-	 * Prüft ob Logo.png im Plugin-Verzeichnis existiert, sonst Fallback auf psource-logo.png
+	 * Prüft ob Logo.png im Plugin-Verzeichnis existiert, sonst psource-logo.png Fallback
 	 *
 	 * @param string $slug Plugin/Theme Slug
-	 * @return string|null Logo URL oder null
+	 * @return string Logo URL
 	 */
 	private function get_product_logo_url( $slug ) {
-		// Prüfe zunächst ob das Plugin/Theme installiert ist
+		// Prüfe zunächst ob das Plugin/Theme lokal installiert ist
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $slug;
 		$theme_dir  = WP_CONTENT_DIR . '/themes/' . $slug;
 
-		// Logo.png Prüfung
+		// Logo.png lokal prüfen
 		if ( file_exists( $plugin_dir . '/Logo.png' ) ) {
 			return plugins_url( 'Logo.png', $plugin_dir . '/' . $slug . '.php' );
 		} elseif ( file_exists( $theme_dir . '/Logo.png' ) ) {
 			return get_theme_file_uri( $slug . '/Logo.png' );
 		}
 
-		// Fallback auf psource-logo.png
+		// Fallback auf psource-logo.png lokal
 		if ( file_exists( $plugin_dir . '/psource-logo.png' ) ) {
 			return plugins_url( 'psource-logo.png', $plugin_dir . '/' . $slug . '.php' );
 		} elseif ( file_exists( $theme_dir . '/psource-logo.png' ) ) {
 			return get_theme_file_uri( $slug . '/psource-logo.png' );
 		}
 
-		return null;
+		// Ultimativer Fallback: psource-logo.png aus PS Update Manager Plugin
+		return PS_UPDATE_MANAGER_URL . 'psource-logo.png';
 	}
 }
 
