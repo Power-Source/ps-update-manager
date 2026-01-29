@@ -13,7 +13,7 @@ Zentraler Installations & Update-Manager für alle PSOURCE Plugins und Themes.
 
 == Description ==
 
-Der **PS Manager** ist deine zentrale Lösung für die Verwaltung von PSOURCE Plugins und Themes auf deiner ClassicPress Installation, egal ob Single oder Multiiste.
+Der **PS Manager** ist deine zentrale Lösung für die Verwaltung von PSOURCE Plugins und Themes auf deiner ClassicPress Installation, egal ob Single oder Multisite.
 
 = Features =
 

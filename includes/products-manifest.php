@@ -144,6 +144,15 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'private-messaging' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS PM System',
+		'repo'        => 'Power-Source/private-messaging',
+		'description' => 'Private Benutzer-zu-Benutzer-Kommunikation zur Abgabe von Angeboten, zum Teilen von Projektspezifikationen und zur versteckten internen Kommunikation. Komplett mit Front-End-Integration, geschützten Kontaktinformationen und geschützter Dateifreigabe.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-groups',
+	),
+
 	'custompress' => array(
 		'type'        => 'plugin',
 		'name'        => 'CustomPress',
