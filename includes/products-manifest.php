@@ -117,6 +117,48 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'easyblogging' => array(
+		'type'        => 'plugin',
+		'name'        => 'Easy Blogging',
+		'repo'        => 'Power-Source/easyblogging',
+		'description' => 'Ändert den ClassicPress-Verwaltungsbereich so, dass er standardmäßig einen "Anfänger" -Bereich enthält, mit der Option, zum normalen "Erweitert" -Bereich zu wechseln.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'msreader'      => 'Netzwerkweiter Reader mit dem Benutzer Beiträge im Netzwerk durchsuchen können',
+		),
+	),
+
+	'ps-jobboard' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Jobboard',
+		'repo'        => 'Power-Source/ps-jobboard',
+		'description' => 'Bringe Menschen mit Projekten und Branchenfachleute zusammen - es ist mehr als eine durchschnittliche Jobbörse. PS Jobboard ist eine umfassende Lösung für die Erstellung und Verwaltung von Jobbörsen auf Deiner ClassicPress-Seite. Mit Funktionen wie benutzerdefinierten Jobkategorien, Bewerbungsformularen, Lebenslauf-Uploads und mehr bietet es eine benutzerfreundliche Plattform für Arbeitgeber und Arbeitssuchende.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'marketpress'      => 'Erhalte Zahlungen für Jobangebote oder Premium-Listings',
+		),
+	),
+
+	'ps-voting' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Voting',
+		'repo'        => 'Power-Source/ps-voting',
+		'description' => 'Ein mächtiges Voting-Plugin für Deine ClassicPress-Seite. Ermögliche Benutzern, Inhalte zu bewerten, Umfragen zu erstellen und Feedback zu sammeln. Ideal für Community-Engagement und Meinungsforschung.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'terminmanager' => array(
+		'type'        => 'plugin',
+		'name'        => 'Terminmanager',
+		'repo'        => 'Power-Source/terminmanager',
+		'description' => 'Ein mächtiges Terminmanager-Plugin für Deine ClassicPress-Seite. Ermögliche Benutzern, Termine zu verwalten, Erinnerungen zu erhalten und vieles mehr. Ideal für die Organisation von Meetings und Veranstaltungen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'ps-postindexer' => array(
 		'type'        => 'plugin',
 		'name'        => 'Multisite Index',
@@ -124,13 +166,16 @@ return array(
 		'description' => 'Ein mächtiges Multisite-Index Plugin - Bringe deinen Content dahin wo du ihn brauchst! Multisite-weite Suche, Anzeige von Beiträgen aus dem gesamten Netzwerk, Filteroptionen und vieles mehr. Ideal für Netzwerke mit vielen Blogs und umfangreichem Content. Inklusive hilfreicher Widgets und Monitoring-Tools.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'msreader'      => 'Netzwerkweiter Reader mit dem Benutzer Beiträge im Netzwerk durchsuchen können',
+		),
 	),
 
 	'ps-community' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS Community',
 		'repo'        => 'Power-Source/ps-community',
-		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu! PS Comunity ist unsere Community-Lösung für ClassicPress mit Benutzerprofilen, Freundschaften, privaten Nachrichten, Aktivitäts-Feeds, Gruppen und vielem mehr. Erstelle eine lebendige Community rund um Deine Webseite und binde Deine Benutzer mit sozialen Funktionen ein.',
+		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu! PS Community ist unsere Community-Lösung für ClassicPress mit Benutzerprofilen, Freundschaften, privaten Nachrichten, Aktivitäts-Feeds, Gruppen und vielem mehr. Erstelle eine lebendige Community rund um Deine Webseite und binde Deine Benutzer mit sozialen Funktionen ein.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
 	),
@@ -167,6 +212,15 @@ return array(
 		'name'        => 'PS BeitragsAds',
 		'repo'        => 'Power-Source/in-post-ads',
 		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten. Integriert sich nahtlos in Dein ClassicPress-Dashboard und bietet flexible Platzierungsoptionen für maximale Sichtbarkeit und Einnahmen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'msreader' => array(
+		'type'        => 'plugin',
+		'name'        => 'Multisite Reader',
+		'repo'        => 'Power-Source/msreader',
+		'description' => 'Mit dem Multisite-Reader erstellst Du einen Netzwerkweiten Newsfeed für Deine Benutzer/Autoren, etc. Du kannst eigene Listen mit Deinen Lieblingsinhalten anlegen, Empfehlen & Bewerten. Du kannst ganz einfach einzelnen Blogs in Deinem Netzwerk folgen um so über die Neusten Beiträge und Inhalte Deiner favorisierten Netzwerk-Seiten informiert zu bleiben.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
