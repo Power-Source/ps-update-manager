@@ -117,6 +117,24 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'ps-popup' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Popup',
+		'repo'        => 'Power-Source/ps-popup',
+		'description' => 'Ermöglicht es Besuchern auf der ganzen Webseite ein ausgefallenes PopUp anzuzeigen. Eine *sehr* effektive Art, eine Mailingliste, ein Sonderangebot oder eine einfache alte Anzeige zu bewerben.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'ps-slide-in' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS SlideIn',
+		'repo'        => 'Power-Source/ps-slide-in',
+		'description' => 'Ermöglicht das Hinzufügen von Slide-In-Benachrichtigungen und -Inhalten auf Deiner ClassicPress-Seite. Ideal für Ankündigungen, Werbung oder wichtige Informationen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'easyblogging' => array(
 		'type'        => 'plugin',
 		'name'        => 'Easy Blogging',

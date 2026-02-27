@@ -3,7 +3,7 @@
  * Plugin Name: PSOURCE Manager
  * Plugin URI: https://github.com/Power-Source/ps-update-manager/
  * Description: PSOURCE Management & Toolbox Hub - Updates, Tools & Netzwerk-Administration
- * Version: 1.2.6
+ * Version: 1.2.7
  * Author: PSource
  * Author URI: https://github.com/Power-Source
  * Text Domain: ps-update-manager
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin-Konstanten definieren
-define( 'PS_UPDATE_MANAGER_VERSION', '1.2.6' );
+define( 'PS_UPDATE_MANAGER_VERSION', '1.2.7' );
 define( 'PS_UPDATE_MANAGER_FILE', __FILE__ );
 define( 'PS_UPDATE_MANAGER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PS_UPDATE_MANAGER_URL', plugin_dir_url( __FILE__ ) );
