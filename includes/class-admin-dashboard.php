@@ -130,8 +130,8 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_enqueue_style( 'ps-catalog', $base_url . 'assets/css/psources-catalog.css', array(), '1.0.0' );
 		}
 		
-		// Settings CSS (nur auf der Settings-Seite)
-		if ( in_array( $current_page, array( 'ps-update-manager-settings' ), true ) ) {
+		// Settings CSS (Settings + Tools Seiten)
+		if ( in_array( $current_page, array( 'ps-update-manager-settings', 'ps-update-manager-tools' ), true ) ) {
 			wp_enqueue_style( 'ps-settings', $base_url . 'assets/css/settings.css', array(), '1.0.0' );
 		}
 
