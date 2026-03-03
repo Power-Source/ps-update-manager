@@ -15,6 +15,11 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_install_product() {
 		// Sicherheits- und Parameter-Checks
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+		
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'install_products' ) ) {
+			wp_send_json_error( __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) );
+		}
+		
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
 		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( $_POST['repo'] ) : '';
 		$type = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'plugin';
@@ -324,12 +329,49 @@ class PS_Update_Manager_Admin_Dashboard {
 			return;
 		}
 
-		if ( ! isset( $_POST['ps_update_manager_allowed_roles'] ) ) {
-			return;
+		$settings = PS_Update_Manager_Settings::get_instance();
+		
+		// Alle Berechtigungs-einstellungen verarbeiten
+		$capability_settings = array(
+			'allowed_roles',
+			'catalog_roles',
+			'check_updates_roles',
+			'install_roles',
+			'update_roles',
+			'manage_plugins_roles',
+			'manage_themes_roles',
+			'network_tools_roles',
+			'manage_tos_roles',
+			'manage_settings_roles',
+			'test_api_roles',
+		);
+
+		foreach ( $capability_settings as $setting_key ) {
+			$post_key = 'ps_update_manager_' . $setting_key;
+			
+			if ( isset( $_POST[ $post_key ] ) ) {
+				// Rollen als Array behandeln und sanitizen
+				$roles = array_map( 'sanitize_key', wp_unslash( (array) $_POST[ $post_key ] ) );
+				$settings->update_setting( $setting_key, $roles );
+			} else {
+				// Wenn keine Rollen ausgewählt, auf leeres Array setzen
+				$settings->update_setting( $setting_key, array() );
+			}
 		}
 
-		$roles = array_map( 'sanitize_key', wp_unslash( (array) $_POST['ps_update_manager_allowed_roles'] ) );
-		PS_Update_Manager_Settings::get_instance()->update_setting( 'allowed_roles', $roles );
+		// Erfolg-Nachricht hinzufügen
+		add_action( 'admin_notices', array( $this, 'settings_saved_notice' ) );
+	}
+
+	/**
+	 * Erfolgs-Nachricht anzeigen
+	 */
+	public function settings_saved_notice() {
+		?>
+		<div class="notice notice-success is-dismissible">
+			<p><?php esc_html_e( 'Berechtigungseinstellungen erfolgreich gespeichert.', 'ps-update-manager' ); ?></p>
+		</div>
+		<?php
 	}
 	
 	/**
@@ -629,8 +671,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_load_products() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'view_catalog' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
 		}
 
 		$tab      = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'plugins';
@@ -780,8 +822,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_get_categories() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'view_catalog' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
 		}
 
 		$tab = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'plugins';
@@ -998,43 +1040,85 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		$settings = PS_Update_Manager_Settings::get_instance();
-		$allowed_roles = $settings->get_setting( 'allowed_roles' );
 		$available_roles = $settings->get_available_roles();
+
+		// Berechtigungskategorien definieren
+		$capabilities = array(
+			'dashboard' => array(
+				'label'       => __( 'Dashboard Zugriff', 'ps-update-manager' ),
+				'description' => __( 'Berechtigung für allgemeinen Zugriff auf das Plugin-Dashboard', 'ps-update-manager' ),
+			),
+			'catalog' => array(
+				'label'       => __( 'Katalog Anzeigen', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Benutzern, die Produktkatalog anzuschauen', 'ps-update-manager' ),
+			),
+			'check_updates' => array(
+				'label'       => __( 'Updates Prüfen', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Force-Check und Aktualisierungssuche', 'ps-update-manager' ),
+			),
+			'install' => array(
+				'label'       => __( 'Produkte Installieren', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Installation von Plugins und Themes', 'ps-update-manager' ),
+			),
+			'update' => array(
+				'label'       => __( 'Produkte Aktualisieren', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Updates von installierten Produkten', 'ps-update-manager' ),
+			),
+			'manage_plugins' => array(
+				'label'       => __( 'Plugins Verwalten', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Aktivierung/Deaktivierung von Plugins', 'ps-update-manager' ),
+			),
+			'manage_themes' => array(
+				'label'       => __( 'Themes Verwalten', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt Aktivierung/Deaktivierung von Themes', 'ps-update-manager' ),
+			),
+			'network_tools' => array(
+				'label'       => __( 'Netzwerk-Tools', 'ps-update-manager' ),
+				'description' => __( 'Zugriff auf Standard-Theme und andere Netzwerk-Tools', 'ps-update-manager' ),
+			),
+			'manage_tos' => array(
+				'label'       => __( 'TOS Einstellungen', 'ps-update-manager' ),
+				'description' => __( 'Verwaltung von Terms of Service Einstellungen', 'ps-update-manager' ),
+			),
+			'manage_settings' => array(
+				'label'       => __( 'Plugin-Einstellungen', 'ps-update-manager' ),
+				'description' => __( 'Zugriff auf diese Einstellungsseite', 'ps-update-manager' ),
+			),
+			'test_api' => array(
+				'label'       => __( 'GitHub API Testen', 'ps-update-manager' ),
+				'description' => __( 'Erlaubt GitHub API Verbindungstests', 'ps-update-manager' ),
+			),
+		);
 		?>
 		<div class="wrap ps-update-manager-settings">
-			<h1><?php esc_html_e( 'PS Update Manager - Einstellungen', 'ps-update-manager' ); ?></h1>
+			<h1><?php esc_html_e( 'PS Update Manager - Berechtigungsmanagement', 'ps-update-manager' ); ?></h1>
 			
 			<div class="ps-settings-container">
 				<form method="post" action="">
 					<?php wp_nonce_field( 'ps_update_manager_settings', 'ps_update_manager_settings_nonce' ); ?>
 					
+					<!-- Zugriff & Katalog -->
 					<div class="ps-settings-section">
-						<h2><?php esc_html_e( 'Zugriffsrechte', 'ps-update-manager' ); ?></h2>
-						<p class="description">
-							<?php esc_html_e( 'Wählen Sie aus, welche Benutzerrollen das Dashboard sehen und verwenden dürfen.', 'ps-update-manager' ); ?>
-						</p>
-						
-						<table class="ps-roles-table">
-							<tbody>
-								<?php foreach ( $available_roles as $role_slug => $role_data ) : ?>
-									<tr>
-										<td>
-											<label>
-												<input type="checkbox" 
-													name="ps_update_manager_allowed_roles[]" 
-													value="<?php echo esc_attr( $role_slug ); ?>"
-													<?php checked( in_array( $role_slug, $allowed_roles, true ) ); ?>
-												>
-												<strong><?php echo esc_html( $role_data['name'] ); ?></strong>
-											</label>
-										</td>
-										<td class="ps-role-caption">
-											<em><?php echo esc_html( $role_slug ); ?></em>
-										</td>
-									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
+						<h2><?php esc_html_e( '🔐 Grundzugriff & Katalog', 'ps-update-manager' ); ?></h2>
+						<?php $this->render_capability_group( $capabilities, $settings, $available_roles, array( 'dashboard', 'catalog', 'check_updates' ) ); ?>
+					</div>
+
+					<!-- Installation & Updates -->
+					<div class="ps-settings-section">
+						<h2><?php esc_html_e( '⬇️ Installation & Updates', 'ps-update-manager' ); ?></h2>
+						<?php $this->render_capability_group( $capabilities, $settings, $available_roles, array( 'install', 'update', 'manage_plugins', 'manage_themes' ) ); ?>
+					</div>
+
+					<!-- Netzwerk-Tools -->
+					<div class="ps-settings-section">
+						<h2><?php esc_html_e( '🛠️ Netzwerk-Tools (Multisite)', 'ps-update-manager' ); ?></h2>
+						<?php $this->render_capability_group( $capabilities, $settings, $available_roles, array( 'network_tools', 'manage_tos' ) ); ?>
+					</div>
+
+					<!-- Admin & Debug -->
+					<div class="ps-settings-section">
+						<h2><?php esc_html_e( '⚙️ Admin & Debug', 'ps-update-manager' ); ?></h2>
+						<?php $this->render_capability_group( $capabilities, $settings, $available_roles, array( 'manage_settings', 'test_api' ) ); ?>
 					</div>
 					
 					<?php submit_button( __( 'Einstellungen speichern', 'ps-update-manager' ), 'primary', 'submit', true ); ?>
@@ -1042,15 +1126,82 @@ class PS_Update_Manager_Admin_Dashboard {
 			</div>
 			
 			<div class="ps-settings-section" style="margin-top:20px;">
-				<h3><?php esc_html_e( '💡 Hinweise', 'ps-update-manager' ); ?></h3>
+				<h3><?php esc_html_e( '💡 Wichtige Hinweise', 'ps-update-manager' ); ?></h3>
 				<ul>
-					<li><?php esc_html_e( 'Der Netzwerk-Administrator hat immer Zugriff auf das Dashboard.', 'ps-update-manager' ); ?></li>
-					<li><?php esc_html_e( 'Wähle mindestens eine Rolle aus, damit andere Benutzer Zugriff haben.', 'ps-update-manager' ); ?></li>
-					<li><?php esc_html_e( 'Diese Einstellung gilt netzwerkweit für alle Seiten.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Der Netzwerk-Administrator hat immer Zugriff auf alle Funktionen.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Wenn ein Benutzer z.B. "Katalog anzeigen" nicht darf, sieht er keine Produktliste.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Installation ist NICHT automatisch erlaubt, wenn nur Katalog anzeigen aktiviert ist.', 'ps-update-manager' ); ?></li>
+					<li><?php esc_html_e( 'Diese Einstellungen gelten netzwerkweit für alle Seiten.', 'ps-update-manager' ); ?></li>
 				</ul>
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render capability group helper
+	 */
+	private function render_capability_group( $all_capabilities, $settings, $available_roles, $capability_keys ) {
+		?>
+		<div class="ps-capabilities-grid">
+			<?php foreach ( $capability_keys as $key ) : ?>
+				<?php if ( ! isset( $all_capabilities[ $key ] ) ) continue; ?>
+				<?php $cap = $all_capabilities[ $key ]; ?>
+				<?php $role_setting_key = $this->capability_key_to_setting( $key ); ?>
+				<?php $allowed_roles = $settings->get_setting( $role_setting_key ); ?>
+				
+				<div class="ps-capability-card">
+					<h4><?php echo esc_html( $cap['label'] ); ?></h4>
+					<p class="description"><?php echo esc_html( $cap['description'] ); ?></p>
+					
+					<div class="ps-role-checkboxes">
+						<?php foreach ( $available_roles as $role_slug => $role_data ) : ?>
+							<label class="ps-role-checkbox">
+								<input type="checkbox" 
+									name="ps_update_manager_<?php echo esc_attr( $role_setting_key ); ?>[]" 
+									value="<?php echo esc_attr( $role_slug ); ?>"
+									<?php checked( in_array( $role_slug, $allowed_roles, true ) ); ?>
+								>
+								<span><?php echo esc_html( $role_data['name'] ); ?></span>
+							</label>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Convert capability key to setting key name
+	 */
+	private function capability_key_to_setting( $key ) {
+		switch ( $key ) {
+			case 'dashboard':
+				return 'allowed_roles';
+			case 'catalog':
+				return 'catalog_roles';
+			case 'check_updates':
+				return 'check_updates_roles';
+			case 'install':
+				return 'install_roles';
+			case 'update':
+				return 'update_roles';
+			case 'manage_plugins':
+				return 'manage_plugins_roles';
+			case 'manage_themes':
+				return 'manage_themes_roles';
+			case 'network_tools':
+				return 'network_tools_roles';
+			case 'manage_tos':
+				return 'manage_tos_roles';
+			case 'manage_settings':
+				return 'manage_settings_roles';
+			case 'test_api':
+				return 'test_api_roles';
+			default:
+				return $key . '_roles';
+		}
 	}
 	
 	/**
@@ -1082,8 +1233,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_force_update_check() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'check_updates' ) ) {
+			wp_send_json_error( __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) );
 		}
 
 		PS_Update_Manager_Update_Checker::get_instance()->force_check();
@@ -1349,8 +1500,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_test_github_api() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 		
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'test_api' ) ) {
+			wp_send_json_error( __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) );
 		}
 		
 		$repo = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
@@ -1421,8 +1572,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_deactivate_plugin() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'manage_plugins' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
 		}
 
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
@@ -1455,8 +1606,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_activate_plugin() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'manage_plugins' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
 		}
 
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';
@@ -1492,8 +1643,8 @@ class PS_Update_Manager_Admin_Dashboard {
 	public function ajax_update_product() {
 		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 
-		if ( ! $this->current_user_can_access() ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung', 'ps-update-manager' ) ) );
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'update_products' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
 		}
 
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( $_POST['slug'] ) : '';

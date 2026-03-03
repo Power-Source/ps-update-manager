@@ -21,7 +21,17 @@ class PS_Update_Manager_Settings {
 	 * Standardeinstellungen
 	 */
 	private $defaults = array(
-		'allowed_roles' => array( 'administrator' ),
+		'allowed_roles'           => array( 'administrator' ),
+		'catalog_roles'           => array( 'administrator' ),
+		'check_updates_roles'     => array( 'administrator' ),
+		'install_roles'           => array( 'administrator' ),
+		'update_roles'            => array( 'administrator' ),
+		'manage_plugins_roles'    => array( 'administrator' ),
+		'manage_themes_roles'     => array( 'administrator' ),
+		'network_tools_roles'     => array( 'administrator' ),
+		'manage_tos_roles'        => array( 'administrator' ),
+		'manage_settings_roles'   => array( 'administrator' ),
+		'test_api_roles'          => array( 'administrator' ),
 	);
 	
 	public static function get_instance() {
@@ -177,6 +187,81 @@ class PS_Update_Manager_Settings {
 			}
 		}
 		
+		return false;
+	}
+
+	/**
+	 * Prüfe ob Benutzer Zugriff auf Dashboard hat (allgemeiner Zugriff)
+	 */
+	public function user_can_access( $capability = 'dashboard', $user_id = null ) {
+		if ( $user_id === null ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		// Netzwerk-Admin hat immer Zugriff
+		if ( is_multisite() && is_super_admin( $user_id ) ) {
+			return true;
+		}
+
+		// Zugriff basierend auf Fähigkeit prüfen
+		switch ( $capability ) {
+			case 'dashboard':
+				$roles = $this->get_setting( 'allowed_roles' );
+				break;
+			case 'view_catalog':
+				$roles = $this->get_setting( 'catalog_roles' );
+				break;
+			case 'check_updates':
+				$roles = $this->get_setting( 'check_updates_roles' );
+				break;
+			case 'install_products':
+				$roles = $this->get_setting( 'install_roles' );
+				break;
+			case 'update_products':
+				$roles = $this->get_setting( 'update_roles' );
+				break;
+			case 'manage_plugins':
+				$roles = $this->get_setting( 'manage_plugins_roles' );
+				break;
+			case 'manage_themes':
+				$roles = $this->get_setting( 'manage_themes_roles' );
+				break;
+			case 'manage_network_tools':
+				$roles = $this->get_setting( 'network_tools_roles' );
+				break;
+			case 'manage_tos':
+				$roles = $this->get_setting( 'manage_tos_roles' );
+				break;
+			case 'manage_settings':
+				$roles = $this->get_setting( 'manage_settings_roles' );
+				break;
+			case 'test_api':
+				$roles = $this->get_setting( 'test_api_roles' );
+				break;
+			default:
+				return false;
+		}
+
+		if ( empty( $roles ) ) {
+			return false;
+		}
+
+		$user = get_user_by( 'id', $user_id );
+		if ( ! $user ) {
+			return false;
+		}
+
+		// Prüfe ob Benutzer eine der erlaubten Rollen hat
+		foreach ( $user->roles as $role ) {
+			if ( in_array( $role, $roles, true ) ) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 }
