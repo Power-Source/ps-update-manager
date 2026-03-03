@@ -135,6 +135,15 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'powerform' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS PowerForm',
+		'repo'        => 'Power-Source/powerform',
+		'description' => 'Erfasse Benutzerinformationen (so detailliert wie Du möchtest), beteilige Benutzer an interaktiven Umfragen, die Echtzeitergebnisse und Grafiken, Quizfragen im Facebook-Stil und Wissenstests ohne falsche Antwort anzeigen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'easyblogging' => array(
 		'type'        => 'plugin',
 		'name'        => 'Easy Blogging',
@@ -231,6 +240,24 @@ return array(
 		'repo'        => 'Power-Source/in-post-ads',
 		'description' => 'Definiere benutzerdefinierte Werbeanzeigen für Beitragstypen und mehr, das einfachste Werkzeug um effektiv Werbeanzeigen zu schalten. Integriert sich nahtlos in Dein ClassicPress-Dashboard und bietet flexible Platzierungsoptionen für maximale Sichtbarkeit und Einnahmen.',
 		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'blogs-directory' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Blogs Directory',
+		'repo'        => 'Power-Source/blogs-directory',
+		'description' => 'Erstelle ein Verzeichnis für Blogs in Deinem Netzwerk. Benutzer können Blogs durchsuchen, nach Kategorien filtern und ihre Favoriten markieren.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'affiliate' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Affiliate',
+		'repo'        => 'Power-Source/affiliate',
+		'description' => 'Verwalte Dein Affiliate-Programm direkt aus Deinem ClassicPress-Dashboard. Verfolge Partner, Provisionen und Zahlungen einfach und effizient.',
+		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
