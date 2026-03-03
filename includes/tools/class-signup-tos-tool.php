@@ -291,6 +291,11 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 	 * Validate TOS acceptance (multisite)
 	 */
 	public function validate_tos_acceptance( $result ) {
+		// Skip validation if in admin area and user has appropriate capabilities
+		if ( is_admin() && current_user_can( 'create_users' ) ) {
+			return $result;
+		}
+
 		if ( ! $this->tos_required() ) {
 			return $result;
 		}
@@ -308,6 +313,11 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 	 * Validate TOS acceptance (single site)
 	 */
 	public function validate_tos_acceptance_single_site( $user_login, $user_email, $errors ) {
+		// Skip validation if in admin area and user has appropriate capabilities
+		if ( is_admin() && current_user_can( 'create_users' ) ) {
+			return;
+		}
+
 		if ( is_multisite() ) {
 			return; // Handled by wpmu_validate_user_signup
 		}
