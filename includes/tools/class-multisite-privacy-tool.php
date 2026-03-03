@@ -103,63 +103,63 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 */
 	public function render_privacy_options() {
 		?>
-		<h3><?php esc_html_e( 'Blog Privacy Options', 'ps-manager' ); ?></h3>
+		<h3><?php esc_html_e( 'Blog-Datenschutzoptionen', 'ps-update-manager' ); ?></h3>
 		<table class="form-table" role="presentation">
 			<tr valign="top">
 				<th scope="row">
 					<label for="blog-privacy-levels">
-						<?php esc_html_e( 'Available Privacy Levels', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Verfügbare Datenschutzstufen', 'ps-update-manager' ); ?>
 					</label>
 				</th>
 				<td>
 					<?php $this->render_privacy_levels(); ?>
 					<p class="description">
-						<?php esc_html_e( 'Check which privacy levels should be available for blogs on this network.', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Wähle aus, welche Datenschutzstufen in diesem Netzwerk für Blogs verfügbar sind.', 'ps-update-manager' ); ?>
 					</p>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th scope="row">
 					<label for="default-blog-privacy">
-						<?php esc_html_e( 'Default Privacy Level', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Standard-Datenschutzstufe', 'ps-update-manager' ); ?>
 					</label>
 				</th>
 				<td>
 					<?php $this->render_default_privacy(); ?>
 					<p class="description">
-						<?php esc_html_e( 'Set the default privacy level for newly created blogs.', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Lege fest, welche Datenschutzstufe neue Blogs standardmäßig bekommen.', 'ps-update-manager' ); ?>
 					</p>
 				</td>
 			</tr>
 		</table>
 
-		<h3><?php esc_html_e( 'Site Overrides', 'ps-manager' ); ?></h3>
+		<h3><?php esc_html_e( 'Überschreibungen für Unterseiten', 'ps-update-manager' ); ?></h3>
 		<table class="form-table" role="presentation">
 			<tr valign="top">
 				<th scope="row">
 					<label for="privacy-override">
-						<?php esc_html_e( 'Allow sites to override network privacy', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Unterseiten dürfen den Netzwerk-Datenschutz überschreiben', 'ps-update-manager' ); ?>
 					</label>
 				</th>
 				<td>
 					<?php $override = get_site_option( 'privacy_override', 'no' ); ?>
 					<label>
 						<input type="checkbox" name="privacy_override" value="yes" <?php checked( $override, 'yes' ); ?> />
-						<?php esc_html_e( 'Sites can choose their own privacy level in Settings', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Unterseiten können ihre Datenschutzstufe in den Einstellungen selbst wählen', 'ps-update-manager' ); ?>
 					</label>
 				</td>
 			</tr>
 		</table>
 
-		<h3><?php esc_html_e( 'Netzwerk Synchronisierung', 'ps-manager' ); ?></h3>
+		<h3><?php esc_html_e( 'Netzwerk-Synchronisierung', 'ps-update-manager' ); ?></h3>
 		<p class="description">
-			<?php esc_html_e( 'Wendet den oben gesetzten Standard-Privacy-Level auf alle Sites im Netzwerk an und synchronisiert blog_public entsprechend.', 'ps-manager' ); ?>
+			<?php esc_html_e( 'Wendet die oben gesetzte Standard-Datenschutzstufe auf alle Unterseiten im Netzwerk an und synchronisiert blog_public entsprechend.', 'ps-update-manager' ); ?>
 		</p>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-			<?php wp_nonce_field( 'ps_privacy_sync_all', 'ps_privacy_sync_nonce' ); ?>
-			<input type="hidden" name="action" value="ps_privacy_sync_all" />
-			<?php submit_button( __( 'Alle Sites synchronisieren', 'ps-manager' ), 'secondary' ); ?>
-		</form>
+		<p>
+			<a class="button button-secondary" href="<?php echo esc_url( network_admin_url( 'admin.php?page=ps-update-manager-tools' ) ); ?>">
+				<?php esc_html_e( 'Zur Synchronisierung im PS Manager', 'ps-update-manager' ); ?>
+			</a>
+		</p>
 		<?php
 	}
 
@@ -168,10 +168,10 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 */
 	public function handle_sync_all_sites() {
 		if ( ! current_user_can( 'manage_network_options' ) ) {
-			wp_die( esc_html__( 'Keine Berechtigung.', 'ps-manager' ) );
+			wp_die( esc_html__( 'Keine Berechtigung.', 'ps-update-manager' ) );
 		}
 		if ( ! isset( $_POST['ps_privacy_sync_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ps_privacy_sync_nonce'] ) ), 'ps_privacy_sync_all' ) ) {
-			wp_die( esc_html__( 'Ungültige Anfrage.', 'ps-manager' ) );
+			wp_die( esc_html__( 'Ungültige Anfrage.', 'ps-update-manager' ) );
 		}
 
 		$default = get_site_option( 'default_blog_privacy', '1' );
@@ -207,7 +207,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 */
 	public function ajax_sync_batch() {
 		if ( ! current_user_can( 'manage_network_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung.', 'ps-manager' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung.', 'ps-update-manager' ) ), 403 );
 		}
 		check_ajax_referer( 'ps_privacy_sync_all' );
 
@@ -237,7 +237,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			wp_send_json_success( array( 'failed' => $failed ) );
 		}
 
-		wp_send_json_error( array( 'message' => __( 'Ungültiger Befehl.', 'ps-manager' ) ), 400 );
+		wp_send_json_error( array( 'message' => __( 'Ungültiger Befehl.', 'ps-update-manager' ) ), 400 );
 	}
 
 	/**
@@ -247,12 +247,12 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		$privacy_available = get_site_option( 'privacy_available', array() );
 
 		$levels = array(
-			'1'  => __( 'Public - openly available to everyone', 'ps-manager' ),
-			'0'  => __( 'Search Engine Blocked - indexed by search engines but not openly advertised', 'ps-manager' ),
-			'-1' => __( 'Network-only - visible to logged-in network members only', 'ps-manager' ),
-			'-2' => __( 'Site-only - visible to this site\'s members only', 'ps-manager' ),
-			'-3' => __( 'Admin-only - visible to administrators only', 'ps-manager' ),
-			'-4' => __( 'Password-protected - password required to access', 'ps-manager' ),
+			'1'  => __( 'Öffentlich – für alle frei zugänglich', 'ps-update-manager' ),
+			'0'  => __( 'Öffentlich, aber Suchmaschinen blockiert', 'ps-update-manager' ),
+			'-1' => __( 'Nur Netzwerkmitglieder – nur für eingeloggte Netzwerkmitglieder sichtbar', 'ps-update-manager' ),
+			'-2' => __( 'Nur Seitenmitglieder – nur für Mitglieder dieser Unterseite sichtbar', 'ps-update-manager' ),
+			'-3' => __( 'Nur Administratoren – nur für Administratoren sichtbar', 'ps-update-manager' ),
+			'-4' => __( 'Passwortgeschützt – Zugriff nur mit Passwort', 'ps-update-manager' ),
 		);
 
 		echo '<fieldset>';
@@ -280,12 +280,12 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		$default = get_site_option( 'default_blog_privacy', '1' );
 
 		$levels = array(
-			'1'  => __( 'Public', 'ps-manager' ),
-			'0'  => __( 'Search Engine Blocked', 'ps-manager' ),
-			'-1' => __( 'Network-only', 'ps-manager' ),
-			'-2' => __( 'Site-only', 'ps-manager' ),
-			'-3' => __( 'Admin-only', 'ps-manager' ),
-			'-4' => __( 'Password-protected', 'ps-manager' ),
+			'1'  => __( 'Öffentlich', 'ps-update-manager' ),
+			'0'  => __( 'Suchmaschinen blockiert', 'ps-update-manager' ),
+			'-1' => __( 'Nur Netzwerkmitglieder', 'ps-update-manager' ),
+			'-2' => __( 'Nur Seitenmitglieder', 'ps-update-manager' ),
+			'-3' => __( 'Nur Administratoren', 'ps-update-manager' ),
+			'-4' => __( 'Passwortgeschützt', 'ps-update-manager' ),
 		);
 
 		?>
@@ -304,8 +304,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 * Save privacy options
 	 */
 	public function save_privacy_options() {
-		// Verify nonce
-		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'closedpostboxes_page' ) ) {
+		if ( ! current_user_can( 'manage_network_options' ) ) {
 			return;
 		}
 
@@ -322,8 +321,8 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			if ( wp_json_encode( $old_available ) !== wp_json_encode( $privacy_available ) ) {
 				add_action( 'admin_notices', function() {
 					echo '<div class="notice notice-warning is-dismissible"><p>';
-					esc_html_e( 'Die verfügbaren Privacy-Level wurden geändert.', 'ps-manager' );
-					echo ' <a href="#ps-privacy-maintenance" class="button button-secondary">' . esc_html__( 'Jetzt synchronisieren', 'ps-manager' ) . '</a>';
+					esc_html_e( 'Die verfügbaren Datenschutzstufen wurden geändert.', 'ps-update-manager' );
+					echo ' <a href="#ps-privacy-maintenance" class="button button-secondary">' . esc_html__( 'Jetzt synchronisieren', 'ps-update-manager' ) . '</a>';
 					echo '</p></div>';
 				} );
 			}
@@ -340,11 +339,12 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		}
 
 		// Allow site override
+		$old_override = get_site_option( 'privacy_override', 'no' );
 		$override = ( isset( $_POST['privacy_override'] ) && 'yes' === sanitize_text_field( wp_unslash( $_POST['privacy_override'] ) ) ) ? 'yes' : 'no';
 		update_site_option( 'privacy_override', $override );
 
-		// If enabling override, ensure all sites' blog_public is aligned with current privacy
-		if ( 'yes' === $override ) {
+		// Only when override is newly enabled, align blog_public with current privacy across sites
+		if ( 'yes' === $override && 'yes' !== $old_override ) {
 			$sites = get_sites( array( 'fields' => 'ids' ) );
 			foreach ( $sites as $blog_id ) {
 				$privacy = get_blog_option( $blog_id, 'blog_privacy', get_site_option( 'default_blog_privacy', '1' ) );
@@ -385,12 +385,12 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		}
 
 		$levels = array(
-			'1'  => __( 'Öffentlich (für alle sichtbar)', 'ps-manager' ),
-			'0'  => __( 'Öffentlich, aber Suchmaschinen blockieren', 'ps-manager' ),
-			'-1' => __( 'Nur Netzwerk-Mitglieder', 'ps-manager' ),
-			'-2' => __( 'Nur Mitglieder dieser Seite', 'ps-manager' ),
-			'-3' => __( 'Nur Administratoren', 'ps-manager' ),
-			'-4' => __( 'Passwortgeschützt', 'ps-manager' ),
+			'1'  => __( 'Öffentlich (für alle sichtbar)', 'ps-update-manager' ),
+			'0'  => __( 'Öffentlich, aber Suchmaschinen blockiert', 'ps-update-manager' ),
+			'-1' => __( 'Nur Netzwerkmitglieder', 'ps-update-manager' ),
+			'-2' => __( 'Nur Mitglieder dieser Unterseite', 'ps-update-manager' ),
+			'-3' => __( 'Nur Administratoren', 'ps-update-manager' ),
+			'-4' => __( 'Passwortgeschützt', 'ps-update-manager' ),
 		);
 
 		// Filter by network-available privacy levels
@@ -411,7 +411,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			$auto_corrected = true;
 		}
 
-		echo '<p class="description">' . esc_html__( 'Datenschutzstufe festlegen:', 'ps-manager' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Lege die Datenschutzstufe fest:', 'ps-update-manager' ) . '</p>';
 		echo '<fieldset>';
 		foreach ( $levels as $value => $label ) {
 			printf(
@@ -424,13 +424,13 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		// Password field when -4 selected (JS toggled)
 		$pwd = get_option( 'blog_privacy_password', '' );
 		echo '<div id="blog-privacy-password-wrap" style="margin-top:8px;' . ( isset( $levels['-4'] ) ? '' : 'display:none;' ) . '">';
-		echo '<input type="password" name="blog_privacy_password" value="' . esc_attr( $pwd ) . '" placeholder="' . esc_attr__( 'Passwort für Zugriff', 'ps-manager' ) . '" />';
+		echo '<input type="password" name="blog_privacy_password" value="' . esc_attr( $pwd ) . '" placeholder="' . esc_attr__( 'Passwort für den Zugriff', 'ps-update-manager' ) . '" />';
 		echo '</div>';
 		echo '</fieldset>';
 
 		if ( $auto_corrected ) {
 			echo '<div class="notice notice-warning" style="margin-top:10px;"><p>';
-			echo esc_html__( 'Hinweis: Ihre bisherige Datenschutzstufe ist im Netzwerk nicht mehr erlaubt und wurde automatisch auf einen zulässigen Wert angepasst.', 'ps-manager' );
+			echo esc_html__( 'Hinweis: Deine bisherige Datenschutzstufe ist im Netzwerk nicht mehr erlaubt und wurde automatisch auf einen zulässigen Wert geändert.', 'ps-update-manager' );
 			echo '</p></div>';
 		}
 	}
@@ -443,12 +443,12 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			return;
 		}
 		$levels = array(
-			'1'  => __( 'Öffentlich', 'ps-manager' ),
-			'0'  => __( 'Öffentlich mit Suchmaschinen-Block', 'ps-manager' ),
-			'-1' => __( 'Nur Netzwerk', 'ps-manager' ),
-			'-2' => __( 'Nur Seiten-Mitglieder', 'ps-manager' ),
-			'-3' => __( 'Nur Administratoren', 'ps-manager' ),
-			'-4' => __( 'Passwortgeschützt', 'ps-manager' ),
+			'1'  => __( 'Öffentlich', 'ps-update-manager' ),
+			'0'  => __( 'Öffentlich mit Suchmaschinen-Block', 'ps-update-manager' ),
+			'-1' => __( 'Nur Netzwerkmitglieder', 'ps-update-manager' ),
+			'-2' => __( 'Nur Seitenmitglieder', 'ps-update-manager' ),
+			'-3' => __( 'Nur Administratoren', 'ps-update-manager' ),
+			'-4' => __( 'Passwortgeschützt', 'ps-update-manager' ),
 		);
 		$available = get_site_option( 'privacy_available', array() );
 		$levels = array_filter( $levels, function( $label, $value ) use ( $available ) {
@@ -458,7 +458,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		if ( ! array_key_exists( (string) $current, $levels ) ) {
 			$current = (string) key( $levels );
 		}
-		echo '<h3>' . esc_html__( 'Datenschutz der neuen Seite', 'ps-manager' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Datenschutz der neuen Unterseite', 'ps-update-manager' ) . '</h3>';
 		echo '<fieldset>';
 		foreach ( $levels as $value => $label ) {
 			printf('<label><input type="radio" name="signup_blog_privacy" value="%1$s" %2$s /> %3$s</label><br/>', esc_attr( $value ), checked( $current, $value, false ), esc_html( $label ));
@@ -616,7 +616,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		<!DOCTYPE html>
 		<html>
 		<head>
-			<title><?php esc_html_e( 'Protected Content', 'ps-manager' ); ?></title>
+			<title><?php esc_html_e( 'Geschützter Inhalt', 'ps-update-manager' ); ?></title>
 			<style>
 				body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; text-align: center; padding-top: 50px; background: #f1f1f1; }
 				.password-form { background: white; padding: 40px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 300px; margin: 0 auto; }
@@ -626,10 +626,10 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		</head>
 		<body>
 			<div class="password-form">
-				<h2><?php esc_html_e( 'This site is password protected', 'ps-manager' ); ?></h2>
+				<h2><?php esc_html_e( 'Diese Website ist passwortgeschützt', 'ps-update-manager' ); ?></h2>
 				<form method="post">
-					<input type="password" name="blog_password" placeholder="<?php esc_attr_e( 'Enter password', 'ps-manager' ); ?>" />
-					<button type="submit"><?php esc_html_e( 'Enter', 'ps-manager' ); ?></button>
+					<input type="password" name="blog_password" placeholder="<?php esc_attr_e( 'Passwort eingeben', 'ps-update-manager' ); ?>" />
+					<button type="submit"><?php esc_html_e( 'Öffnen', 'ps-update-manager' ); ?></button>
 				</form>
 			</div>
 		</body>
@@ -643,7 +643,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	public function render() {
 		if ( ! is_network_admin() ) {
 			echo '<div class="notice notice-warning"><p>';
-			esc_html_e( 'Dieses Tool ist nur im Netzwerk-Admin verfügbar.', 'ps-manager' );
+			esc_html_e( 'Dieses Tool ist nur im Netzwerk-Admin verfügbar.', 'ps-update-manager' );
 			echo '</p></div>';
 			return;
 		}
@@ -654,9 +654,9 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 
 		?>
 		<div class="ps-privacy-tool-settings">
-			<h2><?php esc_html_e( 'Blog Privacy Einstellungen', 'ps-manager' ); ?></h2>
+			<h2><?php esc_html_e( 'Blog-Datenschutz-Einstellungen', 'ps-update-manager' ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Konfiguriere welche Privacy-Level für Blogs im Netzwerk verfügbar sein sollen.', 'ps-manager' ); ?>
+				<?php esc_html_e( 'Lege fest, welche Datenschutzstufen für Blogs im Netzwerk verfügbar sein sollen.', 'ps-update-manager' ); ?>
 			</p>
 
 			<form method="post" action="">
@@ -665,38 +665,38 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row">
-							<label><?php esc_html_e( 'Verfügbare Privacy-Level', 'ps-manager' ); ?></label>
+							<label><?php esc_html_e( 'Verfügbare Datenschutzstufen', 'ps-update-manager' ); ?></label>
 						</th>
 						<td>
 							<fieldset>
 								<legend class="screen-reader-text">
-									<span><?php esc_html_e( 'Verfügbare Privacy-Level', 'ps-manager' ); ?></span>
+									<span><?php esc_html_e( 'Verfügbare Datenschutzstufen', 'ps-update-manager' ); ?></span>
 								</legend>
 								<?php
 								$levels = array(
 									'1'  => array(
-										'label' => __( 'Öffentlich', 'ps-manager' ),
-										'desc'  => __( 'Für jeden frei zugänglich', 'ps-manager' ),
+										'label' => __( 'Öffentlich', 'ps-update-manager' ),
+										'desc'  => __( 'Für alle frei zugänglich', 'ps-update-manager' ),
 									),
 									'0'  => array(
-										'label' => __( 'Suchmaschinen blockiert', 'ps-manager' ),
-										'desc'  => __( 'Von Suchmaschinen indexiert, aber nicht öffentlich beworben', 'ps-manager' ),
+										'label' => __( 'Suchmaschinen blockiert', 'ps-update-manager' ),
+										'desc'  => __( 'Nicht für Suchmaschinen sichtbar', 'ps-update-manager' ),
 									),
 									'-1' => array(
-										'label' => __( 'Nur Netzwerk-Mitglieder', 'ps-manager' ),
-										'desc'  => __( 'Nur für eingeloggte Netzwerk-Benutzer sichtbar', 'ps-manager' ),
+										'label' => __( 'Nur Netzwerkmitglieder', 'ps-update-manager' ),
+										'desc'  => __( 'Nur für eingeloggte Netzwerkmitglieder sichtbar', 'ps-update-manager' ),
 									),
 									'-2' => array(
-										'label' => __( 'Nur Site-Mitglieder', 'ps-manager' ),
-										'desc'  => __( 'Nur für Mitglieder dieser spezifischen Site sichtbar', 'ps-manager' ),
+										'label' => __( 'Nur Seitenmitglieder', 'ps-update-manager' ),
+										'desc'  => __( 'Nur für Mitglieder dieser Unterseite sichtbar', 'ps-update-manager' ),
 									),
 									'-3' => array(
-										'label' => __( 'Nur Administratoren', 'ps-manager' ),
-										'desc'  => __( 'Nur für Site-Administratoren zugänglich', 'ps-manager' ),
+										'label' => __( 'Nur Administratoren', 'ps-update-manager' ),
+										'desc'  => __( 'Nur für Administratoren dieser Unterseite zugänglich', 'ps-update-manager' ),
 									),
 									'-4' => array(
-										'label' => __( 'Passwortgeschützt', 'ps-manager' ),
-										'desc'  => __( 'Passwort erforderlich für Zugriff', 'ps-manager' ),
+										'label' => __( 'Passwortgeschützt', 'ps-update-manager' ),
+										'desc'  => __( 'Zugriff nur mit Passwort', 'ps-update-manager' ),
 									),
 								);
 
@@ -724,7 +724,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 
 					<tr>
 						<th scope="row">
-							<label for="default_blog_privacy"><?php esc_html_e( 'Standard Privacy-Level', 'ps-manager' ); ?></label>
+							<label for="default_blog_privacy"><?php esc_html_e( 'Standard-Datenschutzstufe', 'ps-update-manager' ); ?></label>
 						</th>
 						<td>
 							<select name="default_blog_privacy" id="default_blog_privacy">
@@ -736,46 +736,46 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 								<?php endforeach; ?>
 							</select>
 							<p class="description">
-								<?php esc_html_e( 'Dieser Privacy-Level wird automatisch für neu erstellte Blogs gesetzt.', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Diese Datenschutzstufe wird automatisch für neu erstellte Blogs gesetzt.', 'ps-update-manager' ); ?>
 							</p>
 						</td>
 					</tr>
 				</table>
 
-				<h3><?php esc_html_e( 'Site Overrides', 'ps-manager' ); ?></h3>
+				<h3><?php esc_html_e( 'Überschreibungen für Unterseiten', 'ps-update-manager' ); ?></h3>
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row">
-							<label for="privacy_override"><?php esc_html_e( 'Unterseiten dürfen Einstellungen überschreiben', 'ps-manager' ); ?></label>
+							<label for="privacy_override"><?php esc_html_e( 'Unterseiten dürfen Einstellungen überschreiben', 'ps-update-manager' ); ?></label>
 						</th>
 						<td>
 							<?php $override = get_site_option( 'privacy_override', 'no' ); ?>
 							<label>
 								<input type="checkbox" name="privacy_override" value="yes" <?php checked( $override, 'yes' ); ?> />
-								<?php esc_html_e( 'Wenn aktiviert, erscheinen die Privacy-Optionen in den Unterseiten (Einstellungen → Lesen).', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Wenn aktiviert, erscheinen die Datenschutzoptionen in den Unterseiten (Einstellungen → Lesen).', 'ps-update-manager' ); ?>
 							</label>
 						</td>
 					</tr>
 				</table>
 
-				<?php submit_button( __( 'Einstellungen speichern', 'ps-manager' ) ); ?>
+				<?php submit_button( __( 'Einstellungen speichern', 'ps-update-manager' ) ); ?>
 			</form>
 		</div>
 
 			<div id="ps-privacy-maintenance" class="ps-privacy-maintenance" style="background:#fff3cd;border:1px solid #ffeeba;padding:16px;border-radius:4px;margin-top:16px;">
-				<h2 style="margin-top:0;"><?php esc_html_e( 'Notfall-Wartung: Netzwerk-Synchronisierung', 'ps-manager' ); ?></h2>
+				<h2 style="margin-top:0;"><?php esc_html_e( 'Notfall-Wartung: Netzwerk-Synchronisierung', 'ps-update-manager' ); ?></h2>
 				<p class="description" style="margin-bottom:12px;">
-					<?php esc_html_e( 'Warnung: Dies setzt alle Privacy-Einstellungen der Unterseiten auf den oben konfigurierten Standard zurück und synchronisiert die Sichtbarkeit (blog_public).', 'ps-manager' ); ?>
+					<?php esc_html_e( 'Warnung: Das setzt alle Datenschutz-Einstellungen der Unterseiten auf den oben konfigurierten Standard zurück und synchronisiert die Sichtbarkeit (blog_public).', 'ps-update-manager' ); ?>
 				</p>
 				<p class="description" style="margin-bottom:16px;">
-					<?php esc_html_e( 'Hinweis: Der Vorgang kann je nach Anzahl der Sites einige Sekunden dauern. Bitte nicht abbrechen.', 'ps-manager' ); ?>
+					<?php esc_html_e( 'Hinweis: Der Vorgang kann je nach Anzahl der Unterseiten einige Sekunden dauern. Bitte nicht abbrechen.', 'ps-update-manager' ); ?>
 				</p>
 				<form id="ps-privacy-sync-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<?php wp_nonce_field( 'ps_privacy_sync_all', 'ps_privacy_sync_nonce' ); ?>
 					<input type="hidden" name="action" value="ps_privacy_sync_all" />
-					<?php submit_button( __( 'Alle Sites jetzt synchronisieren', 'ps-manager' ), 'delete', 'ps-privacy-sync-submit', false ); ?>
+					<?php submit_button( __( 'Alle Unterseiten jetzt synchronisieren', 'ps-update-manager' ), 'delete', 'ps-privacy-sync-submit', false ); ?>
 					<span id="ps-privacy-sync-progress" style="display:none;margin-left:8px;vertical-align:middle;">
-						<?php esc_html_e( 'Synchronisierung läuft…', 'ps-manager' ); ?>
+						<?php esc_html_e( 'Synchronisierung läuft…', 'ps-update-manager' ); ?>
 					</span>
 				</form>
 				<script>
@@ -787,7 +787,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 					if(form && btn && prog){
 						form.addEventListener('submit', function(e){
 							e.preventDefault();
-							var ok = confirm('<?php echo esc_js( __( 'Dies setzt alle Privacy-Einstellungen der Unterwebseiten auf die hier angegebenen Einstellungen. FORTFAHREN?', 'ps-manager' ) ); ?>');
+							var ok = confirm('<?php echo esc_js( __( 'Das setzt alle Datenschutz-Einstellungen der Unterseiten auf die hier angegebenen Werte zurück. Möchtest du fortfahren?', 'ps-update-manager' ) ); ?>');
 							if(!ok){ return false; }
 							btn.setAttribute('disabled', 'disabled');
 							prog.style.display = 'inline-block';
@@ -810,7 +810,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 										return;
 									}
 									var chunk = ids.slice(index, index+batch);
-									prog.textContent = '<?php echo esc_js( __( 'Synchronisierung läuft…', 'ps-manager' ) ); ?> (' + Math.min(index+batch, ids.length) + '/' + ids.length + ')';
+									prog.textContent = '<?php echo esc_js( __( 'Synchronisierung läuft…', 'ps-update-manager' ) ); ?> (' + Math.min(index+batch, ids.length) + '/' + ids.length + ')';
 									fetch(ajaxurl, {
 										method: 'POST',
 										headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -835,16 +835,16 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 				<?php if ( isset( $_GET['ps_sync'] ) ) :
 					$code = sanitize_text_field( wp_unslash( $_GET['ps_sync'] ) );
 					if ( 'done' === $code ) : ?>
-						<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Alle Sites wurden erfolgreich synchronisiert.', 'ps-manager' ); ?></p></div>
+						<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Alle Unterseiten wurden erfolgreich synchronisiert.', 'ps-update-manager' ); ?></p></div>
 					<?php elseif ( 'partial' === $code ) :
 						$fail = isset( $_GET['fail'] ) ? intval( $_GET['fail'] ) : 0;
 						$ids = isset( $_GET['fail_ids'] ) ? sanitize_text_field( wp_unslash( $_GET['fail_ids'] ) ) : ''; ?>
-						<div class="notice notice-warning is-dismissible"><p><?php printf( esc_html__( 'Synchronisierung abgeschlossen, aber %d Sites konnten nicht aktualisiert werden.', 'ps-manager' ), $fail ); ?>
+						<div class="notice notice-warning is-dismissible"><p><?php printf( esc_html__( 'Synchronisierung abgeschlossen, aber %d Unterseiten konnten nicht aktualisiert werden.', 'ps-update-manager' ), $fail ); ?>
 						<?php if ( ! empty( $ids ) ) : ?>
-							<br><?php echo esc_html__( 'Betroffene Site-IDs:', 'ps-manager' ); ?> <?php echo esc_html( $ids ); ?>
+							<br><?php echo esc_html__( 'Betroffene Seiten-IDs:', 'ps-update-manager' ); ?> <?php echo esc_html( $ids ); ?>
 						<?php endif; ?></p></div>
 					<?php elseif ( 'error' === $code ) : ?>
-						<div class="notice notice-error is-dismissible"><p><?php esc_html_e( 'Synchronisierung fehlgeschlagen.', 'ps-manager' ); ?></p></div>
+						<div class="notice notice-error is-dismissible"><p><?php esc_html_e( 'Synchronisierung fehlgeschlagen.', 'ps-update-manager' ); ?></p></div>
 					<?php endif; endif; ?>
 			</div>
 
@@ -906,7 +906,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			if ( wp_json_encode( $old_available ) !== wp_json_encode( $privacy_available ) ) {
 				add_action( 'admin_notices', function() {
 					echo '<div class="notice notice-warning is-dismissible"><p>';
-					esc_html_e( 'Die verfügbaren Privacy-Level wurden geändert. Tipp: Nutze die Notfall-Wartungsbox unten, um alle Sites mit den neuen Netzwerk-Einstellungen zu synchronisieren.', 'ps-manager' );
+					esc_html_e( 'Die verfügbaren Datenschutzstufen wurden geändert. Tipp: Nutze die Notfall-Wartungsbox unten, um alle Unterseiten mit den neuen Netzwerk-Einstellungen zu synchronisieren.', 'ps-update-manager' );
 					echo '</p></div>';
 				} );
 			}
@@ -929,7 +929,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 		// Success message
 		add_action( 'admin_notices', function() {
 			echo '<div class="notice notice-success is-dismissible"><p>';
-			esc_html_e( 'Privacy-Einstellungen erfolgreich gespeichert!', 'ps-manager' );
+			esc_html_e( 'Datenschutz-Einstellungen erfolgreich gespeichert!', 'ps-update-manager' );
 			echo '</p></div>';
 		} );
 	}

@@ -805,7 +805,7 @@ class PS_Update_Manager_Admin_Dashboard {
 							<?php elseif ( 'child-theme' === $badge_type ) : ?>
 								<span class="ps-meta-badge ps-badge-child">
 									<span class="dashicons dashicons-admin-generic"></span>
-									<?php esc_html_e( 'Child Theme', 'ps-update-manager' ); ?>
+									<?php esc_html_e( 'Child-Theme', 'ps-update-manager' ); ?>
 								</span>
 							<?php elseif ( 'template' === $badge_type ) : ?>
 								<span class="ps-meta-badge ps-badge-template">

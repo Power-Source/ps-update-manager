@@ -378,7 +378,7 @@ return array(
 	 	'type'        => 'theme',
 	 	'name'        => 'PS Padma Child',
 	 	'repo'        => 'Power-Source/ps-padma-child',
-	 	'description' => 'Sicheres Child Theme für PS Padma. Perfekt für eigene Anpassungen und Custom Code, ohne Updates des Parent-Themes zu verlieren.',
+	 	'description' => 'Sicheres Child-Theme für PS Padma. Perfekt für eigene Anpassungen und Custom Code, ohne Updates des Parent-Themes zu verlieren.',
 	 	'category'    => 'pagebuilder',
 	 	'icon'        => 'dashicons-admin-customizer',
 	 	'featured'    => true,

@@ -18,8 +18,8 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 	 */
 	public function __construct() {
 		$this->id          = 'signup-tos';
-		$this->name        = __( 'Nutzungsbedingungen (TOS)', 'ps-manager' );
-		$this->description = __( 'Nutzungsbedingungen für Registrierung konfigurieren', 'ps-manager' );
+		$this->name        = __( 'Nutzungsbedingungen (TOS)', 'ps-update-manager' );
+		$this->description = __( 'Nutzungsbedingungen für Registrierung konfigurieren', 'ps-update-manager' );
 		$this->icon        = 'admin-page';
 		$this->type        = 'universal'; // Works in both network and single-site admin
 		$this->capability  = is_multisite() ? 'manage_network' : 'manage_options';
@@ -55,9 +55,9 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 			<p class="description">
 				<?php
 				if ( is_multisite() ) {
-					esc_html_e( 'Konfiguriere Nutzungsbedingungen für dein Netzwerk.', 'ps-manager' );
+					esc_html_e( 'Konfiguriere Nutzungsbedingungen für dein Netzwerk.', 'ps-update-manager' );
 				} else {
-					esc_html_e( 'Konfiguriere Nutzungsbedingungen für deine Website.', 'ps-manager' );
+					esc_html_e( 'Konfiguriere Nutzungsbedingungen für deine Website.', 'ps-update-manager' );
 				}
 				?>
 			</p>
@@ -73,23 +73,23 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 						<tr>
 							<th scope="row">
 								<label for="tos_mode">
-									<?php esc_html_e( 'Modus', 'ps-manager' ); ?>
+									<?php esc_html_e( 'Modus', 'ps-update-manager' ); ?>
 								</label>
 							</th>
 							<td>
 								<select id="tos_mode" name="tos_mode" class="regular-text">
 									<option value="global" <?php selected( $mode, 'global' ); ?>>
-										<?php esc_html_e( 'Global (Netzwerkweit)', 'ps-manager' ); ?>
+										<?php esc_html_e( 'Global (Netzwerkweit)', 'ps-update-manager' ); ?>
 									</option>
 									<option value="global-with-override" <?php selected( $mode, 'global-with-override' ); ?>>
-										<?php esc_html_e( 'Global mit Site-Überschreibung', 'ps-manager' ); ?>
+										<?php esc_html_e( 'Global mit Unterseiten-Überschreibung', 'ps-update-manager' ); ?>
 									</option>
 									<option value="per-site" <?php selected( $mode, 'per-site' ); ?>>
-										<?php esc_html_e( 'Pro Site', 'ps-manager' ); ?>
+										<?php esc_html_e( 'Pro Unterseite', 'ps-update-manager' ); ?>
 									</option>
 								</select>
 								<p class="description">
-									<?php esc_html_e( 'Bestimme, wie die TOS verwaltet werden.', 'ps-manager' ); ?>
+									<?php esc_html_e( 'Bestimme, wie die TOS verwaltet werden.', 'ps-update-manager' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -98,7 +98,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 					<tr>
 						<th scope="row">
 							<label for="tos_content">
-								<?php esc_html_e( 'Nutzungsbedingungen', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Nutzungsbedingungen', 'ps-update-manager' ); ?>
 							</label>
 						</th>
 						<td>
@@ -118,7 +118,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 							);
 							?>
 							<p class="description">
-								<?php esc_html_e( 'Gib die Nutzungsbedingungen ein, die bei der Registrierung angezeigt werden.', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Gib die Nutzungsbedingungen ein, die bei der Registrierung angezeigt werden.', 'ps-update-manager' ); ?>
 							</p>
 						</td>
 					</tr>
@@ -127,18 +127,18 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 						<th scope="row">
 							<label>
 								<input type="checkbox" name="tos_required" value="1" <?php checked( $this->tos_required() ); ?> />
-								<?php esc_html_e( 'Akzeptanz erforderlich', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Akzeptanz erforderlich', 'ps-update-manager' ); ?>
 							</label>
 						</th>
 						<td>
 							<p class="description">
-								<?php esc_html_e( 'Nutzer müssen den TOS zustimmen, um sich registrieren zu können.', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Nutzer müssen den TOS zustimmen, um sich registrieren zu können.', 'ps-update-manager' ); ?>
 							</p>
 						</td>
 					</tr>
 				</table>
 
-				<?php submit_button( __( 'Speichern', 'ps-manager' ), 'primary', 'submit', false ); ?>
+				<?php submit_button( __( 'Speichern', 'ps-update-manager' ), 'primary', 'submit', false ); ?>
 			</form>
 		</div>
 		<?php
@@ -281,7 +281,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 			</div>
 			<label>
 				<input type="checkbox" name="ps_tos_accept" value="1" required>
-				<?php esc_html_e( 'Ich akzeptiere die Nutzungsbedingungen', 'ps-manager' ); ?>
+				<?php esc_html_e( 'Ich akzeptiere die Nutzungsbedingungen', 'ps-update-manager' ); ?>
 			</label>
 		</div>
 		<?php
@@ -298,7 +298,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 		$accepted = isset( $_POST['ps_tos_accept'] ) && $_POST['ps_tos_accept'];
 
 		if ( ! $accepted ) {
-			$result['errors']->add( 'ps_tos_required', __( 'Bitte akzeptiere die Nutzungsbedingungen.', 'ps-manager' ) );
+			$result['errors']->add( 'ps_tos_required', __( 'Bitte akzeptiere die Nutzungsbedingungen.', 'ps-update-manager' ) );
 		}
 
 		return $result;
@@ -319,7 +319,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 		$accepted = isset( $_POST['ps_tos_accept'] ) && $_POST['ps_tos_accept'];
 
 		if ( ! $accepted ) {
-			$errors->add( 'ps_tos_required', __( 'Bitte akzeptiere die Nutzungsbedingungen.', 'ps-manager' ) );
+			$errors->add( 'ps_tos_required', __( 'Bitte akzeptiere die Nutzungsbedingungen.', 'ps-update-manager' ) );
 		}
 	}
 
@@ -340,8 +340,8 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 		}
 
 		add_options_page(
-			__( 'Nutzungsbedingungen', 'ps-manager' ),
-			__( 'Nutzungsbedingungen', 'ps-manager' ),
+			__( 'Nutzungsbedingungen', 'ps-update-manager' ),
+			__( 'Nutzungsbedingungen', 'ps-update-manager' ),
 			'manage_options',
 			'ps-manager-tos-site-settings',
 			array( $this, 'render_site_settings' )
@@ -374,7 +374,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 			update_option( 'ps_manager_tos_required_override', $tos_required );
 			
 			echo '<div class="notice notice-success is-dismissible"><p>';
-			esc_html_e( 'Nutzungsbedingungen erfolgreich gespeichert!', 'ps-manager' );
+			esc_html_e( 'Nutzungsbedingungen erfolgreich gespeichert!', 'ps-update-manager' );
 			echo '</p></div>';
 		}
 
@@ -385,13 +385,13 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Nutzungsbedingungen', 'ps-manager' ); ?></h1>
+			<h1><?php esc_html_e( 'Nutzungsbedingungen', 'ps-update-manager' ); ?></h1>
 			
 			<?php if ( 'global-with-override' === $mode ) : ?>
 				<div class="notice notice-info">
 					<p>
-						<strong><?php esc_html_e( 'Überschreibungs-Modus aktiv', 'ps-manager' ); ?></strong><br>
-						<?php esc_html_e( 'Du kannst die netzwerkweiten Nutzungsbedingungen für diese Site überschreiben. Lasse die Felder leer, um die globalen Einstellungen zu verwenden.', 'ps-manager' ); ?>
+						<strong><?php esc_html_e( 'Überschreibungs-Modus aktiv', 'ps-update-manager' ); ?></strong><br>
+						<?php esc_html_e( 'Du kannst die netzwerkweiten Nutzungsbedingungen für diese Unterseite überschreiben. Lass die Felder leer, um die globalen Einstellungen zu verwenden.', 'ps-update-manager' ); ?>
 					</p>
 				</div>
 			<?php endif; ?>
@@ -403,16 +403,16 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 					<?php if ( 'global-with-override' === $mode && ! empty( $global_content ) ) : ?>
 						<tr>
 							<th scope="row">
-								<?php esc_html_e( 'Netzwerkweite TOS (Global)', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Netzwerkweite TOS (Global)', 'ps-update-manager' ); ?>
 							</th>
 							<td>
 								<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; background: #f9f9f9;">
 									<?php echo wp_kses_post( $global_content ); ?>
 								</div>
 								<p class="description">
-									<?php esc_html_e( 'Diese Nutzungsbedingungen sind netzwerkweit definiert.', 'ps-manager' ); ?>
+									<?php esc_html_e( 'Diese Nutzungsbedingungen sind netzwerkweit definiert.', 'ps-update-manager' ); ?>
 									<?php if ( empty( $site_content ) ) : ?>
-										<strong><?php esc_html_e( 'Diese werden aktuell verwendet.', 'ps-manager' ); ?></strong>
+										<strong><?php esc_html_e( 'Diese werden aktuell verwendet.', 'ps-update-manager' ); ?></strong>
 									<?php endif; ?>
 								</p>
 							</td>
@@ -424,9 +424,9 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 							<label for="tos_content">
 								<?php
 								if ( 'per-site' === $mode ) {
-									esc_html_e( 'Nutzungsbedingungen (Diese Site)', 'ps-manager' );
+									esc_html_e( 'Nutzungsbedingungen (Diese Unterseite)', 'ps-update-manager' );
 								} else {
-									esc_html_e( 'Nutzungsbedingungen (Überschreibung)', 'ps-manager' );
+									esc_html_e( 'Nutzungsbedingungen (Überschreibung)', 'ps-update-manager' );
 								}
 								?>
 							</label>
@@ -450,9 +450,9 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 							<p class="description">
 								<?php
 								if ( 'per-site' === $mode ) {
-									esc_html_e( 'Diese Nutzungsbedingungen werden nur für diese Site verwendet.', 'ps-manager' );
+									esc_html_e( 'Diese Nutzungsbedingungen werden nur für diese Unterseite verwendet.', 'ps-update-manager' );
 								} else {
-									esc_html_e( 'Leer lassen, um die globalen Nutzungsbedingungen zu verwenden.', 'ps-manager' );
+									esc_html_e( 'Leer lassen, um die globalen Nutzungsbedingungen zu verwenden.', 'ps-update-manager' );
 								}
 								?>
 							</p>
@@ -461,21 +461,21 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 
 					<tr>
 						<th scope="row">
-							<?php esc_html_e( 'Akzeptanz erforderlich', 'ps-manager' ); ?>
+							<?php esc_html_e( 'Akzeptanz erforderlich', 'ps-update-manager' ); ?>
 						</th>
 						<td>
 							<label>
 								<input type="checkbox" name="tos_required" value="1" 
 									<?php checked( null !== $site_required ? $site_required : ( 'global-with-override' === $mode ? $global_required : false ) ); ?> />
-								<?php esc_html_e( 'Nutzer müssen die TOS akzeptieren', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Nutzer müssen die TOS akzeptieren', 'ps-update-manager' ); ?>
 							</label>
 							<?php if ( 'global-with-override' === $mode ) : ?>
 								<p class="description">
 									<?php
 									printf(
 										/* translators: %s: global required status */
-										esc_html__( 'Global: %s', 'ps-manager' ),
-										$global_required ? '<strong>' . esc_html__( 'Erforderlich', 'ps-manager' ) . '</strong>' : esc_html__( 'Optional', 'ps-manager' )
+										esc_html__( 'Global: %s', 'ps-update-manager' ),
+										$global_required ? '<strong>' . esc_html__( 'Erforderlich', 'ps-update-manager' ) . '</strong>' : esc_html__( 'Optional', 'ps-update-manager' )
 									);
 									?>
 								</p>
@@ -484,18 +484,18 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 					</tr>
 				</table>
 
-				<?php submit_button( __( 'Speichern', 'ps-manager' ), 'primary', 'ps_tos_site_save' ); ?>
+				<?php submit_button( __( 'Speichern', 'ps-update-manager' ), 'primary', 'ps_tos_site_save' ); ?>
 			</form>
 
 			<?php if ( 'global-with-override' === $mode && ! empty( $site_content ) ) : ?>
 				<hr>
-				<h2><?php esc_html_e( 'Überschreibung zurücksetzen', 'ps-manager' ); ?></h2>
-				<p><?php esc_html_e( 'Möchtest du die site-spezifischen Einstellungen löschen und wieder die globalen Einstellungen verwenden?', 'ps-manager' ); ?></p>
+				<h2><?php esc_html_e( 'Überschreibung zurücksetzen', 'ps-update-manager' ); ?></h2>
+				<p><?php esc_html_e( 'Möchtest du die unterseiten-spezifischen Einstellungen löschen und wieder die globalen Einstellungen verwenden?', 'ps-update-manager' ); ?></p>
 				<form method="post">
 					<?php wp_nonce_field( 'ps_tos_site_reset' ); ?>
 					<button type="submit" name="ps_tos_site_reset" class="button button-secondary" 
-						onclick="return confirm('<?php esc_attr_e( 'Bist du sicher? Die site-spezifischen Einstellungen werden gelöscht.', 'ps-manager' ); ?>');">
-						<?php esc_html_e( 'Überschreibung zurücksetzen', 'ps-manager' ); ?>
+						onclick="return confirm('<?php esc_attr_e( 'Bist du sicher? Die unterseiten-spezifischen Einstellungen werden gelöscht.', 'ps-update-manager' ); ?>');">
+						<?php esc_html_e( 'Überschreibung zurücksetzen', 'ps-update-manager' ); ?>
 					</button>
 				</form>
 				<?php
@@ -504,7 +504,7 @@ class PS_Manager_Signup_TOS_Tool extends PS_Manager_Tool {
 					delete_option( 'ps_manager_tos_content_override' );
 					delete_option( 'ps_manager_tos_required_override' );
 					echo '<div class="notice notice-success is-dismissible"><p>';
-					esc_html_e( 'Überschreibung wurde zurückgesetzt. Die globalen Einstellungen werden nun verwendet.', 'ps-manager' );
+					esc_html_e( 'Überschreibung wurde zurückgesetzt. Die globalen Einstellungen werden nun verwendet.', 'ps-update-manager' );
 					echo '</p></div>';
 					echo '<script>window.location.reload();</script>';
 				}

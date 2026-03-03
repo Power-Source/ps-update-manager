@@ -17,8 +17,8 @@ class PS_Manager_Default_Theme_Tool extends PS_Manager_Tool {
 	 */
 	public function __construct() {
 		$this->id          = 'default-theme';
-		$this->name        = __( 'Standard Theme', 'ps-manager' );
-		$this->description = __( 'Standardtheme für neue Blog-Registrierungen festlegen', 'ps-manager' );
+		$this->name        = __( 'Standard-Theme', 'ps-update-manager' );
+		$this->description = __( 'Standard-Theme für neue Blog-Registrierungen festlegen', 'ps-update-manager' );
 		$this->icon        = 'admin-appearance';
 		$this->type        = 'network-only'; // Only available in network admin
 		$this->capability  = 'manage_network';
@@ -47,7 +47,7 @@ class PS_Manager_Default_Theme_Tool extends PS_Manager_Tool {
 		?>
 		<div class="ps-manager-tool-settings">
 			<p class="description">
-				<?php esc_html_e( 'Wähle ein Theme aus, das automatisch bei neuen Blog-Registrierungen aktiviert wird.', 'ps-manager' ); ?>
+				<?php esc_html_e( 'Wähle ein Theme aus, das automatisch bei neuen Blog-Registrierungen aktiviert wird.', 'ps-update-manager' ); ?>
 			</p>
 
 			<form method="post" class="ps-manager-tool-form">
@@ -58,7 +58,7 @@ class PS_Manager_Default_Theme_Tool extends PS_Manager_Tool {
 					<tr>
 						<th scope="row">
 							<label for="default_theme">
-								<?php esc_html_e( 'Standard Theme', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Standard-Theme', 'ps-update-manager' ); ?>
 							</label>
 						</th>
 						<td>
@@ -72,13 +72,13 @@ class PS_Manager_Default_Theme_Tool extends PS_Manager_Tool {
 								?>
 							</select>
 							<p class="description">
-								<?php esc_html_e( 'Dieses Theme wird bei neuen Blog-Registrierungen als Standard aktiviert.', 'ps-manager' ); ?>
+								<?php esc_html_e( 'Dieses Theme wird bei neuen Blog-Registrierungen als Standard aktiviert.', 'ps-update-manager' ); ?>
 							</p>
 						</td>
 					</tr>
 				</table>
 
-				<?php submit_button( __( 'Speichern', 'ps-manager' ), 'primary', 'submit', false ); ?>
+				<?php submit_button( __( 'Speichern', 'ps-update-manager' ), 'primary', 'submit', false ); ?>
 			</form>
 		</div>
 		<?php

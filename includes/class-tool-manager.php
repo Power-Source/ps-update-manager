@@ -123,7 +123,7 @@ class PS_Manager_Tool_Manager {
 		$current = $this->get_current_tool_id();
 
 		if ( empty( $available ) ) {
-			echo '<p>' . esc_html__( 'Keine Tools verfügbar.', 'ps-manager' ) . '</p>';
+			echo '<p>' . esc_html__( 'Keine Tools verfügbar.', 'ps-update-manager' ) . '</p>';
 			return;
 		}
 
