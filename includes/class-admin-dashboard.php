@@ -44,6 +44,8 @@ class PS_Update_Manager_Admin_Dashboard {
 			) );
 		}
 
+		PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
+
 		wp_send_json_success( array(
 			'message' => sprintf( __( '%s erfolgreich installiert!', 'ps-update-manager' ), $slug ),
 		) );
@@ -574,14 +576,51 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * Update-Info für Produkt abrufen
 	 */
 	private function get_product_update_info( $product ) {
-		if ( empty( $product['github_repo'] ) ) {
+		$release = false;
+
+		if ( ! empty( $product['github_repo'] ) ) {
+			$github = PS_Update_Manager_GitHub_API::get_instance();
+			$release = $github->get_latest_release( $product['github_repo'] );
+		}
+
+		if ( ( ! $release || is_wp_error( $release ) ) && ! empty( $product['update_url'] ) ) {
+			$release = $this->get_custom_update_info( $product['update_url'] );
+		}
+
+		if ( is_wp_error( $release ) || ! is_array( $release ) ) {
 			return false;
 		}
-		
-		$github = PS_Update_Manager_GitHub_API::get_instance();
-		$release = $github->get_latest_release( $product['github_repo'] );
-		
-		return is_wp_error( $release ) ? false : $release;
+
+		if ( empty( $release['version'] ) || empty( $release['download_url'] ) ) {
+			return false;
+		}
+
+		return $release;
+	}
+
+	/**
+	 * Update-Info von Custom URL abrufen
+	 */
+	private function get_custom_update_info( $url ) {
+		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $data ) ) {
+			return false;
+		}
+
+		if ( empty( $data['version'] ) || empty( $data['download_url'] ) ) {
+			return false;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -617,6 +656,8 @@ class PS_Update_Manager_Admin_Dashboard {
 				'description'      => $manifest['description'],
 				'type'             => $manifest['type'],
 				'repo'             => $manifest['repo'],
+				'github_repo'      => $manifest['repo'] ?? '',
+				'update_url'       => $manifest['update_url'] ?? '',
 				'icon'             => $manifest['icon'] ?? 'dashicons-admin-plugins',
 				'category'         => $manifest['category'] ?? 'general',
 				'installed'        => false,
@@ -628,7 +669,7 @@ class PS_Update_Manager_Admin_Dashboard {
 				'network_mode'     => 'none',
 				'featured'         => $manifest['featured'] ?? false,
 				'badge'            => $manifest['badge'] ?? null,
-				'logo'             => $this->get_product_logo_url( $slug ),
+				'logo'             => $this->get_product_logo_url( $slug, $manifest['repo'] ?? '' ),
 			);
 
 			if ( isset( $installed_products[ $slug ] ) ) {
@@ -638,8 +679,10 @@ class PS_Update_Manager_Admin_Dashboard {
 				$product['version']         = $installed['version'];
 				$product['basename']        = $installed['basename'] ?? null;
 				$product['network_mode']    = $installed['network_mode'] ?? 'none';
+				$product['github_repo']     = $installed['github_repo'] ?? $product['github_repo'];
+				$product['update_url']      = $installed['update_url'] ?? $product['update_url'];
 
-				$update_info = $this->get_product_update_info( $installed );
+				$update_info = $this->get_product_update_info( $product );
 				if ( $update_info && version_compare( $update_info['version'], $installed['version'], '>' ) ) {
 					$product['update_available'] = true;
 					$product['new_version']      = $update_info['version'];
@@ -781,8 +824,21 @@ class PS_Update_Manager_Admin_Dashboard {
 				</div>
 			<?php endif; ?>
 			<?php if ( ! empty( $product['logo'] ) ) : ?>
+				<?php
+				$default_logo = PS_UPDATE_MANAGER_URL . 'psource-logo.png';
+				$repo_logo_fallback = '';
+				if ( ! empty( $product['repo'] ) ) {
+					$safe_repo = preg_replace( '#[^A-Za-z0-9._/-]#', '', (string) $product['repo'] );
+					if ( ! empty( $safe_repo ) ) {
+						$repo_logo_fallback = 'https://cdn.jsdelivr.net/gh/' . $safe_repo . '@HEAD/psource-logo.png';
+					}
+				}
+				$onerror = ! empty( $repo_logo_fallback )
+					? "this.onerror=function(){this.onerror=null;this.src='" . esc_js( $default_logo ) . "';};this.src='" . esc_js( $repo_logo_fallback ) . "';"
+					: "this.onerror=null;this.src='" . esc_js( $default_logo ) . "';";
+				?>
 				<div class="ps-store-card-logo">
-					<img src="<?php echo esc_url( $product['logo'] ); ?>" alt="<?php echo esc_attr( $product['name'] ); ?>" />
+					<img src="<?php echo esc_url( $product['logo'] ); ?>" alt="<?php echo esc_attr( $product['name'] ); ?>" onerror="<?php echo esc_attr( $onerror ); ?>" />
 				</div>
 			<?php endif; ?>
 			<div class="ps-store-card-header">
@@ -916,10 +972,15 @@ class PS_Update_Manager_Admin_Dashboard {
 						<span class="dashicons dashicons-yes"></span>
 						<?php esc_html_e( 'Aktivieren', 'ps-update-manager' ); ?>
 					</a>
-				<?php else : ?>
+				<?php elseif ( 'plugin' === $product['type'] ) : ?>
 					<button class="button button-secondary ps-deactivate-plugin" data-slug="<?php echo esc_attr( $slug ); ?>" data-basename="<?php echo esc_attr( $product['basename'] ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>">
 						<span class="dashicons dashicons-dismiss"></span>
 						<?php esc_html_e( 'Deaktivieren', 'ps-update-manager' ); ?>
+					</button>
+				<?php else : ?>
+					<button class="button" disabled>
+						<span class="dashicons dashicons-yes"></span>
+						<?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?>
 					</button>
 				<?php endif; ?>
 			</div>
@@ -999,7 +1060,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$count = 0;
 		foreach ( $products as $product ) {
 			$update_info = $this->get_product_update_info( $product );
-			if ( $update_info && version_compare( $update_info['version'], $product['version'], '>' ) ) {
+			if ( $update_info && ! empty( $product['version'] ) && version_compare( (string) $update_info['version'], (string) $product['version'], '>' ) ) {
 				$count++;
 			}
 		}
@@ -1024,6 +1085,8 @@ class PS_Update_Manager_Admin_Dashboard {
 		if ( ! $this->current_user_can_access() ) {
 			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
 		}
+
+		PS_Update_Manager_Update_Checker::get_instance()->force_check();
 
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
 		$scanner->scan_all();
@@ -1078,9 +1141,11 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 
 		// Zielverzeichnis und Zielordner vorbereiten
-		$destination = ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes/' : WP_PLUGIN_DIR . '/';
+		$destination = trailingslashit( ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes' : WP_PLUGIN_DIR );
 		$slug_safe = sanitize_file_name( $slug );
 		$target_dir = trailingslashit( $destination ) . $slug_safe;
+		$dirs_before = glob( $destination . '*', GLOB_ONLYDIR );
+		$dirs_before = is_array( $dirs_before ) ? array_map( 'realpath', $dirs_before ) : array();
 		// Vorhandenen Zielordner vorab löschen
 		if ( file_exists( $target_dir ) ) {
 			$this->delete_directory_recursive( $target_dir );
@@ -1134,7 +1199,20 @@ class PS_Update_Manager_Admin_Dashboard {
 		
 		// GitHub ZIP hat Ordner wie "Power-Source-ps-chat-abc123"
 		// Umbenennen zu "ps-chat"
+		if ( is_dir( $target_dir ) ) {
+			return true;
+		}
+
 		$extracted_dir = $this->find_extracted_directory( $destination, $repo );
+
+		if ( ! $extracted_dir ) {
+			$dirs_after = glob( $destination . '*', GLOB_ONLYDIR );
+			$dirs_after = is_array( $dirs_after ) ? array_map( 'realpath', $dirs_after ) : array();
+			$new_dirs = array_values( array_diff( $dirs_after, $dirs_before ) );
+			if ( count( $new_dirs ) === 1 && is_dir( $new_dirs[0] ) ) {
+				$extracted_dir = $new_dirs[0];
+			}
+		}
 		
 		if ( $extracted_dir ) {
 			// SICHERHEIT: Path Traversal Prevention
@@ -1164,6 +1242,10 @@ class PS_Update_Manager_Admin_Dashboard {
 			if ( file_exists( $extracted_dir ) && $extracted_dir !== $target_dir ) {
 				$this->delete_directory_recursive( $extracted_dir );
 			}
+		}
+
+		if ( ! is_dir( $target_dir ) ) {
+			return new WP_Error( 'install_directory_missing', __( 'Installation fehlgeschlagen: Zielordner wurde nach dem Entpacken nicht gefunden.', 'ps-update-manager' ) );
 		}
 
 		return true;
@@ -1265,7 +1347,7 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * Test GitHub API - Debug-Funktion
 	 */
 	public function ajax_test_github_api() {
-		check_ajax_referer( 'ps_update_manager', 'nonce' );
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
 		
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( __( 'Keine Berechtigung', 'ps-update-manager' ) );
@@ -1303,23 +1385,30 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * @param string $slug Plugin/Theme Slug
 	 * @return string Logo URL
 	 */
-	private function get_product_logo_url( $slug ) {
+	private function get_product_logo_url( $slug, $repo = '' ) {
 		// Prüfe zunächst ob das Plugin/Theme lokal installiert ist
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $slug;
 		$theme_dir  = WP_CONTENT_DIR . '/themes/' . $slug;
 
 		// Logo.png lokal prüfen
 		if ( file_exists( $plugin_dir . '/Logo.png' ) ) {
-			return plugins_url( 'Logo.png', $plugin_dir . '/' . $slug . '.php' );
+			return content_url( 'plugins/' . $slug . '/Logo.png' );
 		} elseif ( file_exists( $theme_dir . '/Logo.png' ) ) {
-			return get_theme_file_uri( $slug . '/Logo.png' );
+			return content_url( 'themes/' . $slug . '/Logo.png' );
 		}
 
 		// Fallback auf psource-logo.png lokal
 		if ( file_exists( $plugin_dir . '/psource-logo.png' ) ) {
-			return plugins_url( 'psource-logo.png', $plugin_dir . '/' . $slug . '.php' );
+			return content_url( 'plugins/' . $slug . '/psource-logo.png' );
 		} elseif ( file_exists( $theme_dir . '/psource-logo.png' ) ) {
-			return get_theme_file_uri( $slug . '/psource-logo.png' );
+			return content_url( 'themes/' . $slug . '/psource-logo.png' );
+		}
+
+		if ( ! empty( $repo ) ) {
+			$safe_repo = preg_replace( '#[^A-Za-z0-9._/-]#', '', (string) $repo );
+			if ( ! empty( $safe_repo ) ) {
+				return 'https://cdn.jsdelivr.net/gh/' . $safe_repo . '@HEAD/Logo.png';
+			}
 		}
 
 		// Ultimativer Fallback: psource-logo.png aus PS Update Manager Plugin
@@ -1411,7 +1500,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$basename = isset( $_POST['basename'] ) ? sanitize_text_field( $_POST['basename'] ) : '';
 		$type = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'plugin';
 
-		if ( empty( $slug ) || empty( $basename ) ) {
+		if ( empty( $slug ) || ( 'plugin' === $type && empty( $basename ) ) ) {
 			wp_send_json_error( array( 'message' => __( 'Ungültige Parameter', 'ps-update-manager' ) ) );
 		}
 
@@ -1447,6 +1536,8 @@ class PS_Update_Manager_Admin_Dashboard {
 				'message' => __( 'Update fehlgeschlagen', 'ps-update-manager' ),
 			) );
 		}
+
+		PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
 
 		wp_send_json_success( array(
 			'message' => sprintf( __( '%s wurde erfolgreich aktualisiert.', 'ps-update-manager' ), $slug ),

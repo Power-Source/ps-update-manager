@@ -54,8 +54,19 @@ class PS_Update_Manager_Update_Checker {
 				continue;
 			}
 			
+			$installed_version = '';
+			if ( ! empty( $product['basename'] ) && isset( $transient->checked[ $product['basename'] ] ) ) {
+				$installed_version = (string) $transient->checked[ $product['basename'] ];
+			} elseif ( ! empty( $product['version'] ) ) {
+				$installed_version = (string) $product['version'];
+			}
+
+			if ( empty( $installed_version ) || empty( $update_info['version'] ) || empty( $update_info['download_url'] ) ) {
+				continue;
+			}
+
 			// Neue Version verfügbar?
-			if ( version_compare( $update_info['version'], $product['version'], '>' ) ) {
+			if ( version_compare( (string) $update_info['version'], $installed_version, '>' ) ) {
 				$plugin_data = array(
 					'slug'        => $product['slug'],
 					'new_version' => $update_info['version'],
@@ -92,7 +103,18 @@ class PS_Update_Manager_Update_Checker {
 				continue;
 			}
 			
-			if ( version_compare( $update_info['version'], $product['version'], '>' ) ) {
+			$installed_version = '';
+			if ( ! empty( $product['slug'] ) && isset( $transient->checked[ $product['slug'] ] ) ) {
+				$installed_version = (string) $transient->checked[ $product['slug'] ];
+			} elseif ( ! empty( $product['version'] ) ) {
+				$installed_version = (string) $product['version'];
+			}
+
+			if ( empty( $installed_version ) || empty( $update_info['version'] ) || empty( $update_info['download_url'] ) ) {
+				continue;
+			}
+
+			if ( version_compare( (string) $update_info['version'], $installed_version, '>' ) ) {
 				$theme_data = array(
 					'theme'       => $product['slug'],
 					'new_version' => $update_info['version'],
@@ -203,6 +225,10 @@ class PS_Update_Manager_Update_Checker {
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
 		
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
@@ -215,7 +241,24 @@ class PS_Update_Manager_Update_Checker {
 		//   "html_url": "..."
 		// }
 		
+		if ( ! is_array( $data ) ) {
+			return false;
+		}
+
+		if ( empty( $data['version'] ) || empty( $data['download_url'] ) ) {
+			return false;
+		}
+
 		return $data;
+	}
+
+	/**
+	 * Plugin-spezifische Update-Info-Caches löschen
+	 */
+	private function clear_update_info_cache() {
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_ps_update_info_%'" );
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_ps_update_info_%'" );
 	}
 	
 	/**
@@ -289,6 +332,7 @@ class PS_Update_Manager_Update_Checker {
 	public function force_check() {
 		delete_site_transient( 'update_plugins' );
 		delete_site_transient( 'update_themes' );
+		$this->clear_update_info_cache();
 		PS_Update_Manager_GitHub_API::get_instance()->clear_cache();
 		
 		wp_update_plugins();
