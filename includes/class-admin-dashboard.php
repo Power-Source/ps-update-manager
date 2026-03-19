@@ -141,7 +141,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 
 		// Scripts
-		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery', 'wp-pointer' ), '1.0.0', true );
 		
 		// PSources Katalog Script (nur auf der PSources-Seite)
 		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
@@ -383,10 +383,13 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
 		
-		// Scanner immer ausführen, damit Status sofort aktuell ist
-		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$scanner->scan_all();
-		$last_scan = current_time( 'timestamp' );
+		// Scan nur bei abgelaufenem Cache (verhindert blockierende Disk-Reads bei jedem Aufruf)
+		$scanner  = PS_Update_Manager_Product_Scanner::get_instance();
+		$last_scan = get_transient( 'ps_last_scan_time' );
+		if ( ! $last_scan ) {
+			$scanner->scan_all();
+			$last_scan = get_transient( 'ps_last_scan_time' );
+		}
 		
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
@@ -458,9 +461,20 @@ class PS_Update_Manager_Admin_Dashboard {
 				</p>
 				
 				<div class="ps-products-grid">
-					<?php foreach ( $products as $product ) : 
-						$update_info = $this->get_product_update_info( $product );
-						$has_update = $update_info && version_compare( $update_info['version'], $product['version'], '>' );
+					<?php
+					// WP-Update-Transients einmalig laden – keine GitHub-API-Calls während der Seitenausgabe
+					$_wp_update_plugins = get_site_transient( 'update_plugins' );
+					$_wp_update_themes  = get_site_transient( 'update_themes' );
+					foreach ( $products as $product ) :
+						$has_update  = false;
+						$new_version = '';
+						if ( 'plugin' === $product['type'] && ! empty( $product['basename'] ) && is_object( $_wp_update_plugins ) && isset( $_wp_update_plugins->response[ $product['basename'] ] ) ) {
+							$has_update  = true;
+							$new_version = $_wp_update_plugins->response[ $product['basename'] ]->new_version ?? '';
+						} elseif ( 'theme' === $product['type'] && ! empty( $product['slug'] ) && is_object( $_wp_update_themes ) && isset( $_wp_update_themes->response[ $product['slug'] ] ) ) {
+							$has_update  = true;
+							$new_version = $_wp_update_themes->response[ $product['slug'] ]['new_version'] ?? '';
+						}
 					?>
 						<div class="ps-product-card <?php echo $has_update ? 'has-update' : ''; ?>">
 							<div class="ps-product-header">
@@ -494,10 +508,10 @@ class PS_Update_Manager_Admin_Dashboard {
 							<?php if ( $has_update ) : ?>
 								<div class="ps-update-badge">
 									<span class="dashicons dashicons-update-alt"></span>
-									<?php printf( __( 'Update auf v%s verfügbar', 'ps-update-manager' ), esc_html( $update_info['version'] ) ); ?>
+								<?php printf( __( 'Update auf v%s verfügbar', 'ps-update-manager' ), esc_html( $new_version ?: '?' ) ); ?>
 								</div>
 							<?php endif; ?>
-							
+								
 							<div class="ps-product-links">
 								<?php
 								$docs_url = ! empty( $product['docs_url'] ) 
@@ -681,13 +695,19 @@ class PS_Update_Manager_Admin_Dashboard {
 		$category = isset( $_POST['category'] ) ? sanitize_key( $_POST['category'] ) : 'all';
 		$status   = isset( $_POST['status'] ) ? sanitize_key( $_POST['status'] ) : 'all';
 
-		// Produkte sammeln
+		// Scan nur wenn Cache abgelaufen (nicht bei jedem AJAX-Aufruf neu scannen)
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$scanner->scan_all();
+		if ( ! get_transient( 'ps_discovered_products' ) ) {
+			$scanner->scan_all();
+		}
 
 		$official_products  = $scanner->get_official_products();
 		$registry           = PS_Update_Manager_Product_Registry::get_instance();
 		$installed_products = $registry->get_all();
+
+		// WP-Update-Transients einmalig laden (schnell, keine GitHub-API-Calls)
+		$update_plugins = get_site_transient( 'update_plugins' );
+		$update_themes  = get_site_transient( 'update_themes' );
 
 		// Produkte vorbereiten
 		$all_products = array();
@@ -724,10 +744,18 @@ class PS_Update_Manager_Admin_Dashboard {
 				$product['github_repo']     = $installed['github_repo'] ?? $product['github_repo'];
 				$product['update_url']      = $installed['update_url'] ?? $product['update_url'];
 
-				$update_info = $this->get_product_update_info( $product );
-				if ( $update_info && version_compare( $update_info['version'], $installed['version'], '>' ) ) {
-					$product['update_available'] = true;
-					$product['new_version']      = $update_info['version'];
+				// Update-Status aus WP-Transient lesen (kein GitHub-API-Call pro Produkt)
+				if ( 'plugin' === $product['type'] ) {
+					$_bn = $installed['basename'] ?? null;
+					if ( $_bn && is_object( $update_plugins ) && isset( $update_plugins->response[ $_bn ] ) ) {
+						$product['update_available'] = true;
+						$product['new_version']      = $update_plugins->response[ $_bn ]->new_version ?? '';
+					}
+				} elseif ( 'theme' === $product['type'] ) {
+					if ( is_object( $update_themes ) && isset( $update_themes->response[ $slug ] ) ) {
+						$product['update_available'] = true;
+						$product['new_version']      = $update_themes->response[ $slug ]['new_version'] ?? '';
+					}
 				}
 			}
 
@@ -1208,11 +1236,19 @@ class PS_Update_Manager_Admin_Dashboard {
 	 * Verfügbare Updates zählen
 	 */
 	private function count_available_updates( $products ) {
+		// WP-Update-Transients lesen – kein blockierender GitHub-API-Call pro Produkt
+		$update_plugins = get_site_transient( 'update_plugins' );
+		$update_themes  = get_site_transient( 'update_themes' );
 		$count = 0;
 		foreach ( $products as $product ) {
-			$update_info = $this->get_product_update_info( $product );
-			if ( $update_info && ! empty( $product['version'] ) && version_compare( (string) $update_info['version'], (string) $product['version'], '>' ) ) {
-				$count++;
+			if ( 'plugin' === $product['type'] ) {
+				if ( ! empty( $product['basename'] ) && is_object( $update_plugins ) && isset( $update_plugins->response[ $product['basename'] ] ) ) {
+					$count++;
+				}
+			} elseif ( 'theme' === $product['type'] ) {
+				if ( ! empty( $product['slug'] ) && is_object( $update_themes ) && isset( $update_themes->response[ $product['slug'] ] ) ) {
+					$count++;
+				}
 			}
 		}
 		return $count;

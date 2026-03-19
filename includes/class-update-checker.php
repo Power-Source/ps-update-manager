@@ -311,11 +311,7 @@ class PS_Update_Manager_Update_Checker {
 			return __( 'Kein Changelog verfügbar.', 'ps-update-manager' );
 		}
 		
-		// Markdown zu HTML (simpel)
-		require_once ABSPATH . WPINC . '/class-simplepie.php';
-		$changelog = \SimplePie_Misc::absolutize_url( $changelog, '' );
-		
-		// Basic Markdown
+		// Basic Markdown to HTML
 		$changelog = preg_replace( '/^### (.+)$/m', '<h4>$1</h4>', $changelog );
 		$changelog = preg_replace( '/^## (.+)$/m', '<h3>$1</h3>', $changelog );
 		$changelog = preg_replace( '/^# (.+)$/m', '<h2>$1</h2>', $changelog );

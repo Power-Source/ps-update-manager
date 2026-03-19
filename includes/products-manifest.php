@@ -66,7 +66,7 @@ return array(
 
 	'marketpress' => array(
 		'type'        => 'plugin',
-		'name'        => 'MarketPress',
+		'name'        => 'PS MarketPress',
 		'repo'        => 'Power-Source/marketpress',
 		'description' => 'Das komplette ClassicPress E-Commerce-Plugin – funktioniert auch perfekt mit Multisite, um einen sozialen Marktplatz zu erstellen, auf dem Du eine Provision einbehalten kannst! Aktiviere das Plugin, passe Deine Einstellungen an und füge dann Produkte zu Deinem Shop hinzu.',
 		'category'    => 'ecommerce',
@@ -74,7 +74,7 @@ return array(
 		'compatible_with' => array(
 			'ps-mitgliedschaften' => 'Integriere Mitgliedschaften & Rabatte',
 			'ps-dsgvo'            => 'DSGVO-konform verkaufen',
-			'ps-smart-crm'        => 'Kundenverwaltung & CRM',
+			'ps-smart-crm'        => 'Kundenverwaltung & Buchhaltung direkt im CRM',
 		),
 	),
 
@@ -98,13 +98,17 @@ return array(
 
 	'ps-smart-crm' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS Smart CRM',
+		'name'        => 'PS Smart Business',
 		'repo'        => 'Power-Source/ps-smart-crm',
-		'description' => 'Fügt ClassicPress ein leistungsstarkes CRM hinzu. Verwalte Kunden, Rechnungen, TODO, Termine und zukünftige Benachrichtigungen an Agenten, Benutzer und Kunden. Halte Deine Buchhaltung und Kundenbeziehungen direkt in Deinem ClassicPress-Dashboard im Griff! Die PSOURCE Lösung für kleine und mittlere Unternehmen.',
+		'description' => 'Fügt ClassicPress eine leistungsstarkes Business-Suite hinzu. Du erältst CRM, Dokumentenmanagement, Zeiterfassung, Newsletter-Integration, Webapp deiner Homepage und vieles mehr – alles in einem benutzerfreundlichen Plugin.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-businessperson',
+		'featured'    => true,
 		'compatible_with' => array(
-			'marketpress' => 'Buche erfolgreiche Verkäufe direkt im CRM',
+			'marketpress' => 'Buche erfolgreiche Verkäufe direkt in Deiner Buchhaltung ein',
+			'private-messaging' => 'Kommunikation mit Kunden und im Team direkt auf der eigenen Webseite',
+			'terminmanager' => 'Verwalte Termine und Meetings direkt in Deinem Dashboard und der Webapp',
+			'ps-support' => 'Integriere Dein Support-System direkt in die Webapp und das CRM, um Kundenanfragen effizient zu verwalten',
 		),
 	),
 
@@ -261,6 +265,15 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'ps-cloner' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Cloner',
+		'repo'        => 'Power-Source/ps-cloner',
+		'description' => 'Klonen von Webseiten innerhalb eines Netzwerks einfach gemacht. Erstelle Kopien von bestehenden Seiten mit allen Inhalten, Einstellungen und Plugins.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'msreader' => array(
 		'type'        => 'plugin',
 		'name'        => 'Multisite Reader',
@@ -358,6 +371,15 @@ return array(
 		'description' => 'Google Maps lässt sich ganz einfach in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
+	'ps-medienoptimierung' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Medienoptimierung',
+		'repo'        => 'Power-Source/ps-medienoptimierung',
+		'description' => 'Lokale Bildoptimierung für WordPress-Medien ohne externe API-Abhängigkeiten.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-admin-links',
 	),
 
 	'ps-pretty-plugins' => array(

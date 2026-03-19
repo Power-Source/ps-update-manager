@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.6.0
 Requires PHP: 7.4
-Stable tag: 1.2.8
+Stable tag: 1.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,15 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.2.9 =
+
+* WEITER PSOURCE: PS Medienoptimierer, PS Cloner
+* Fix: JavaScript-Fehler `$(...).pointer is not a function` durch fehlende `wp-pointer`-Abhängigkeit behoben
+* Fix: Seitenladung extrem beschleunigt – GitHub-API-Calls werden nicht mehr synchron beim Rendern des Dashboards ausgeführt
+* Fix: `scan_all()` läuft jetzt nur bei abgelaufenem Cache, nicht mehr bei jedem Seitenaufruf
+* Fix: Update-Anzeige im Dashboard nutzt WP-eigene Update-Transients – Updates werden nun zuverlässig erkannt
+* Fix: Fehlerhafter `SimplePie_Misc::absolutize_url()`-Aufruf im Changelog-Formatter entfernt
 
 = 1.2.8 =
 
