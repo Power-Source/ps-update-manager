@@ -141,7 +141,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 
 		// Scripts
-		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery', 'wp-pointer' ), '1.0.0', true );
+		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
 		
 		// PSources Katalog Script (nur auf der PSources-Seite)
 		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
@@ -1273,11 +1273,17 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_send_json_error( __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) );
 		}
 
+		// Force: Transients löschen und neu checken
 		PS_Update_Manager_Update_Checker::get_instance()->force_check();
 
+		// Kurze Verzögerung um sicherzustellen, dass WP-Update-Prüfung fertig ist
+		sleep( 1 );
+
+		// Immer scannen (nicht Cache-Guard)
 		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
 		$scanner->scan_all();
 
+		// Frische Daten laden
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
 

@@ -4,21 +4,33 @@
 (function($) {
 	'use strict';
 	
-	$(document).ready(function() {
+	// Debug: Prüfe ob jQuery geladen ist
+	console.log('PS Update Manager Admin JS geladen. jQuery verfügbar:', typeof $ !== 'undefined');
+	
+	function initForceCheck() {
+		var $button = $('#ps-force-check');
 		
-		/**
-		 * Force Update Check Button
-		 */
-		$('#ps-force-check').on('click', function(e) {
+		if ($button.length === 0) {
+			console.warn('Button #ps-force-check nicht gefunden auf dieser Seite');
+			return;
+		}
+		
+		console.log('Button #ps-force-check gefunden, registriere Click-Handler');
+		
+		$button.on('click', function(e) {
 			e.preventDefault();
+			e.stopPropagation();
 			
-			var $button = $(this);
+			console.log('Button clicked, starte Force-Check');
+			
 			var originalText = $button.html();
 			
 			// Button State
 			$button.prop('disabled', true)
 				.addClass('checking')
 				.html('<span class="dashicons dashicons-update"></span> ' + PSUpdateManager.strings.checking);
+			
+			console.log('AJAX Request wird gesendet an:', PSUpdateManager.ajaxUrl);
 			
 			// AJAX Request
 			$.ajax({
@@ -29,11 +41,14 @@
 					nonce: PSUpdateManager.nonce
 				},
 				success: function(response) {
+					console.log('Force-Check Response:', response);
+					
 					if (response.success) {
 						$button.html('<span class="dashicons dashicons-yes"></span> ' + PSUpdateManager.strings.success);
 						
 						// Seite nach 1 Sekunde neu laden
 						setTimeout(function() {
+							console.log('Laden Seite neu...');
 							location.reload();
 						}, 1000);
 					} else {
@@ -41,12 +56,14 @@
 						if (response.data && response.data.message) {
 							errorMsg = response.data.message;
 						}
+						console.error('Force-Check Fehler:', errorMsg);
 						showError(errorMsg);
 						resetButton();
 					}
 				},
-				error: function() {
-					showError(PSUpdateManager.strings.error);
+				error: function(xhr, status, error) {
+					console.error('AJAX Fehler:', status, error, xhr);
+					showError(PSUpdateManager.strings.error + ': ' + error);
 					resetButton();
 				}
 			});
@@ -67,6 +84,17 @@
 				});
 			}
 		});
+	}
+	
+	// Starte sofort wenn DOM ready
+	if (document.readyState === 'loading') {
+		$(document).ready(initForceCheck);
+	} else {
+		// DOM ist bereits ready
+		initForceCheck();
+	}
+	
+	$(document).ready(function() {
 		
 		/**
 		 * Product Card Hover Effects
