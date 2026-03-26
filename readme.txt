@@ -3,9 +3,9 @@ Contributors: PSOURCE
 Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
 Tested up to: 6.4
-ClassicPress: 2.6.0
+ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.2.9
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,17 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 == Changelog ==
 
 = 1.3.0 =
+
+* Fix: Hero-Stat-Layout im Dashboard repariert (saubere HTML-Struktur, korrekt geschlossene Container)
+* Fix: Empfehlung aus rechter Dark-Sidebar in den Hero-Stats-Bereich integriert
+* Fix: Empfehlungskachel visuell an restliche Hinweis-/Stat-Kacheln angepasst (kein aggressiver Hervorhebungsstil)
+* Fix: Empfehlungsbereich zeigt bis zu 3 Plugin-Empfehlungen mit Logo, Name und Kurzbegründung
+* Fix: Responsive-/Overflow-Probleme im Empfehlungsbereich beseitigt (kein Herausragen über Container)
+* Fix: Community-Pulse-Kachel und zugehörige Dashboard-JS-Initialisierung entfernt
+* Fix: Dashboard-Hinweis "GitHub Token fehlt" vollständig entfernt
+* Fix: Token-bezogene Logik aus GitHub-API-Request entfernt (keine Token-Option/Anzeige mehr im UI)
+* Fix: Fehlermeldung bei GitHub-Rate-Limit neutralisiert (kein Verweis mehr auf Token-Konfiguration)
+* Fix: Multisite-Privacy-Tool weiter lokalisiert (Tool-Metadaten + JS-Fehlermeldungen über Textdomain)
 
 = 1.2.9 =
 

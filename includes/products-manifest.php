@@ -402,7 +402,7 @@ return array(
 
 	'ps-support' => array(
 		'type'        => 'plugin',
-		'name'        => 'PS-Support',
+		'name'        => 'PS-Support System',
 		'repo'        => 'Power-Source/ps-support',
 		'description' => 'Richte auf jeder ClassicPress-Seite ein fantastisches Support-Ticket-System mit häufig gestellten Fragen ein, oder biete Deinen Usern einen Netzwerkweiten HelpDesk an.',
 		'category'    => 'community',

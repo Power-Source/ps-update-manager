@@ -31,14 +31,14 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 *
 	 * @var string
 	 */
-	public $name = 'Multisite Privacy';
+	public $name = '';
 
 	/**
 	 * Tool description
 	 *
 	 * @var string
 	 */
-	public $description = 'Control blog visibility and access levels (public, private, password-protected, etc.)';
+	public $description = '';
 
 	/**
 	 * Tool type (network-only)
@@ -58,6 +58,10 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 * Initialize the tool
 	 */
 	public function init() {
+		// Localized tool meta so it is picked up by the plugin textdomain.
+		$this->name = __( 'Multisite-Datenschutz', 'ps-update-manager' );
+		$this->description = __( 'Steuere die Sichtbarkeit und Zugriffsstufen von Unterseiten (oeffentlich, privat, passwortgeschuetzt usw.).', 'ps-update-manager' );
+
 		// Only on multisite
 		if ( ! is_multisite() ) {
 			return;
@@ -797,7 +801,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 								headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
 								body: new URLSearchParams({ action: 'ps_privacy_sync_batch', cmd: 'list', _ajax_nonce: nonce })
 							}).then(function(r){ return r.json(); }).then(function(resp){
-								if(!resp.success){ alert(resp.data && resp.data.message ? resp.data.message : 'Fehler beim Laden der Sites'); btn.removeAttribute('disabled'); prog.style.display = 'none'; return; }
+								if(!resp.success){ alert(resp.data && resp.data.message ? resp.data.message : '<?php echo esc_js( __( 'Fehler beim Laden der Unterseiten', 'ps-update-manager' ) ); ?>'); btn.removeAttribute('disabled'); prog.style.display = 'none'; return; }
 								var ids = resp.data.ids || [];
 								var index = 0; var batch = 20; var fails = [];
 								function step(){
@@ -826,7 +830,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 									}).catch(function(){ fails = fails.concat(chunk); index += batch; setTimeout(step, 50); });
 								}
 								step();
-							}).catch(function(){ alert('Fehler beim Starten der Synchronisierung'); btn.removeAttribute('disabled'); prog.style.display = 'none'; });
+							}).catch(function(){ alert('<?php echo esc_js( __( 'Fehler beim Starten der Synchronisierung', 'ps-update-manager' ) ); ?>'); btn.removeAttribute('disabled'); prog.style.display = 'none'; });
 						});
 					}
 				})();

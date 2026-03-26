@@ -88,7 +88,9 @@
 	
 	// Starte sofort wenn DOM ready
 	if (document.readyState === 'loading') {
-		$(document).ready(initForceCheck);
+		$(document).ready(function() {
+			initForceCheck();
+		});
 	} else {
 		// DOM ist bereits ready
 		initForceCheck();

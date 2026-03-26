@@ -38,17 +38,10 @@ class PS_Update_Manager_GitHub_API {
 		// GitHub API Request
 		$url = "https://api.github.com/repos/{$repo}/releases/latest";
 		
-		// Optional: GitHub Token aus Environment/Settings für höhere Rate Limits
 		$headers = array(
 			'Accept' => 'application/vnd.github.v3+json',
 			'User-Agent' => 'PS-Update-Manager/1.1.2',
 		);
-		
-		// Prüfe auf GitHub Token in WP Settings
-		$github_token = get_option( 'ps_github_api_token' );
-		if ( ! empty( $github_token ) ) {
-			$headers['Authorization'] = 'token ' . sanitize_text_field( $github_token );
-		}
 		
 		$response = wp_remote_get( $url, array(
 			'timeout' => 15,
@@ -89,7 +82,7 @@ class PS_Update_Manager_GitHub_API {
 					// Nicht cachen (HTML kann sich schnell ändern), aber gib Ergebnis zurück
 					return $fallback;
 				}
-				return new WP_Error( 'github_rate_limit', __( 'GitHub API Rate Limit erreicht. Bitte später versuchen oder GitHub Token konfigurieren.', 'ps-update-manager' ) );
+				return new WP_Error( 'github_rate_limit', __( 'GitHub API Rate Limit erreicht. Bitte später erneut versuchen.', 'ps-update-manager' ) );
 			}
 			
 			return new WP_Error( 'github_api_error', sprintf(

@@ -95,6 +95,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'wp_ajax_ps_deactivate_plugin', array( $this, 'ajax_deactivate_plugin' ) );
 		add_action( 'wp_ajax_ps_activate_plugin', array( $this, 'ajax_activate_plugin' ) );
 		add_action( 'wp_ajax_ps_update_product', array( $this, 'ajax_update_product' ) );
+		add_action( 'wp_ajax_ps_community_pulse', array( $this, 'ajax_community_pulse' ) );
 	}
 
 	/**
@@ -377,95 +378,417 @@ class PS_Update_Manager_Admin_Dashboard {
 	/**
 	 * Dashboard rendern
 	 */
+	/**
+	 * AJAX: Community Pulse – aggregierte GitHub-Stats aller installierten Repos
+	 * Gecacht 24h als kombiniertes Transient um Rate-Limits zu schonen
+	 */
+	public function ajax_community_pulse() {
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+
+		if ( ! $this->current_user_can_access() ) {
+			wp_send_json_error( array( 'message' => 'Keine Berechtigung' ) );
+		}
+
+		$cache_key = 'ps_community_pulse_v2';
+		$cached    = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			wp_send_json_success( $cached );
+		}
+
+		// Manifest direkt nutzen – enthält alle PSOURCE Repos zuverlässig
+		$manifest_file = PS_UPDATE_MANAGER_DIR . 'includes/products-manifest.php';
+		$manifest      = file_exists( $manifest_file ) ? include $manifest_file : array();
+		$github        = PS_Update_Manager_GitHub_API::get_instance();
+
+		$active_30d    = 0;
+		$latest_ts     = 0;
+		$latest_repo   = '';
+		$repos_fetched = 0;
+		$limit         = 10; // max. Repos pro Aufruf um Rate-Limit zu schonen
+		$cutoff_30d    = current_time( 'timestamp' ) - ( 30 * DAY_IN_SECONDS );
+
+		foreach ( $manifest as $slug => $product ) {
+			if ( empty( $product['repo'] ) ) {
+				continue;
+			}
+			if ( $repos_fetched >= $limit ) {
+				break;
+			}
+
+			$info = $github->get_repo_info( $product['repo'] );
+			if ( is_wp_error( $info ) || ! is_array( $info ) ) {
+				continue;
+			}
+
+			if ( ! empty( $info['updated_at'] ) ) {
+				$ts = strtotime( $info['updated_at'] );
+				if ( $ts >= $cutoff_30d ) {
+					$active_30d++;
+				}
+				if ( $ts > $latest_ts ) {
+					$latest_ts   = $ts;
+					$latest_repo = $product['name'];
+				}
+			}
+
+			$repos_fetched++;
+		}
+
+		$data = array(
+			'active_30d'   => $active_30d,
+			'repos_fetched'=> $repos_fetched,
+			'latest_repo'  => $latest_repo,
+			'latest_ago'   => $latest_ts > 0 ? human_time_diff( $latest_ts, current_time( 'timestamp' ) ) : '',
+		);
+
+		// 24h cachen
+		set_transient( $cache_key, $data, 24 * HOUR_IN_SECONDS );
+
+		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Ecosystem Stacks definieren – zielorientierte Plugin-Kombinationen
+	 */
+	private function get_ecosystem_stacks() {
+		return array(
+			'shop' => array(
+				'title' => __( 'Online-Shop', 'ps-update-manager' ),
+				'desc'  => __( 'Vollständiger E-Commerce mit DSGVO, Mitgliedschaften & CRM', 'ps-update-manager' ),
+				'icon'  => 'dashicons-cart',
+				'color' => '#0073aa',
+				'slugs' => array( 'marketpress', 'ps-dsgvo', 'ps-mitgliedschaften', 'ps-smart-crm', 'affiliate' ),
+			),
+			'community' => array(
+				'title' => __( 'Community-Plattform', 'ps-update-manager' ),
+				'desc'  => __( 'Soziales Netzwerk, private Nachrichten, Wiki & Chat', 'ps-update-manager' ),
+				'icon'  => 'dashicons-groups',
+				'color' => '#00a32a',
+				'slugs' => array( 'ps-community', 'private-messaging', 'ps-mitgliedschaften', 'ps-wiki', 'ps-chat' ),
+			),
+			'education' => array(
+				'title' => __( 'Bildungsplattform', 'ps-update-manager' ),
+				'desc'  => __( 'Online-Kurse, Mitgliedschaften & Terminverwaltung', 'ps-update-manager' ),
+				'icon'  => 'dashicons-welcome-learn-more',
+				'color' => '#8c00d4',
+				'slugs' => array( 'coursepress', 'ps-mitgliedschaften', 'marketpress', 'terminmanager', 'e-newsletter' ),
+			),
+			'business' => array(
+				'title' => __( 'Business Suite', 'ps-update-manager' ),
+				'desc'  => __( 'CRM, Termine, Newsletter & Support auf einer Plattform', 'ps-update-manager' ),
+				'icon'  => 'dashicons-businessperson',
+				'color' => '#b26900',
+				'slugs' => array( 'ps-smart-crm', 'terminmanager', 'private-messaging', 'ps-support', 'e-newsletter' ),
+			),
+			'network' => array(
+				'title' => __( 'Multisite Netzwerk', 'ps-update-manager' ),
+				'desc'  => __( 'Bloghosting, Cloner, Netzwerk-Index & Reader', 'ps-update-manager' ),
+				'icon'  => 'dashicons-networking',
+				'color' => '#d63638',
+				'slugs' => array( 'ps-bloghosting', 'ps-cloner', 'ps-postindexer', 'msreader', 'easyblogging' ),
+			),
+		);
+	}
+
+	/**
+	 * Empfehlungen aus compatible_with im Manifest generieren
+	 *
+	 * @param array $installed_slugs Liste der installierten Produkt-Slugs
+	 * @return array
+	 */
+	private function get_recommended_products( $installed_slugs ) {
+		$scanner  = PS_Update_Manager_Product_Scanner::get_instance();
+		$official = $scanner->get_official_products();
+
+		$recommendations = array();
+		foreach ( $installed_slugs as $slug ) {
+			if ( ! isset( $official[ $slug ] ) ) {
+				continue;
+			}
+			$manifest = $official[ $slug ];
+			if ( empty( $manifest['compatible_with'] ) ) {
+				continue;
+			}
+			foreach ( $manifest['compatible_with'] as $rec_slug => $reason ) {
+				if ( in_array( $rec_slug, $installed_slugs, true ) ) {
+					continue;
+				}
+				if ( ! isset( $official[ $rec_slug ] ) ) {
+					continue;
+				}
+				if ( ! isset( $recommendations[ $rec_slug ] ) ) {
+					$rec_repo = $official[ $rec_slug ]['repo'] ?? '';
+					$recommendations[ $rec_slug ] = array(
+						'name'        => $official[ $rec_slug ]['name'],
+						'reason'      => $reason,
+						'logo_url'    => $this->get_product_logo_url( $rec_slug, $rec_repo ),
+						'repo'        => $rec_repo,
+						'type'        => $official[ $rec_slug ]['type'],
+						'from'        => $official[ $slug ]['name'],
+						'count'       => 1,
+					);
+				} else {
+					$recommendations[ $rec_slug ]['count']++;
+					$recommendations[ $rec_slug ]['from'] .= ', ' . $official[ $slug ]['name'];
+				}
+			}
+		}
+
+		uasort( $recommendations, function( $a, $b ) { return $b['count'] - $a['count']; } );
+
+		return array_slice( $recommendations, 0, 6, true );
+	}
+
 	public function render_dashboard() {
 		// Zugriffsprüfung
 		if ( ! $this->current_user_can_access() ) {
 			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
 		}
-		
-		// Scan nur bei abgelaufenem Cache (verhindert blockierende Disk-Reads bei jedem Aufruf)
-		$scanner  = PS_Update_Manager_Product_Scanner::get_instance();
+
+		// Scan nur bei abgelaufenem Cache
+		$scanner   = PS_Update_Manager_Product_Scanner::get_instance();
 		$last_scan = get_transient( 'ps_last_scan_time' );
 		if ( ! $last_scan ) {
 			$scanner->scan_all();
 			$last_scan = get_transient( 'ps_last_scan_time' );
 		}
-		
-		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
+
+		$products          = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$updates_available = $this->count_available_updates( $products );
-		
+		$active_count      = $this->count_active( $products );
+		$total_count       = count( $products );
+		$installed_slugs   = array_keys( $products );
+
+		$stacks      = $this->get_ecosystem_stacks();
+		$recommended = $this->get_recommended_products( $installed_slugs );
+		$official    = $scanner->get_official_products();
+
+		$_wp_update_plugins = get_site_transient( 'update_plugins' );
+		$_wp_update_themes  = get_site_transient( 'update_themes' );
+
+		$catalog_url = is_network_admin()
+			? network_admin_url( 'admin.php?page=ps-update-manager-psources' )
+			: admin_url( 'admin.php?page=ps-update-manager-psources' );
+
+		$tools_url = is_network_admin()
+			? network_admin_url( 'admin.php?page=ps-update-manager-tools' )
+			: admin_url( 'admin.php?page=ps-update-manager-tools' );
+		$settings_url = is_network_admin()
+			? network_admin_url( 'admin.php?page=ps-update-manager-settings' )
+			: admin_url( 'admin.php?page=ps-update-manager-settings' );
+
+		$tool_manager    = PS_Manager_Tool_Manager::get_instance();
+		$available_tools = $tool_manager->get_available_tools();
+
 		?>
 		<div class="wrap ps-update-manager-dashboard">
-			<h1><?php esc_html_e( 'PS Update Manager', 'ps-update-manager' ); ?></h1>
-			
-			<div class="ps-dashboard-header">
-				<div class="ps-stats">
-					<div class="ps-stat-box">
-						<div class="ps-stat-number"><?php echo count( $products ); ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Gefundene PSOURCE', 'ps-update-manager' ); ?></div>
-					</div>
-					<div class="ps-stat-box">
-						<div class="ps-stat-number"><?php echo $updates_available; ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Updates verfügbar', 'ps-update-manager' ); ?></div>
-					</div>
-					<div class="ps-stat-box">
-						<div class="ps-stat-number"><?php echo $this->count_active( $products ); ?></div>
-						<div class="ps-stat-label"><?php esc_html_e( 'Aktive PSOURCE', 'ps-update-manager' ); ?></div>
-					</div>
-				</div>
-				
-				<div class="ps-actions">
-					<button type="button" id="ps-force-check" class="button button-primary">
-						<span class="dashicons dashicons-update"></span>
-						<?php esc_html_e( 'Updates prüfen', 'ps-update-manager' ); ?>
-					</button>
-				</div>
+
+			<!-- =================== HERO =================== -->
+			<div class="ps-hero">
+				<div class="ps-hero-body">
+					<div class="ps-hero-left">
+						<div class="ps-hero-top">
+							<div class="ps-hero-identity">
+								<span class="dashicons dashicons-update ps-hero-icon"></span>
+								<div>
+									<h1><?php esc_html_e( 'PSOURCE Manager', 'ps-update-manager' ); ?></h1>
+									<p class="ps-hero-sub"><?php esc_html_e( 'Dein ClassicPress Ökosystem – Open Source, Deutsch, vollständig.', 'ps-update-manager' ); ?></p>
+								</div>
+							</div>
+							<div class="ps-hero-btns">
+								<button type="button" id="ps-force-check" class="button button-primary">
+									<span class="dashicons dashicons-update"></span>
+									<?php esc_html_e( 'Updates prüfen', 'ps-update-manager' ); ?>
+								</button>
+								<a href="<?php echo esc_url( $catalog_url ); ?>" class="button">
+									<span class="dashicons dashicons-store"></span>
+									<?php esc_html_e( 'Alle PSOURCE entdecken', 'ps-update-manager' ); ?>
+								</a>
+							</div>
+						</div>
+
+						<div class="ps-hero-stats">
+							<div class="ps-stat-tile">
+								<span class="dashicons dashicons-admin-plugins ps-stat-icon"></span>
+								<span class="ps-stat-num"><?php echo intval( $total_count ); ?></span>
+								<span class="ps-stat-lbl"><?php esc_html_e( 'Installiert', 'ps-update-manager' ); ?></span>
+							</div>
+							<div class="ps-stat-tile<?php echo $active_count > 0 ? ' ps-stat-green' : ''; ?>">
+								<span class="dashicons dashicons-yes-alt ps-stat-icon"></span>
+								<span class="ps-stat-num"><?php echo intval( $active_count ); ?></span>
+								<span class="ps-stat-lbl"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+							</div>
+							<div class="ps-stat-tile<?php echo $updates_available > 0 ? ' ps-stat-orange' : ''; ?>">
+								<span class="dashicons dashicons-update-alt ps-stat-icon"></span>
+								<span class="ps-stat-num"><?php echo intval( $updates_available ); ?></span>
+								<span class="ps-stat-lbl"><?php esc_html_e( 'Updates', 'ps-update-manager' ); ?></span>
+							</div>
+							<?php if ( ! empty( $recommended ) ) :
+								$top_recommendations = array_slice( $recommended, 0, 3, true );
+							?>
+							<div class="ps-stat-tile ps-stat-reco">
+								<div class="ps-reco-tile-head">
+									<span class="ps-reco-tile-badge"><?php esc_html_e( 'Tipps fuer dein Setup', 'ps-update-manager' ); ?></span>
+								</div>
+								<div class="ps-reco-tile-grid">
+									<?php foreach ( $top_recommendations as $r_slug => $reco ) : ?>
+										<a href="<?php echo esc_url( $catalog_url ); ?>" class="ps-reco-tile-item" title="<?php echo esc_attr( $reco['reason'] ); ?>">
+											<img src="<?php echo esc_url( $reco['logo_url'] ); ?>" alt="" class="ps-reco-tile-logo">
+											<div class="ps-reco-tile-info">
+												<strong><?php echo esc_html( $reco['name'] ); ?></strong>
+												<span class="ps-reco-tile-reason"><?php echo esc_html( $reco['reason'] ); ?></span>
+											</div>
+										</a>
+									<?php endforeach; ?>
+								</div>
+							</div>
+							<?php endif; ?>
+						</div>
+
+						<div class="ps-hero-footer">
+							<?php if ( $last_scan ) : ?>
+								<span class="ps-hero-scan">
+									<span class="dashicons dashicons-clock"></span>
+									<?php printf(
+										esc_html__( 'Letzter Scan vor %s', 'ps-update-manager' ),
+										human_time_diff( $last_scan, current_time( 'timestamp' ) )
+									); ?>
+								</span>
+							<?php endif; ?>
+						</div>
+					</div><!-- .ps-hero-left -->
+
+				</div><!-- .ps-hero-body -->
 			</div>
-			
-			<?php if ( $last_scan ) : ?>
-				<p class="ps-scan-info">
-					<?php
-					printf(
-						esc_html__( 'Letzter Scan: %s', 'ps-update-manager' ),
-						human_time_diff( $last_scan, current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'ps-update-manager' )
-					);
-					?>
-				</p>
-			<?php endif; ?>
-			
+
 			<?php if ( $updates_available > 0 ) : ?>
-				<div class="notice notice-info">
-					<p>
-						<strong><?php esc_html_e( 'Updates verfügbar!', 'ps-update-manager' ); ?></strong>
-						<?php
-						if ( $updates_available === 1 ) {
-							esc_html_e( 'Es ist ein Update für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' );
-						} else {
-							printf(
-								esc_html__( 'Es sind %d Updates für deine PSOURCE-Installationen verfügbar.', 'ps-update-manager' ),
-								$updates_available
-							);
-						}
-						?>
-						<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-small">
+				<div class="ps-alert ps-alert-update">
+					<span class="dashicons dashicons-update-alt"></span>
+					<div>
+						<strong><?php printf(
+							esc_html( _n( '%d Update verfügbar', '%d Updates verfügbar', $updates_available, 'ps-update-manager' ) ),
+							intval( $updates_available )
+						); ?></strong>
+						<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-small" style="margin-left:12px;">
 							<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
 						</a>
-					</p>
+					</div>
 				</div>
 			<?php endif; ?>
-			
-			<div class="ps-products-overview">
-				<h2><?php esc_html_e( 'Deine PSOURCE-Übersicht', 'ps-update-manager' ); ?></h2>
-				<p>
-					<?php esc_html_e( 'Hier findest du alle PSOURCE Plugins und Themes, die auf deiner Webseite installiert sind. Du kannst den Status, die Version und verfügbare Updates auf einen Blick sehen.', 'ps-update-manager' ); ?>
-				</p>
-				
-				<div class="ps-products-grid">
-					<?php
-					// WP-Update-Transients einmalig laden – keine GitHub-API-Calls während der Seitenausgabe
-					$_wp_update_plugins = get_site_transient( 'update_plugins' );
-					$_wp_update_themes  = get_site_transient( 'update_themes' );
-					foreach ( $products as $product ) :
+
+			<!-- =================== SCHNELLZUGRIFF =================== -->
+			<section class="ps-section">
+				<div class="ps-section-header">
+					<h2><span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Schnellzugriff', 'ps-update-manager' ); ?></h2>
+					<p><?php esc_html_e( 'Direkte Shortcuts zu Tools, Einstellungen und wichtigen Aktionen.', 'ps-update-manager' ); ?></p>
+				</div>
+				<div class="ps-quick-grid">
+
+					<a href="<?php echo esc_url( $catalog_url ); ?>" class="ps-quick-card ps-quick-catalog">
+						<span class="dashicons dashicons-store ps-quick-icon"></span>
+						<div class="ps-quick-info">
+							<strong><?php esc_html_e( 'PSOURCE Katalog', 'ps-update-manager' ); ?></strong>
+							<span><?php printf( esc_html__( '%d weitere Plugins verfügbar', 'ps-update-manager' ), max( 0, count( $official ) - $total_count ) ); ?></span>
+						</div>
+						<span class="dashicons dashicons-arrow-right-alt2 ps-quick-arrow"></span>
+					</a>
+
+					<?php foreach ( $available_tools as $tool ) :
+						$tool_url = ( is_network_admin()
+							? network_admin_url( 'admin.php?page=ps-update-manager-tools' )
+							: admin_url( 'admin.php?page=ps-update-manager-tools' )
+						) . '&tool=' . urlencode( $tool->id );
+					?>
+						<a href="<?php echo esc_url( $tool_url ); ?>" class="ps-quick-card ps-quick-tool">
+							<span class="dashicons dashicons-<?php echo esc_attr( $tool->icon ); ?> ps-quick-icon"></span>
+							<div class="ps-quick-info">
+								<strong><?php echo esc_html( $tool->name ); ?></strong>
+								<span><?php echo esc_html( wp_trim_words( $tool->description, 8 ) ); ?></span>
+							</div>
+							<span class="dashicons dashicons-arrow-right-alt2 ps-quick-arrow"></span>
+						</a>
+					<?php endforeach; ?>
+
+					<a href="<?php echo esc_url( $settings_url ); ?>" class="ps-quick-card ps-quick-settings">
+						<span class="dashicons dashicons-admin-generic ps-quick-icon"></span>
+						<div class="ps-quick-info">
+							<strong><?php esc_html_e( 'Einstellungen', 'ps-update-manager' ); ?></strong>
+							<span><?php esc_html_e( 'Berechtigungen und Systemoptionen', 'ps-update-manager' ); ?></span>
+						</div>
+						<span class="dashicons dashicons-arrow-right-alt2 ps-quick-arrow"></span>
+					</a>
+
+				</div>
+			</section>
+
+			<!-- =================== STACKS =================== -->
+			<section class="ps-section">
+				<div class="ps-section-header">
+					<h2><span class="dashicons dashicons-layout"></span> <?php esc_html_e( 'Was willst du bauen?', 'ps-update-manager' ); ?></h2>
+					<p><?php esc_html_e( 'Fertige Plugin-Kombis für dein Ziel. Grün = bereits installiert.', 'ps-update-manager' ); ?></p>
+				</div>
+				<div class="ps-stacks-grid">
+					<?php foreach ( $stacks as $stack_id => $stack ) :
+						$stack_slugs        = $stack['slugs'];
+						$installed_in_stack = array_intersect( $stack_slugs, $installed_slugs );
+						$count_in           = count( $installed_in_stack );
+						$count_total        = count( $stack_slugs );
+						$pct                = (int) round( ( $count_in / $count_total ) * 100 );
+					?>
+						<div class="ps-stack-card" style="--stack-color: <?php echo esc_attr( $stack['color'] ); ?>">
+							<div class="ps-stack-head">
+								<span class="ps-stack-icon dashicons <?php echo esc_attr( $stack['icon'] ); ?>"></span>
+								<div class="ps-stack-info">
+									<h3><?php echo esc_html( $stack['title'] ); ?></h3>
+									<p><?php echo esc_html( $stack['desc'] ); ?></p>
+								</div>
+								<div class="ps-stack-counter">
+									<span class="ps-stack-num"><?php echo intval( $count_in ); ?></span>
+									<span class="ps-stack-of">/<?php echo intval( $count_total ); ?></span>
+								</div>
+							</div>
+							<div class="ps-stack-bar-wrap">
+								<div class="ps-stack-bar" style="width: <?php echo intval( $pct ); ?>%"></div>
+							</div>
+							<div class="ps-stack-tags">
+								<?php foreach ( $stack_slugs as $s_slug ) :
+									$is_in  = in_array( $s_slug, $installed_slugs, true );
+									$s_name = isset( $official[ $s_slug ]['name'] ) ? $official[ $s_slug ]['name'] : $s_slug;
+								?>
+									<span class="ps-stag <?php echo $is_in ? 'ps-stag-in' : 'ps-stag-out'; ?>">
+										<?php if ( $is_in ) : ?>
+											<span class="dashicons dashicons-yes"></span>
+										<?php endif; ?>
+										<?php echo esc_html( $s_name ); ?>
+									</span>
+								<?php endforeach; ?>
+							</div>
+							<?php if ( $count_in < $count_total ) : ?>
+								<a href="<?php echo esc_url( $catalog_url ); ?>" class="ps-stack-cta">
+									<?php esc_html_e( 'Stack vervollständigen', 'ps-update-manager' ); ?>
+									<span class="dashicons dashicons-arrow-right-alt2"></span>
+								</a>
+							<?php else : ?>
+								<span class="ps-stack-done">
+									<span class="dashicons dashicons-awards"></span>
+									<?php esc_html_e( 'Stack vollständig!', 'ps-update-manager' ); ?>
+								</span>
+							<?php endif; ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</section>
+
+
+
+			<!-- =================== INSTALLIERTE PRODUKTE =================== -->
+			<section class="ps-section">
+				<div class="ps-section-header">
+					<h2><span class="dashicons dashicons-admin-plugins"></span> <?php esc_html_e( 'Installierte PSOURCE', 'ps-update-manager' ); ?></h2>
+					<p><?php printf( esc_html__( '%d Plugins & Themes auf dieser Installation.', 'ps-update-manager' ), intval( $total_count ) ); ?></p>
+				</div>
+				<div class="ps-installed-grid">
+					<?php foreach ( $products as $product ) :
 						$has_update  = false;
 						$new_version = '';
 						if ( 'plugin' === $product['type'] && ! empty( $product['basename'] ) && is_object( $_wp_update_plugins ) && isset( $_wp_update_plugins->response[ $product['basename'] ] ) ) {
@@ -475,88 +798,66 @@ class PS_Update_Manager_Admin_Dashboard {
 							$has_update  = true;
 							$new_version = $_wp_update_themes->response[ $product['slug'] ]['new_version'] ?? '';
 						}
+						$is_net_active = is_multisite() && $product['is_active'] && ! empty( $product['basename'] ) && is_plugin_active_for_network( $product['basename'] );
 					?>
-						<div class="ps-product-card <?php echo $has_update ? 'has-update' : ''; ?>">
-							<div class="ps-product-header">
-								<h3>
-									<?php echo esc_html( $product['name'] ); ?>
-									<?php if ( isset( $product['discovered'] ) && $product['discovered'] ) : ?>
-										<span class="ps-badge-discovered" title="<?php esc_attr_e( 'Automatisch erkannt', 'ps-update-manager' ); ?>">Auto</span>
-									<?php endif; ?>
-								</h3>
-								<span class="ps-product-version">v<?php echo esc_html( $product['version'] ); ?></span>
-							</div>
-							
-							<div class="ps-product-meta">
-								<span class="ps-product-type">
+						<div class="ps-inst-card<?php echo $has_update ? ' ps-inst-update' : ''; ?>">
+							<div class="ps-inst-top">
+								<div class="ps-inst-name">
 									<span class="dashicons dashicons-<?php echo 'plugin' === $product['type'] ? 'admin-plugins' : 'admin-appearance'; ?>"></span>
-									<?php echo esc_html( ucfirst( $product['type'] ) ); ?>
-								</span>
-								<span class="ps-product-status <?php echo $product['is_active'] ? 'active' : 'inactive'; ?>">
-									<?php 
-									// Multisite: Zeige ob netzwerkweit aktiv
-									if ( is_multisite() && $product['is_active'] && isset( $product['basename'] ) && is_plugin_active_for_network( $product['basename'] ) ) {
-										echo '<span class="dashicons dashicons-networking" style="font-size: 14px; width: 14px; height: 14px;"></span> ';
-										esc_html_e( 'Netzwerkweit aktiv', 'ps-update-manager' );
-									} else {
-										echo $product['is_active'] ? __( 'Aktiv', 'ps-update-manager' ) : __( 'Inaktiv', 'ps-update-manager' );
-									}
-									?>
-								</span>
-							</div>
-							
-							<?php if ( $has_update ) : ?>
-								<div class="ps-update-badge">
-									<span class="dashicons dashicons-update-alt"></span>
-								<?php printf( __( 'Update auf v%s verfügbar', 'ps-update-manager' ), esc_html( $new_version ?: '?' ) ); ?>
+									<?php echo esc_html( $product['name'] ); ?>
 								</div>
-							<?php endif; ?>
-								
-							<div class="ps-product-links">
+								<span class="ps-inst-version">v<?php echo esc_html( $product['version'] ); ?></span>
+							</div>
+							<div class="ps-inst-meta">
+								<?php if ( $has_update ) : ?>
+									<span class="ps-badge ps-badge-update">
+										<span class="dashicons dashicons-update-alt"></span>
+										v<?php echo esc_html( $new_version ?: '?' ); ?>
+									</span>
+								<?php endif; ?>
+								<?php if ( $is_net_active ) : ?>
+									<span class="ps-badge ps-badge-network">
+										<span class="dashicons dashicons-networking"></span>
+										<?php esc_html_e( 'Netzwerk', 'ps-update-manager' ); ?>
+									</span>
+								<?php elseif ( $product['is_active'] ) : ?>
+									<span class="ps-badge ps-badge-active"><?php esc_html_e( 'Aktiv', 'ps-update-manager' ); ?></span>
+								<?php else : ?>
+									<span class="ps-badge ps-badge-inactive"><?php esc_html_e( 'Inaktiv', 'ps-update-manager' ); ?></span>
+								<?php endif; ?>
+							</div>
+							<div class="ps-inst-links">
 								<?php
-								$docs_url = ! empty( $product['docs_url'] ) 
-									? $product['docs_url'] 
+								$docs_url = ! empty( $product['docs_url'] )
+									? $product['docs_url']
 									: 'https://power-source.github.io/' . rawurlencode( $product['slug'] );
 								?>
-								<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="button button-small">
-										<span class="dashicons dashicons-book"></span>
-										<?php esc_html_e( 'Docs', 'ps-update-manager' ); ?>
-									</a>
-								
-								<?php if ( ! empty( $product['support_url'] ) ) : ?>
-									<a href="<?php echo esc_url( $product['support_url'] ); ?>" target="_blank" class="button button-small">
-										<span class="dashicons dashicons-sos"></span>
-										<?php esc_html_e( 'Support', 'ps-update-manager' ); ?>
-									</a>
-								<?php endif; ?>
-								
+								<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="ps-icon-link" title="<?php esc_attr_e( 'Dokumentation', 'ps-update-manager' ); ?>">
+									<span class="dashicons dashicons-book"></span>
+								</a>
 								<?php if ( ! empty( $product['github_repo'] ) ) : ?>
-									<a href="<?php echo esc_url( 'https://github.com/' . $product['github_repo'] ); ?>" target="_blank" class="button button-small">
+									<a href="<?php echo esc_url( 'https://github.com/' . $product['github_repo'] ); ?>" target="_blank" class="ps-icon-link" title="GitHub">
 										<span class="dashicons dashicons-admin-site-alt3"></span>
-										<?php esc_html_e( 'GitHub', 'ps-update-manager' ); ?>
 									</a>
 								<?php endif; ?>
 							</div>
 						</div>
 					<?php endforeach; ?>
 				</div>
+			</section>
+
+			<!-- =================== COMMUNITY FOOTER =================== -->
+			<div class="ps-community-banner">
+				<div class="ps-community-text">
+					<strong><?php esc_html_e( 'PSOURCE ist Open Source', 'ps-update-manager' ); ?></strong>
+					<span><?php esc_html_e( 'Alles kostenlos, alles auf GitHub. Beiträge, Issues und Ideen willkommen.', 'ps-update-manager' ); ?></span>
+				</div>
+				<a href="https://github.com/power-source" target="_blank" class="button ps-community-btn">
+					<span class="dashicons dashicons-admin-site-alt3"></span>
+					<?php esc_html_e( 'GitHub / Power-Source', 'ps-update-manager' ); ?>
+				</a>
 			</div>
-			
-			<div class="ps-info-box">
-				<h3><?php esc_html_e( '💡 Über PS Update Manager', 'ps-update-manager' ); ?></h3>
-				<p>
-					<?php esc_html_e( 'Der PS Update Manager ist deine zentrale Anlaufstelle für alle PSource Plugins und Themes. Updates werden automatisch von GitHub oder deinem eigenen Server abgerufen.', 'ps-update-manager' ); ?>
-				</p>
-				<p>
-					<strong><?php esc_html_e( 'Open Source & Community:', 'ps-update-manager' ); ?></strong><br>
-					<?php esc_html_e( 'Alle PSOURCE Projekte sind Open Source. Du kannst jederzeit beitragen, Issues melden oder Features vorschlagen.', 'ps-update-manager' ); ?>
-				</p>
-				<p>
-					<a href="https://github.com/power-source" target="_blank" class="button">
-						<?php esc_html_e( 'Auf GitHub mitwirken um Dein Projekt zu verbessern', 'ps-update-manager' ); ?>
-					</a>
-				</p>
-			</div>
+
 		</div>
 		<?php
 	}
