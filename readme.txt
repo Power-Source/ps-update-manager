@@ -48,6 +48,8 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 == Changelog ==
 
+= 1.3.0 =
+
 = 1.2.9 =
 
 * WEITER PSOURCE: PS Medienoptimierer, PS Cloner

@@ -400,6 +400,15 @@ return array(
 		'icon'        => 'dashicons-admin-links',
 	),
 
+	'ps-support' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS-Support',
+		'repo'        => 'Power-Source/ps-support',
+		'description' => 'Richte auf jeder ClassicPress-Seite ein fantastisches Support-Ticket-System mit häufig gestellten Fragen ein, oder biete Deinen Usern einen Netzwerkweiten HelpDesk an.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'ps-live-debug' => array(
 		'type'        => 'plugin',
 		'name'        => 'PSOURCE Live Debug',
