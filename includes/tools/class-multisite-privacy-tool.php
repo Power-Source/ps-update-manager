@@ -69,6 +69,7 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 
 		// Handle settings save from tool tab
 		add_action( 'admin_init', array( $this, 'save_settings' ) );
+		add_action( 'admin_init', array( $this, 'save_site_privacy_override' ) );
 
 		// Add privacy options to wpmu_options (network admin) - für ClassicPress native integration
 		add_action( 'wpmu_options', array( $this, 'render_privacy_options' ) );
@@ -399,9 +400,13 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 
 		// Filter by network-available privacy levels
 		$available = get_site_option( 'privacy_available', array() );
-		$levels = array_filter( $levels, function( $label, $value ) use ( $available ) {
+		$filtered_levels = array_filter( $levels, function( $label, $value ) use ( $available ) {
 			return isset( $available[ (string) $value ] ) ? (bool) $available[ (string) $value ] : false;
 		}, ARRAY_FILTER_USE_BOTH );
+		// Fallback: if nothing is explicitly configured, keep all levels usable.
+		if ( ! empty( $filtered_levels ) ) {
+			$levels = $filtered_levels;
+		}
 
 		$current = get_option( 'blog_privacy', get_site_option( 'default_blog_privacy', '1' ) );
 		$auto_corrected = false;
@@ -440,12 +445,75 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	}
 
 	/**
+	 * Save subsite privacy override from Settings > Reading.
+	 */
+	public function save_site_privacy_override() {
+		if ( is_network_admin() || ! is_multisite() ) {
+			return;
+		}
+
+		if ( get_site_option( 'privacy_override', 'no' ) !== 'yes' ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['option_page'], $_POST['action'] ) ) {
+			return;
+		}
+
+		$option_page = sanitize_text_field( wp_unslash( $_POST['option_page'] ) );
+		$action = sanitize_text_field( wp_unslash( $_POST['action'] ) );
+		if ( 'reading' !== $option_page || 'update' !== $action ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'reading-options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['blog_privacy'] ) ) {
+			return;
+		}
+
+		$all_levels = array( '1', '0', '-1', '-2', '-3', '-4' );
+		$available = get_site_option( 'privacy_available', array() );
+		$allowed = array_values( array_filter( $all_levels, function( $level ) use ( $available ) {
+			return isset( $available[ $level ] ) ? (bool) $available[ $level ] : false;
+		} ) );
+		if ( empty( $allowed ) ) {
+			$allowed = $all_levels;
+		}
+
+		$privacy = sanitize_text_field( wp_unslash( $_POST['blog_privacy'] ) );
+		if ( ! in_array( $privacy, $allowed, true ) ) {
+			$default = (string) get_site_option( 'default_blog_privacy', '1' );
+			$privacy = in_array( $default, $allowed, true ) ? $default : (string) $allowed[0];
+		}
+
+		update_option( 'blog_privacy', $privacy );
+		update_option( 'blog_public', $privacy === '1' ? 1 : 0 );
+
+		if ( '-4' === $privacy ) {
+			$pwd = isset( $_POST['blog_privacy_password'] ) ? sanitize_text_field( wp_unslash( $_POST['blog_privacy_password'] ) ) : '';
+			if ( '' !== $pwd ) {
+				update_option( 'blog_privacy_password', $pwd );
+			} elseif ( '' === (string) get_option( 'blog_privacy_password', '' ) ) {
+				update_option( 'blog_privacy_password', wp_generate_password( 12, false ) );
+			}
+		}
+	}
+
+	/**
 	 * Signup form: render privacy options
 	 */
 	public function render_signup_privacy_options() {
 		if ( get_site_option( 'privacy_override', 'no' ) !== 'yes' ) {
 			return;
 		}
+
 		$levels = array(
 			'1'  => __( 'Öffentlich', 'ps-update-manager' ),
 			'0'  => __( 'Öffentlich mit Suchmaschinen-Block', 'ps-update-manager' ),
@@ -455,9 +523,14 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 			'-4' => __( 'Passwortgeschützt', 'ps-update-manager' ),
 		);
 		$available = get_site_option( 'privacy_available', array() );
-		$levels = array_filter( $levels, function( $label, $value ) use ( $available ) {
+		$filtered_levels = array_filter( $levels, function( $label, $value ) use ( $available ) {
 			return isset( $available[ (string) $value ] ) ? (bool) $available[ (string) $value ] : false;
 		}, ARRAY_FILTER_USE_BOTH );
+		// Fallback: if nothing is explicitly configured, keep all levels usable.
+		if ( ! empty( $filtered_levels ) ) {
+			$levels = $filtered_levels;
+		}
+
 		$current = get_site_option( 'default_blog_privacy', '1' );
 		if ( ! array_key_exists( (string) $current, $levels ) ) {
 			$current = (string) key( $levels );
@@ -475,7 +548,22 @@ class PS_Manager_Multisite_Privacy_Tool extends PS_Manager_Tool {
 	 */
 	public function add_signup_privacy_meta( $meta ) {
 		if ( isset( $_POST['signup_blog_privacy'] ) ) {
-			$meta['signup_blog_privacy'] = sanitize_text_field( wp_unslash( $_POST['signup_blog_privacy'] ) );
+			$all_levels = array( '1', '0', '-1', '-2', '-3', '-4' );
+			$available = get_site_option( 'privacy_available', array() );
+			$allowed = array_values( array_filter( $all_levels, function( $level ) use ( $available ) {
+				return isset( $available[ $level ] ) ? (bool) $available[ $level ] : false;
+			} ) );
+			if ( empty( $allowed ) ) {
+				$allowed = $all_levels;
+			}
+
+			$privacy = sanitize_text_field( wp_unslash( $_POST['signup_blog_privacy'] ) );
+			if ( ! in_array( $privacy, $allowed, true ) ) {
+				$default = (string) get_site_option( 'default_blog_privacy', '1' );
+				$privacy = in_array( $default, $allowed, true ) ? $default : (string) $allowed[0];
+			}
+
+			$meta['signup_blog_privacy'] = $privacy;
 		}
 		return $meta;
 	}

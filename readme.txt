@@ -48,6 +48,11 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 == Changelog ==
 
+= 1.3.1 =
+
+* Fix: Unterseiten-Datenschutz wird in Multisite nun zuverlässig gespeichert, wenn Überschreiben im Netzwerk-Admin aktiviert ist (kein unerwarteter Rückfall auf "Öffentlich").
+* Fix: Datenschutz-Auswahl für Unterseiten/Signup hat jetzt einen robusten Fallback, wenn im Netzwerk noch keine verfügbaren Stufen konfiguriert sind.
+
 = 1.3.0 =
 
 * Fix: Hero-Stat-Layout im Dashboard repariert (saubere HTML-Struktur, korrekt geschlossene Container)
