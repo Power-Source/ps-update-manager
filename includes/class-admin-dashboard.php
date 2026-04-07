@@ -1421,6 +1421,51 @@ class PS_Update_Manager_Admin_Dashboard {
 		?>
 		<div class="wrap ps-update-manager-settings">
 			<h1><?php esc_html_e( 'PS Update Manager - Berechtigungsmanagement', 'ps-update-manager' ); ?></h1>
+
+			<div class="ps-settings-hero">
+				<div class="ps-settings-hero-content">
+					<span class="ps-settings-hero-kicker"><?php esc_html_e( 'PSOURCE Netzwerk', 'ps-update-manager' ); ?></span>
+					<h2><?php esc_html_e( 'Alles Wichtige rund um PSOURCE an einem Ort', 'ps-update-manager' ); ?></h2>
+					<p><?php esc_html_e( 'Bleib bei neuen Entwicklungen auf dem Laufenden, spring direkt in die Dokumentation oder diskutiere mit der Community im Forum. Wenn Du tiefer einsteigen willst, findest Du alle Repositories auch gesammelt auf GitHub.', 'ps-update-manager' ); ?></p>
+					<div class="ps-settings-hero-actions">
+						<a class="ps-settings-hero-btn ps-settings-hero-btn-primary" href="https://psource.eimen.net/aktivitaetswall/" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-megaphone"></span>
+							<?php esc_html_e( 'Aktuelle DEV News', 'ps-update-manager' ); ?>
+						</a>
+						<a class="ps-settings-hero-btn" href="https://psource.eimen.net/wiki/categories/psource/" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-media-document"></span>
+							<?php esc_html_e( 'Dokumentationen', 'ps-update-manager' ); ?>
+						</a>
+						<a class="ps-settings-hero-btn" href="https://psource.eimen.net/ps-forum/" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-format-chat"></span>
+							<?php esc_html_e( 'Forum', 'ps-update-manager' ); ?>
+						</a>
+						<a class="ps-settings-hero-btn" href="https://github.com/Power-Source" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-admin-site-alt3"></span>
+							GitHub
+						</a>
+					</div>
+				</div>
+
+				<div class="ps-settings-hero-menu">
+					<a class="ps-settings-hero-menu-item" href="https://psource.eimen.net/aktivitaetswall/" target="_blank" rel="noopener noreferrer">
+						<strong><?php esc_html_e( 'DEV News', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Neue Builds, Änderungen und laufende Entwicklung.', 'ps-update-manager' ); ?></span>
+					</a>
+					<a class="ps-settings-hero-menu-item" href="https://psource.eimen.net/wiki/categories/psource/" target="_blank" rel="noopener noreferrer">
+						<strong><?php esc_html_e( 'Wiki', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Handbücher, Integrationen und technische Doku.', 'ps-update-manager' ); ?></span>
+					</a>
+					<a class="ps-settings-hero-menu-item" href="https://psource.eimen.net/ps-forum/" target="_blank" rel="noopener noreferrer">
+						<strong><?php esc_html_e( 'Forum', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Fragen, Feedback und Austausch mit der Community.', 'ps-update-manager' ); ?></span>
+					</a>
+					<a class="ps-settings-hero-menu-item" href="https://github.com/Power-Source" target="_blank" rel="noopener noreferrer">
+						<strong>GitHub</strong>
+						<span><?php esc_html_e( 'Quellcode, Issues und Beiträge direkt bei Power-Source.', 'ps-update-manager' ); ?></span>
+					</a>
+				</div>
+			</div>
 			
 			<div class="ps-settings-container">
 				<form method="post" action="">

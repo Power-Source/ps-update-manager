@@ -207,27 +207,31 @@ class PS_Update_Manager_Dependency_Manager {
 	}
 
 	/**
-	 * Generiert einen HTML-String für Plugins die DIESES Plugin erweitern (Infobox-Format)
-	 * 
+	 * Generiert einen HTML-String für kompatible Plugins (Infobox-Format)
+	 *
+	 * Die Beschreibungen in compatible_with sind gerichtet und gelten nur
+	 * fuer das aktuelle Plugin. Deshalb wird hier bewusst kein Reverse-Lookup
+	 * ueber andere Plugins gemacht.
+	 *
 	 * @param string $slug Plugin Slug
-	 * @return string HTML für Infobox
+	 * @return string HTML fuer Infobox
 	 */
 	public function render_extends_banner( $slug ) {
-		$extends = $this->get_plugins_using_this( $slug );
+		$compatible = $this->get_compatible_plugins( $slug );
 		
-		if ( empty( $extends ) ) {
-			return ''; // Kein Banner wenn keine Plugins dieses erweitern
+		if ( empty( $compatible ) ) {
+			return ''; // Kein Banner wenn keine Kompatibilitaet definiert ist
 		}
 
-		$installed_active = array_filter( $extends, function( $item ) {
+		$installed_active = array_filter( $compatible, function( $item ) {
 			return $item['installed'] && $item['active'];
 		});
 
-		$installed_inactive = array_filter( $extends, function( $item ) {
+		$installed_inactive = array_filter( $compatible, function( $item ) {
 			return $item['installed'] && ! $item['active'];
 		});
 
-		$not_installed = array_filter( $extends, function( $item ) {
+		$not_installed = array_filter( $compatible, function( $item ) {
 			return ! $item['installed'];
 		});
 

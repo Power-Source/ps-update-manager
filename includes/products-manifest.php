@@ -24,6 +24,12 @@ return array(
 		'category'    => 'development',
 		'icon'        => 'dashicons-update',
 		'featured'    => true,
+		'compatible_with' => array(
+			'ps-live-debug' => 'Debug-Logs direkt im Dashboard anzeigen',
+			'cp-defender' => 'Sicherheitsüberprüfungen und Empfehlungen für deine ClassicPress-Installation',
+			'psource-branding' => 'White-Label-Optionen für deine ClassicPress-Seite',
+			'ps-snapshot' => 'Schnelle Backup-Snapshots deiner Datenbank und Webseite erstellen und verwalten',
+		),
 	),
 
 
@@ -35,6 +41,11 @@ return array(
 		'category'    => 'sicherheit',
 		'icon'        => 'dashicons-admin-appearance',
 		'featured'    => true,
+		'compatible_with' => array(
+			'ps-live-debug' => 'Debug-Logs direkt im Dashboard anzeigen',
+			'cp-defender' => 'Sicherheitsüberprüfungen und Empfehlungen für deine ClassicPress-Installation',
+			'psource-branding' => 'White-Label-Optionen für deine ClassicPress-Seite',
+		),
 	),
 
 
@@ -75,6 +86,7 @@ return array(
 			'ps-mitgliedschaften' => 'Integriere Mitgliedschaften & Rabatte',
 			'ps-dsgvo'            => 'DSGVO-konform verkaufen',
 			'ps-smart-crm'        => 'Kundenverwaltung & Buchhaltung direkt im CRM',
+			'ps-kleinanzeigen'    => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
 		),
 	),
 
@@ -94,6 +106,11 @@ return array(
 		'description' => 'Das ultimative Bloghosting-Plugin für Multisites verwandelt reguläre Webseiten in mehrere PRO-Webseite-Abonnementstufen, die Zugriff auf Speicherplatz, Premium-Themen, Premium-Plugins und vieles mehr bieten! Ideal für Agenturen und Entwickler, die ihren Kunden hochwertige Bloghosting-Dienste anbieten möchten. In Verbindung mit anderen PSOURCE-Produkten wie PS Mitgliedschaften und MarketPress kannst Du ein komplettes Bloghosting-Geschäftsmodell erstellen.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-cloud',
+		'compatible_with' => array(
+			'marketpress' => 'Biete Deinen Webseiten-Betreibern einen integrierten E-Commerce-Shop mit Netzwerkweiten Marktplatzfunktionen',
+			'ps-support' => 'Premiumsupport für Deine Webseiten-Betreiber mit Features wie Ticketing, FAQs und mehr',
+			'ps-postindexer' => 'Sammle Content aus dem gesamten Netzwerk und stelle ihn in einem benutzerfreundlichen Dashboard zur Verfügung',
+		),
 	),
 
 	'ps-smart-crm' => array(
@@ -160,6 +177,19 @@ return array(
 		),
 	),
 
+	'ps-kleinanzeigen' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Kleinanzeigen',
+		'repo'        => 'Power-Source/ps-kleinanzeigen',
+		'description' => 'Füge Kleinanzeigen zu Deinem Blog oder Netzwerk hinzu. Erstelle und verwalte Anzeigen, lade Bilder hoch, sende E-Mails, aktiviere das Kreditsystem und berechne Deinen Benutzern die Platzierung von Anzeigen in Deinem Netzwerk.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'marketpress'      	  => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
+			'ps-mitgliedschaften' => 'Erlaube das veröffentlichen von Anzeigen nur für Mitglieder.',
+		),
+	),
+
 	'ps-jobboard' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS Jobboard',
@@ -169,6 +199,8 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 		'compatible_with' => array(
 			'marketpress'      => 'Erhalte Zahlungen für Jobangebote oder Premium-Listings',
+			'ps-community'     => 'Integriere Jobboard Funktionen in die Community-Funktionen',
+			'private-messaging' => 'Erlaube die Kommunikation zwischen Arbeitgebern und Bewerbern direkt auf der Webseite'
 		),
 	),
 

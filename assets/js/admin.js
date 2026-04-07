@@ -118,6 +118,11 @@
 		$(document).on('click', '.ps-install-product', function(e) {
 			e.preventDefault();
 			var $button = $(this);
+
+			if ($button.closest('.ps-update-manager-psources').length) {
+				return;
+			}
+
 			var slug = $button.data('slug');
 			var repo = $button.data('repo');
 			var type = $button.data('type');

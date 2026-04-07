@@ -6,6 +6,7 @@
 
 	const PSCatalog = {
 		activeTab: 'plugins',
+		storageKey: 'psCatalogActiveTab',
 		currentPage: 1,
 		filters: {
 			search: '',
@@ -14,7 +15,9 @@
 		},
 
 		init() {
+			this.activeTab = this.getInitialTab();
 			this.bindEvents();
+			this.syncTabUI();
 			this.loadProducts();
 		},
 
@@ -123,16 +126,35 @@
 		switchTab(tab) {
 			this.activeTab = tab;
 			this.currentPage = 1;
-			this.resetFilters();
-			
-			// Tab-UI aktualisieren
-			$('.ps-tab-link').removeClass('nav-tab-active');
-			$(`.ps-tab-link[data-tab="${tab}"]`).addClass('nav-tab-active');
+			this.persistActiveTab();
+			this.syncTabUI();
 			
 			// Kategorien für den Tab laden
 			this.loadCategories(tab);
-			
-			this.loadProducts();
+			this.resetFilters(false);
+		},
+
+		getInitialTab() {
+			const hashTab = window.location.hash ? window.location.hash.replace('#', '') : '';
+			const storedTab = window.sessionStorage ? window.sessionStorage.getItem(this.storageKey) : '';
+			const initialTab = hashTab || storedTab || this.activeTab;
+
+			return initialTab === 'themes' ? 'themes' : 'plugins';
+		},
+
+		persistActiveTab() {
+			if (window.sessionStorage) {
+				window.sessionStorage.setItem(this.storageKey, this.activeTab);
+			}
+
+			if (window.location.hash !== `#${this.activeTab}`) {
+				window.location.hash = this.activeTab;
+			}
+		},
+
+		syncTabUI() {
+			$('.ps-tab-link').removeClass('nav-tab-active');
+			$(`.ps-tab-link[data-tab="${this.activeTab}"]`).addClass('nav-tab-active');
 		},
 
 		loadCategories(tab) {
@@ -166,13 +188,15 @@
 			this.loadProducts();
 		},
 
-		resetFilters() {
+		resetFilters(shouldLoad = true) {
 			this.filters = { search: '', category: 'all', status: 'all' };
 			$('#ps-search').val('');
 			$('#ps-category').val('all');
 			$('#ps-status').val('all');
 			this.currentPage = 1;
-			this.loadProducts();
+			if (shouldLoad) {
+				this.loadProducts();
+			}
 		},
 
 		goToPage(page) {
@@ -354,8 +378,7 @@
 	$(document).ready(() => {
 		if ($('.ps-update-manager-psources').length) {
 			PSCatalog.init();
-			// Initial Kategorien für Plugins laden
-			PSCatalog.loadCategories('plugins');
+			PSCatalog.loadCategories(PSCatalog.activeTab);
 		}
 	});
 
