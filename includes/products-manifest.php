@@ -92,7 +92,7 @@ return array(
 			'ps-smart-crm'        => 'Kundenverwaltung & Buchhaltung direkt im CRM',
 			'ps-kleinanzeigen'    => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
 			'ps-jobboard'         => 'Erhalte Zahlungen für Jobangebote oder Premium-Listings',
-			'ps-events'           => 'Verkaufe Tickets für Veranstaltungen und Partys direkt auf Deiner Webseite',
+			'events-and-bookings' => 'Verkaufe Tickets für Veranstaltungen und Partys direkt auf Deiner Webseite',
 		),
 	),
 
