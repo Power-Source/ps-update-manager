@@ -59,6 +59,9 @@ return array(
 		'featured'    => true,
 		'compatible_with' => array(
 			'marketpress' => 'Verwalte Zahlungen & Abrechnungen für Mitgliedschaften',
+			'ps-community' => 'Grenze Communityfunktionen auf Mitglieder ein',
+			'ps-kleinanzeigen' => 'Erlaube das veröffentlichen von Anzeigen nur für Mitglieder.',
+			'cp-defender' => 'Verhindere Spam-Registrierungen und biete deinen Mitgliedern mehr Sicherheit',
 		),
 	),
 
@@ -70,8 +73,9 @@ return array(
 		'category'    => 'tools',
 		'icon'        => 'dashicons-shield-alt',
 		'compatible_with' => array(
-			'marketpress'      => 'E-Commerce DSGVO-konform',
+			'marketpress'      	  => 'E-Commerce DSGVO-konform',
 			'ps-mitgliedschaften' => 'Datenschutz für Mitgliedschaften',
+			'ps-community' 		  => 'Datenschutz für Community-Funktionen',
 		),
 	),
 
@@ -87,6 +91,8 @@ return array(
 			'ps-dsgvo'            => 'DSGVO-konform verkaufen',
 			'ps-smart-crm'        => 'Kundenverwaltung & Buchhaltung direkt im CRM',
 			'ps-kleinanzeigen'    => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
+			'ps-jobboard'         => 'Erhalte Zahlungen für Jobangebote oder Premium-Listings',
+			'ps-events'           => 'Verkaufe Tickets für Veranstaltungen und Partys direkt auf Deiner Webseite',
 		),
 	),
 
@@ -97,6 +103,11 @@ return array(
 		'description' => 'Eine komplette White-Label- und Branding-Lösung für Multisite. Adminbar, Loginsreens, Wartungsmodus, Favicons, Entfernen von ClassicPress-Links und Branding und vielem mehr. Schalte Deine Webseite in den Wartungsmodus, um anstehende Updates oder Wartungsarbeiten anzukündigen. Nutze SMTP-Einstellungen, oder gib anderen Nutzern in deiner Multisite Tipps vom Admin-Dashboard aus.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
+		'compatible_with' => array(
+			'ps-mitgliedschaften' => 'Rebrande Emails, ClassicPress-Branding entfernen',
+			'ps-dsgvo'            => 'Stellt Deinem Netzwerk oder Deiner Webseite DSGVO Optionen hinzu',
+			'cp-defender'         => 'Füge Sicherheitsfunktionen und -optionen zu deinem Netzwerk oder deiner Webseite hinzu',
+		),
 	),
 
 	'ps-bloghosting' => array(
