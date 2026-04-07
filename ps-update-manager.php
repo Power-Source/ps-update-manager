@@ -3,7 +3,7 @@
  * Plugin Name: PSOURCE Manager
  * Plugin URI: https://psource.eimen.net/wiki/psource-manager-dokumentation/
  * Description: PSOURCE Management & Toolbox Hub - Updates, Tools & Netzwerk-Administration
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: PSource
  * Author URI: https://psource.eimen.net
  * Text Domain: ps-update-manager
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin-Konstanten definieren
-define( 'PS_UPDATE_MANAGER_VERSION', '1.3.0' );
+define( 'PS_UPDATE_MANAGER_VERSION', '1.3.1' );
 define( 'PS_UPDATE_MANAGER_FILE', __FILE__ );
 define( 'PS_UPDATE_MANAGER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PS_UPDATE_MANAGER_URL', plugin_dir_url( __FILE__ ) );

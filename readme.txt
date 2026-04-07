@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,7 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 = 1.3.1 =
 
+* Neu: Mehr PSOURCE
 * Fix: Unterseiten-Datenschutz wird in Multisite nun zuverlässig gespeichert, wenn Überschreiben im Netzwerk-Admin aktiviert ist (kein unerwarteter Rückfall auf "Öffentlich").
 * Fix: Datenschutz-Auswahl für Unterseiten/Signup hat jetzt einen robusten Fallback, wenn im Netzwerk noch keine verfügbaren Stufen konfiguriert sind.
 * Fix: "Erweitere deine Möglichkeiten mit"-Box im Katalog zeigt nur noch die direkt beim jeweiligen Plugin definierten compatible_with-Einträge – kein unerwünschter Reverse-Lookup mehr aus anderen Plugins.
