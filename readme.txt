@@ -52,6 +52,10 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 * Fix: Unterseiten-Datenschutz wird in Multisite nun zuverlässig gespeichert, wenn Überschreiben im Netzwerk-Admin aktiviert ist (kein unerwarteter Rückfall auf "Öffentlich").
 * Fix: Datenschutz-Auswahl für Unterseiten/Signup hat jetzt einen robusten Fallback, wenn im Netzwerk noch keine verfügbaren Stufen konfiguriert sind.
+* Fix: "Erweitere deine Möglichkeiten mit"-Box im Katalog zeigt nur noch die direkt beim jeweiligen Plugin definierten compatible_with-Einträge – kein unerwünschter Reverse-Lookup mehr aus anderen Plugins.
+* Fix: Doppelter Install-Handler entfernt – der globale Handler in admin.js greift nicht mehr auf der Katalog-Seite, verhinderte korrekte AJAX-Verarbeitung und erzwang unnötigen Seiten-Reload.
+* Add: Aktiver Tab im PSOURCE Katalog bleibt nach Reload, Installation, Aktivierung und Deaktivierung erhalten (URL-Hash + sessionStorage).
+* Add: Hero-Banner auf der Einstellungsseite mit direkten Links zur PSOURCE-Webseite: DEV-News (Aktivitätswall), Wiki-Dokumentation, Forum und GitHub-Repository.
 
 = 1.3.0 =
 
