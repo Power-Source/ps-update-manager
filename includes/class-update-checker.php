@@ -27,6 +27,9 @@ class PS_Update_Manager_Update_Checker {
 		// Theme Updates
 		add_filter( 'pre_set_site_transient_update_themes', array( $this, 'check_theme_updates' ) );
 		
+		// Täglicher Sync soll WordPress-Update-Transients auch ohne Dashboard-Besuch befüllen
+		add_action( 'ps_update_manager_daily_scan', array( $this, 'force_check' ) );
+		
 		// Update-Links anpassen
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
 	}
@@ -333,5 +336,90 @@ class PS_Update_Manager_Update_Checker {
 		
 		wp_update_plugins();
 		wp_update_themes();
+		$this->store_update_snapshot();
+	}
+
+	/**
+	 * Update-Snapshot abrufen
+	 *
+	 * Der Snapshot ist die zentrale Quelle für Dashboard- und Menü-Zähler.
+	 */
+	public function get_update_snapshot( $refresh_if_stale = true ) {
+		$snapshot = get_transient( 'ps_update_manager_update_snapshot' );
+		if ( ! is_array( $snapshot ) ) {
+			$snapshot = array();
+		}
+
+		if ( $refresh_if_stale && $this->is_snapshot_stale( $snapshot ) ) {
+			$this->force_check();
+			$snapshot = get_transient( 'ps_update_manager_update_snapshot' );
+			if ( ! is_array( $snapshot ) ) {
+				$snapshot = array();
+			}
+		}
+
+		if ( ! isset( $snapshot['count'] ) ) {
+			$snapshot['count'] = $this->count_available_updates_from_wp();
+		}
+
+		if ( ! isset( $snapshot['checked_at'] ) ) {
+			$snapshot['checked_at'] = 0;
+		}
+
+		return $snapshot;
+	}
+
+	/**
+	 * Update-Zähler abrufen
+	 */
+	public function get_cached_update_count( $refresh_if_stale = true ) {
+		$snapshot = $this->get_update_snapshot( $refresh_if_stale );
+		return isset( $snapshot['count'] ) ? (int) $snapshot['count'] : 0;
+	}
+
+	/**
+	 * Prüfen, ob der Snapshot veraltet ist.
+	 */
+	private function is_snapshot_stale( $snapshot ) {
+		$checked_at = isset( $snapshot['checked_at'] ) ? (int) $snapshot['checked_at'] : 0;
+		if ( ! $checked_at ) {
+			return true;
+		}
+
+		return ( current_time( 'timestamp' ) - $checked_at ) > DAY_IN_SECONDS;
+	}
+
+	/**
+	 * Snapshot aus den aktuellen WP-Update-Transients erzeugen.
+	 */
+	private function store_update_snapshot() {
+		set_transient( 'ps_update_manager_update_snapshot', array(
+			'count'      => $this->count_available_updates_from_wp(),
+			'checked_at' => current_time( 'timestamp' ),
+		), DAY_IN_SECONDS );
+	}
+
+	/**
+	 * Verfügbare Updates aus den WordPress-Transients zählen.
+	 */
+	private function count_available_updates_from_wp() {
+		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
+		$update_plugins = get_site_transient( 'update_plugins' );
+		$update_themes  = get_site_transient( 'update_themes' );
+		$count = 0;
+
+		foreach ( $products as $product ) {
+			if ( 'plugin' === $product['type'] ) {
+				if ( ! empty( $product['basename'] ) && is_object( $update_plugins ) && isset( $update_plugins->response[ $product['basename'] ] ) ) {
+					$count++;
+				}
+			} elseif ( 'theme' === $product['type'] ) {
+				if ( ! empty( $product['slug'] ) && is_object( $update_themes ) && isset( $update_themes->response[ $product['slug'] ] ) ) {
+					$count++;
+				}
+			}
+		}
+
+		return $count;
 	}
 }

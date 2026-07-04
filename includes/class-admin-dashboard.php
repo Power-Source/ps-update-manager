@@ -554,7 +554,9 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 
 		$products          = PS_Update_Manager_Product_Registry::get_instance()->get_all();
-		$updates_available = $this->count_available_updates( $products );
+		$update_snapshot   = PS_Update_Manager_Update_Checker::get_instance()->get_update_snapshot();
+		$updates_available = isset( $update_snapshot['count'] ) ? (int) $update_snapshot['count'] : 0;
+		$last_update_sync  = isset( $update_snapshot['checked_at'] ) ? (int) $update_snapshot['checked_at'] : 0;
 		$active_count      = $this->count_active( $products );
 		$total_count       = count( $products );
 		$installed_slugs   = array_keys( $products );
@@ -652,6 +654,15 @@ class PS_Update_Manager_Admin_Dashboard {
 									<?php printf(
 										esc_html__( 'Letzter Scan vor %s', 'ps-update-manager' ),
 										human_time_diff( $last_scan, current_time( 'timestamp' ) )
+									); ?>
+								</span>
+							<?php endif; ?>
+							<?php if ( $last_update_sync ) : ?>
+								<span class="ps-hero-scan">
+									<span class="dashicons dashicons-update-alt"></span>
+									<?php printf(
+										esc_html__( 'Letzter Sync vor %s', 'ps-update-manager' ),
+										human_time_diff( $last_update_sync, current_time( 'timestamp' ) )
 									); ?>
 								</span>
 							<?php endif; ?>

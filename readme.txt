@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,13 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.3.2 =
+
+* Fix: Täglicher Update-Sync triggert jetzt wieder die WordPress-Update-Transients.
+* Fix: Update-Checker speichert einen Snapshot für den verlässlichen Update-Zähler.
+* Fix: Dashboard zeigt wieder den aktuellen Update-Stand und „Letzter Sync vor …“ an.
+* Fix: Cron-basierter Produkt-Scan und Update-Refresh laufen wieder zusammen.
 
 = 1.3.1 =
 

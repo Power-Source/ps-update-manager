@@ -443,6 +443,24 @@ return array(
 		'icon'        => 'dashicons-admin-links',
 	),
 
+	'directory' => array(
+		'type'        => 'plugin',
+		'name'        => 'Directory',
+		'repo'        => 'Power-Source/directory',
+		'description' => 'Ein Verzeichnis-Plugin für ClassicPress, mit dem Du Einträge erstellen und verwalten kannst.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
+	'multisite-content-copier' => array(
+		'type'        => 'plugin',
+		'name'        => 'Multisite Content Copier',
+		'repo'        => 'Power-Source/multisite-content-copier',
+		'description' => 'Kopiere Inhalte zwischen verschiedenen Webseiten in einem Multisite-Netzwerk.',
+		'category'    => 'tools',
+		'icon'        => 'dashicons-admin-links',
+	),
+
 	'ps-support' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS-Support System',
