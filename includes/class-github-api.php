@@ -147,32 +147,49 @@ class PS_Update_Manager_GitHub_API {
 			return new WP_Error( 'github_html_error', sprintf( __( 'GitHub Releases Seite antwortete mit %d', 'ps-update-manager' ), $code ) );
 		}
 		$body = wp_remote_retrieve_body( $response );
-		// Suche nach dem ersten Asset-Link auf der Seite
-		// Beispiel: href="/owner/repo/releases/download/v1.2.3/plugin.zip"
-		if ( preg_match( '#href="(/[^\"]+/releases/download/[^\"]+\.zip)"#i', $body, $m ) ) {
-			$asset_path = $m[1];
+
+		$tag_name = '';
+
+		// Primär: Release-Tag aus HTML ermitteln (z.B. /owner/repo/releases/tag/v1.2.3)
+		if ( preg_match( '#href="/[^"]+/releases/tag/([^"]+)"#i', $body, $tag_match ) ) {
+			$tag_name = rawurldecode( $tag_match[1] );
+		}
+
+		// Sekundär: Erstes ZIP-Asset nehmen (z.B. /owner/repo/releases/download/v1.2.3/plugin.zip)
+		if ( preg_match( '#href="(/[^"]+/releases/download/([^"]+)/[^"]+\.zip)"#i', $body, $asset_match ) ) {
+			$asset_path   = $asset_match[1];
+			$asset_tag    = rawurldecode( $asset_match[2] );
 			$download_url = 'https://github.com' . $asset_path;
+
+			if ( empty( $tag_name ) ) {
+				$tag_name = $asset_tag;
+			}
+
 			return array(
-				'version'      => '',
-				'tag_name'     => '',
-				'name'         => '',
+				'version'      => ltrim( $tag_name, 'vV' ),
+				'tag_name'     => $tag_name,
+				'name'         => $tag_name,
 				'download_url' => $download_url,
 				'changelog'    => '',
 				'published_at' => '',
 				'html_url'     => $releases_url,
 			);
 		}
-		// Alternativ: ZIP der Hauptbranch (nicht Release) – nur letzter Ausweg
-		$default_branch_zip = "https://codeload.github.com/{$repo}/zip/refs/heads/main";
-		return array(
-			'version'      => '',
-			'tag_name'     => '',
-			'name'         => '',
-			'download_url' => $default_branch_zip,
-			'changelog'    => '',
-			'published_at' => '',
-			'html_url'     => $releases_url,
-		);
+
+		// Tertiär: Wenn nur der Tag gefunden wurde, direkt Tag-ZIP bauen.
+		if ( ! empty( $tag_name ) ) {
+			return array(
+				'version'      => ltrim( $tag_name, 'vV' ),
+				'tag_name'     => $tag_name,
+				'name'         => $tag_name,
+				'download_url' => "https://github.com/{$repo}/archive/refs/tags/" . rawurlencode( $tag_name ) . '.zip',
+				'changelog'    => '',
+				'published_at' => '',
+				'html_url'     => $releases_url,
+			);
+		}
+
+		return new WP_Error( 'github_html_parse_failed', __( 'Release konnte aus der GitHub-HTML-Seite nicht ermittelt werden.', 'ps-update-manager' ) );
 	}
 	
 	/**

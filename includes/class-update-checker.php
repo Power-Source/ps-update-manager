@@ -23,12 +23,14 @@ class PS_Update_Manager_Update_Checker {
 		// Plugin Updates
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_plugin_updates' ) );
 		add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
+		add_filter( 'upgrader_source_selection', array( $this, 'normalize_upgrader_source' ), 10, 4 );
 		
 		// Theme Updates
 		add_filter( 'pre_set_site_transient_update_themes', array( $this, 'check_theme_updates' ) );
 		
-		// Täglicher Sync soll WordPress-Update-Transients auch ohne Dashboard-Besuch befüllen
-		add_action( 'ps_update_manager_daily_scan', array( $this, 'force_check' ) );
+		// Täglicher Sync soll WordPress-Update-Transients auch ohne Dashboard-Besuch befüllen.
+		// Priority 20: Scanner läuft vorher auf Priority 10 und füllt die Registry zuerst.
+		add_action( 'ps_update_manager_daily_scan', array( $this, 'force_check' ), 20 );
 		
 		// Update-Links anpassen
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
@@ -263,6 +265,160 @@ class PS_Update_Manager_Update_Checker {
 		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_ps_update_info_%'" );
 		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_ps_update_info_%'" );
 	}
+
+	/**
+	 * Normalisiert den temporär entpackten Quellordner beim Core-Upgrader.
+	 *
+	 * Manche Release-ZIPs enthalten einen Root-Ordner wie "ps-plugin-1.2.3".
+	 * Ohne Umbenennung übernimmt der Upgrader diesen Namen 1:1 ins Plugin-/Theme-Verzeichnis.
+	 */
+	public function normalize_upgrader_source( $source, $remote_source, $upgrader, $hook_extra ) {
+		if ( ! is_string( $source ) || ! is_dir( $source ) || ! is_array( $hook_extra ) ) {
+			return $source;
+		}
+
+		$expected_dir = $this->resolve_expected_upgrader_directory( $hook_extra );
+		if ( '' === $expected_dir ) {
+			return $source;
+		}
+
+		$source_dir_name = basename( untrailingslashit( $source ) );
+		if ( $source_dir_name === $expected_dir ) {
+			return $source;
+		}
+
+		$parent_dir = trailingslashit( dirname( untrailingslashit( $source ) ) );
+		$normalized_source = $parent_dir . $expected_dir;
+
+		if ( file_exists( $normalized_source ) ) {
+			$this->delete_directory_recursive( $normalized_source );
+			if ( file_exists( $normalized_source ) ) {
+				return $source;
+			}
+		}
+
+		if ( @rename( $source, $normalized_source ) ) {
+			return $normalized_source;
+		}
+
+		return $source;
+	}
+
+	/**
+	 * Ermittelt den erwarteten Zielordner für den Upgrader-Lauf.
+	 */
+	private function resolve_expected_upgrader_directory( $hook_extra ) {
+		if ( ! is_array( $hook_extra ) ) {
+			return '';
+		}
+
+		if ( ! empty( $hook_extra['plugin'] ) ) {
+			$plugin_basename = (string) $hook_extra['plugin'];
+			$product = $this->find_product_by_basename( $plugin_basename );
+			if ( $product && ! empty( $product['slug'] ) ) {
+				return sanitize_file_name( (string) $product['slug'] );
+			}
+
+			$directory = dirname( $plugin_basename );
+			if ( '.' === $directory ) {
+				$directory = basename( $plugin_basename, '.php' );
+			}
+
+			return $this->normalize_plugin_directory_name( $directory );
+		}
+
+		if ( ! empty( $hook_extra['theme'] ) ) {
+			$theme_slug = sanitize_file_name( (string) $hook_extra['theme'] );
+			$product = PS_Update_Manager_Product_Registry::get_instance()->get( $theme_slug );
+			if ( ! $product || ( isset( $product['type'] ) && 'theme' !== $product['type'] ) ) {
+				return '';
+			}
+
+			return $theme_slug;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Entfernt Versions-Suffixe aus Plugin-Verzeichnisnamen.
+	 */
+	private function normalize_plugin_directory_name( $directory ) {
+		$directory = sanitize_file_name( (string) $directory );
+		if ( '' === $directory ) {
+			return '';
+		}
+
+		$without_version = preg_replace( '/-(?:v)?\d+(?:\.\d+){1,3}(?:[-._]?[a-z0-9]+)?$/i', '', $directory );
+		if ( is_string( $without_version ) && '' !== $without_version ) {
+			$directory = $without_version;
+		}
+
+		$products = PS_Update_Manager_Product_Registry::get_instance()->get_by_type( 'plugin' );
+		foreach ( $products as $product ) {
+			$slug = sanitize_file_name( (string) ( $product['slug'] ?? '' ) );
+			if ( '' === $slug ) {
+				continue;
+			}
+			if ( $directory === $slug || 0 === strpos( $directory, $slug . '-' ) ) {
+				return $slug;
+			}
+		}
+
+		return $directory;
+	}
+
+	/**
+	 * Sucht ein registriertes Produkt anhand seines Plugin-Basenames.
+	 */
+	private function find_product_by_basename( $plugin_basename ) {
+		$products = PS_Update_Manager_Product_Registry::get_instance()->get_by_type( 'plugin' );
+		$plugin_basename = (string) $plugin_basename;
+		$lookup_dir = dirname( $plugin_basename );
+		if ( '.' === $lookup_dir ) {
+			$lookup_dir = basename( $plugin_basename, '.php' );
+		}
+		$lookup_dir = $this->normalize_plugin_directory_name( $lookup_dir );
+
+		foreach ( $products as $product ) {
+			if ( isset( $product['basename'] ) && $product['basename'] === $plugin_basename ) {
+				return $product;
+			}
+			$product_slug = sanitize_file_name( (string) ( $product['slug'] ?? '' ) );
+			if ( '' !== $product_slug && $product_slug === $lookup_dir ) {
+				return $product;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Verzeichnis rekursiv löschen.
+	 */
+	private function delete_directory_recursive( $dir ) {
+		if ( ! file_exists( $dir ) ) {
+			return;
+		}
+		if ( is_file( $dir ) || is_link( $dir ) ) {
+			@unlink( $dir );
+			return;
+		}
+
+		$items = scandir( $dir );
+		if ( ! is_array( $items ) ) {
+			return;
+		}
+
+		foreach ( $items as $item ) {
+			if ( '.' === $item || '..' === $item ) {
+				continue;
+			}
+			$this->delete_directory_recursive( $dir . DIRECTORY_SEPARATOR . $item );
+		}
+
+		@rmdir( $dir );
+	}
 	
 	/**
 	 * Plugin Row Meta erweitern
@@ -329,6 +485,9 @@ class PS_Update_Manager_Update_Checker {
 	 * Update-Check manuell auslösen
 	 */
 	public function force_check() {
+		// Vor dem Update-Check immer frisch scannen, damit die Registry vollständige Basenames/Slugs enthält.
+		PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
+
 		delete_site_transient( 'update_plugins' );
 		delete_site_transient( 'update_themes' );
 		$this->clear_update_info_cache();

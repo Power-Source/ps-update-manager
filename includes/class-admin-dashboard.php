@@ -82,6 +82,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'network_admin_menu', array( $this, 'add_network_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'admin_head', array( $this, 'inject_pointer_fallback' ) );
 		add_action( 'admin_init', array( $this, 'handle_settings_save' ) );
 		add_action( 'admin_init', array( $this, 'maybe_redirect_legacy_products_page' ) );
 		add_action( 'admin_init', array( $this, 'cleanup_orphaned_products' ) );
@@ -95,6 +96,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		add_action( 'wp_ajax_ps_deactivate_plugin', array( $this, 'ajax_deactivate_plugin' ) );
 		add_action( 'wp_ajax_ps_activate_plugin', array( $this, 'ajax_activate_plugin' ) );
 		add_action( 'wp_ajax_ps_update_product', array( $this, 'ajax_update_product' ) );
+		add_action( 'wp_ajax_ps_update_all_products', array( $this, 'ajax_update_all_products' ) );
 		add_action( 'wp_ajax_ps_community_pulse', array( $this, 'ajax_community_pulse' ) );
 	}
 
@@ -127,26 +129,32 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 
 		$base_url = plugin_dir_url( dirname( __FILE__ ) );
+		$base_dir = plugin_dir_path( dirname( __FILE__ ) );
+		$admin_css_version = file_exists( $base_dir . 'assets/css/admin.css' ) ? (string) filemtime( $base_dir . 'assets/css/admin.css' ) : PS_UPDATE_MANAGER_VERSION;
+		$catalog_css_version = file_exists( $base_dir . 'assets/css/psources-catalog.css' ) ? (string) filemtime( $base_dir . 'assets/css/psources-catalog.css' ) : PS_UPDATE_MANAGER_VERSION;
+		$settings_css_version = file_exists( $base_dir . 'assets/css/settings.css' ) ? (string) filemtime( $base_dir . 'assets/css/settings.css' ) : PS_UPDATE_MANAGER_VERSION;
+		$admin_js_version = file_exists( $base_dir . 'assets/js/admin.js' ) ? (string) filemtime( $base_dir . 'assets/js/admin.js' ) : PS_UPDATE_MANAGER_VERSION;
+		$catalog_js_version = file_exists( $base_dir . 'assets/js/psources-catalog.js' ) ? (string) filemtime( $base_dir . 'assets/js/psources-catalog.js' ) : PS_UPDATE_MANAGER_VERSION;
 
 		// Styles
-		wp_enqueue_style( 'ps-update-manager-admin', $base_url . 'assets/css/admin.css', array(), '1.0.0' );
+		wp_enqueue_style( 'ps-update-manager-admin', $base_url . 'assets/css/admin.css', array(), $admin_css_version );
 		
 		// PSources Katalog CSS (nur auf der PSources-Seite)
 		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
-			wp_enqueue_style( 'ps-catalog', $base_url . 'assets/css/psources-catalog.css', array(), '1.0.0' );
+			wp_enqueue_style( 'ps-catalog', $base_url . 'assets/css/psources-catalog.css', array(), $catalog_css_version );
 		}
 		
 		// Settings CSS (Settings + Tools Seiten)
 		if ( in_array( $current_page, array( 'ps-update-manager-settings', 'ps-update-manager-tools' ), true ) ) {
-			wp_enqueue_style( 'ps-settings', $base_url . 'assets/css/settings.css', array(), '1.0.0' );
+			wp_enqueue_style( 'ps-settings', $base_url . 'assets/css/settings.css', array(), $settings_css_version );
 		}
 
 		// Scripts
-		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'ps-update-manager-admin', $base_url . 'assets/js/admin.js', array( 'jquery' ), $admin_js_version, true );
 		
 		// PSources Katalog Script (nur auf der PSources-Seite)
 		if ( in_array( $current_page, array( 'ps-update-manager-psources' ), true ) ) {
-			wp_enqueue_script( 'ps-catalog', $base_url . 'assets/js/psources-catalog.js', array( 'jquery' ), '1.0.0', true );
+			wp_enqueue_script( 'ps-catalog', $base_url . 'assets/js/psources-catalog.js', array( 'jquery' ), $catalog_js_version, true );
 		}
 
 		// Lokalisierung / Nonces für AJAX
@@ -163,6 +171,120 @@ class PS_Update_Manager_Admin_Dashboard {
 				'error'    => __( 'Ein Fehler ist aufgetreten', 'ps-update-manager' ),
 			),
 		) );
+	}
+
+	/**
+	 * Fallback fuer jQuery pointer() auf ClassicPress ohne wp-pointer.
+	 * Verhindert JS-Abbruch und ersetzt Pointer durch ein kleines lokales Tooltip.
+	 */
+	public function inject_pointer_fallback() {
+		$current_page = isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '';
+		$our_pages = array(
+			'ps-update-manager',
+			'ps-update-manager-psources',
+			'ps-update-manager-tools',
+			'ps-update-manager-settings',
+		);
+
+		if ( ! in_array( $current_page, $our_pages, true ) ) {
+			return;
+		}
+		?>
+		<script>
+		(function(w){
+			function installPointerFallback() {
+				var $ = w.jQuery;
+				if (!$ || $.fn.pointer) {
+					return !!($ && $.fn.pointer);
+				}
+
+				function ensureBox(el, opts) {
+					var key = '__psPointerBox';
+					if (el[key]) {
+						return el[key];
+					}
+
+					var box = document.createElement('div');
+					box.className = 'ps-pointer-fallback';
+					box.style.position = 'absolute';
+					box.style.zIndex = '100000';
+					box.style.maxWidth = '320px';
+					box.style.padding = '10px 12px';
+					box.style.borderRadius = '8px';
+					box.style.background = '#1d2327';
+					box.style.color = '#fff';
+					box.style.fontSize = '12px';
+					box.style.lineHeight = '1.4';
+					box.style.boxShadow = '0 8px 24px rgba(0,0,0,.24)';
+					box.style.display = 'none';
+
+					var content = '';
+					if (opts && typeof opts.content === 'string') {
+						content = opts.content;
+					} else if (opts && opts.content && opts.content.html) {
+						content = opts.content.html;
+					} else {
+						content = el.getAttribute('title') || '';
+					}
+
+					box.innerHTML = content;
+					document.body.appendChild(box);
+					el[key] = box;
+					return box;
+				}
+
+				function openBox(el, opts) {
+					var box = ensureBox(el, opts || {});
+					var rect = el.getBoundingClientRect();
+					box.style.display = 'block';
+					box.style.left = (w.scrollX + rect.left) + 'px';
+					box.style.top = (w.scrollY + rect.bottom + 8) + 'px';
+				}
+
+				function closeBox(el) {
+					var box = el.__psPointerBox;
+					if (box) {
+						box.style.display = 'none';
+					}
+				}
+
+				$.fn.pointer = function(arg) {
+					if (typeof arg === 'string') {
+						if (arg === 'open') {
+							this.each(function(){ openBox(this, this.__psPointerOpts || {}); });
+						} else if (arg === 'close' || arg === 'destroy') {
+							this.each(function(){ closeBox(this); });
+						}
+						return this;
+					}
+
+					this.each(function(){
+						this.__psPointerOpts = arg || {};
+					});
+
+					return this;
+				};
+
+				return true;
+			}
+
+			if (!installPointerFallback()) {
+				var tries = 0;
+				var timer = w.setInterval(function() {
+					tries++;
+					if (installPointerFallback() || tries > 200) {
+						w.clearInterval(timer);
+					}
+				}, 25);
+
+				w.addEventListener('load', function() {
+					installPointerFallback();
+					w.clearInterval(timer);
+				});
+			}
+		})(window);
+		</script>
+		<?php
 	}
 
 	/**
@@ -448,49 +570,6 @@ class PS_Update_Manager_Admin_Dashboard {
 	}
 
 	/**
-	 * Ecosystem Stacks definieren – zielorientierte Plugin-Kombinationen
-	 */
-	private function get_ecosystem_stacks() {
-		return array(
-			'shop' => array(
-				'title' => __( 'Online-Shop', 'ps-update-manager' ),
-				'desc'  => __( 'Vollständiger E-Commerce mit DSGVO, Mitgliedschaften & CRM', 'ps-update-manager' ),
-				'icon'  => 'dashicons-cart',
-				'color' => '#0073aa',
-				'slugs' => array( 'marketpress', 'ps-dsgvo', 'ps-mitgliedschaften', 'ps-smart-crm', 'affiliate' ),
-			),
-			'community' => array(
-				'title' => __( 'Community-Plattform', 'ps-update-manager' ),
-				'desc'  => __( 'Soziales Netzwerk, private Nachrichten, Wiki & Chat', 'ps-update-manager' ),
-				'icon'  => 'dashicons-groups',
-				'color' => '#00a32a',
-				'slugs' => array( 'ps-community', 'private-messaging', 'ps-mitgliedschaften', 'ps-wiki', 'ps-chat' ),
-			),
-			'education' => array(
-				'title' => __( 'Bildungsplattform', 'ps-update-manager' ),
-				'desc'  => __( 'Online-Kurse, Mitgliedschaften & Terminverwaltung', 'ps-update-manager' ),
-				'icon'  => 'dashicons-welcome-learn-more',
-				'color' => '#8c00d4',
-				'slugs' => array( 'coursepress', 'ps-mitgliedschaften', 'marketpress', 'terminmanager', 'e-newsletter' ),
-			),
-			'business' => array(
-				'title' => __( 'Business Suite', 'ps-update-manager' ),
-				'desc'  => __( 'CRM, Termine, Newsletter & Support auf einer Plattform', 'ps-update-manager' ),
-				'icon'  => 'dashicons-businessperson',
-				'color' => '#b26900',
-				'slugs' => array( 'ps-smart-crm', 'terminmanager', 'private-messaging', 'ps-support', 'e-newsletter' ),
-			),
-			'network' => array(
-				'title' => __( 'Multisite Netzwerk', 'ps-update-manager' ),
-				'desc'  => __( 'Bloghosting, Cloner, Netzwerk-Index & Reader', 'ps-update-manager' ),
-				'icon'  => 'dashicons-networking',
-				'color' => '#d63638',
-				'slugs' => array( 'ps-bloghosting', 'ps-cloner', 'ps-postindexer', 'msreader', 'easyblogging' ),
-			),
-		);
-	}
-
-	/**
 	 * Empfehlungen aus compatible_with im Manifest generieren
 	 *
 	 * @param array $installed_slugs Liste der installierten Produkt-Slugs
@@ -555,18 +634,40 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		$products          = PS_Update_Manager_Product_Registry::get_instance()->get_all();
 		$update_snapshot   = PS_Update_Manager_Update_Checker::get_instance()->get_update_snapshot();
-		$updates_available = isset( $update_snapshot['count'] ) ? (int) $update_snapshot['count'] : 0;
+		$updates_available = $this->count_available_updates( $products );
 		$last_update_sync  = isset( $update_snapshot['checked_at'] ) ? (int) $update_snapshot['checked_at'] : 0;
 		$active_count      = $this->count_active( $products );
 		$total_count       = count( $products );
 		$installed_slugs   = array_keys( $products );
 
-		$stacks      = $this->get_ecosystem_stacks();
 		$recommended = $this->get_recommended_products( $installed_slugs );
 		$official    = $scanner->get_official_products();
 
 		$_wp_update_plugins = get_site_transient( 'update_plugins' );
 		$_wp_update_themes  = get_site_transient( 'update_themes' );
+
+		$update_items = array();
+		foreach ( $products as $product ) {
+			if ( 'plugin' === $product['type'] ) {
+				$matched_basename = '';
+				$plugin_update = $this->find_plugin_update_entry( $product, $_wp_update_plugins, $matched_basename );
+				if ( $plugin_update ) {
+					$update_items[] = array(
+						'name'        => $product['name'],
+						'type'        => 'plugin',
+						'new_version' => (string) ( $plugin_update->new_version ?? '' ),
+					);
+				}
+			} elseif ( 'theme' === $product['type'] && ! empty( $product['slug'] ) && is_object( $_wp_update_themes ) && isset( $_wp_update_themes->response[ $product['slug'] ] ) ) {
+				$update_items[] = array(
+					'name'        => $product['name'],
+					'type'        => 'theme',
+					'new_version' => (string) ( $_wp_update_themes->response[ $product['slug'] ]['new_version'] ?? '' ),
+				);
+			}
+		}
+
+		$updates_available = count( $update_items );
 
 		$catalog_url = is_network_admin()
 			? network_admin_url( 'admin.php?page=ps-update-manager-psources' )
@@ -601,6 +702,10 @@ class PS_Update_Manager_Admin_Dashboard {
 								<button type="button" id="ps-force-check" class="button button-primary">
 									<span class="dashicons dashicons-update"></span>
 									<?php esc_html_e( 'Updates prüfen', 'ps-update-manager' ); ?>
+								</button>
+								<button type="button" id="ps-update-all" class="button <?php echo $updates_available > 0 ? 'button-secondary' : ''; ?>" <?php disabled( $updates_available < 1 ); ?>>
+									<span class="dashicons dashicons-update-alt"></span>
+									<?php esc_html_e( 'Alle PSOURCE aktualisieren', 'ps-update-manager' ); ?>
 								</button>
 								<a href="<?php echo esc_url( $catalog_url ); ?>" class="button">
 									<span class="dashicons dashicons-store"></span>
@@ -680,9 +785,23 @@ class PS_Update_Manager_Admin_Dashboard {
 							esc_html( _n( '%d Update verfügbar', '%d Updates verfügbar', $updates_available, 'ps-update-manager' ) ),
 							intval( $updates_available )
 						); ?></strong>
-						<a href="<?php echo esc_url( admin_url( 'update-core.php' ) ); ?>" class="button button-small" style="margin-left:12px;">
-							<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
-						</a>
+						<?php
+						$preview_updates = array_slice( $update_items, 0, 5 );
+						$preview_labels = array();
+						foreach ( $preview_updates as $item ) {
+							$preview_labels[] = ! empty( $item['new_version'] )
+								? sprintf( '%s (v%s)', $item['name'], $item['new_version'] )
+								: $item['name'];
+						}
+						$preview_text = implode( ', ', $preview_labels );
+						if ( count( $update_items ) > 5 ) {
+							$preview_text .= sprintf( ' %s', __( 'u.a.', 'ps-update-manager' ) );
+						}
+						?>
+						<p style="margin:6px 0 0; opacity:.9;"><?php echo esc_html( $preview_text ); ?></p>
+						<button type="button" id="ps-alert-update-all" class="button button-small" style="margin-left:12px; margin-top:8px;">
+							<?php esc_html_e( 'Jetzt hier aktualisieren', 'ps-update-manager' ); ?>
+						</button>
 					</div>
 				</div>
 			<?php endif; ?>
@@ -732,66 +851,6 @@ class PS_Update_Manager_Admin_Dashboard {
 				</div>
 			</section>
 
-			<!-- =================== STACKS =================== -->
-			<section class="ps-section">
-				<div class="ps-section-header">
-					<h2><span class="dashicons dashicons-layout"></span> <?php esc_html_e( 'Was willst du bauen?', 'ps-update-manager' ); ?></h2>
-					<p><?php esc_html_e( 'Fertige Plugin-Kombis für dein Ziel. Grün = bereits installiert.', 'ps-update-manager' ); ?></p>
-				</div>
-				<div class="ps-stacks-grid">
-					<?php foreach ( $stacks as $stack_id => $stack ) :
-						$stack_slugs        = $stack['slugs'];
-						$installed_in_stack = array_intersect( $stack_slugs, $installed_slugs );
-						$count_in           = count( $installed_in_stack );
-						$count_total        = count( $stack_slugs );
-						$pct                = (int) round( ( $count_in / $count_total ) * 100 );
-					?>
-						<div class="ps-stack-card" style="--stack-color: <?php echo esc_attr( $stack['color'] ); ?>">
-							<div class="ps-stack-head">
-								<span class="ps-stack-icon dashicons <?php echo esc_attr( $stack['icon'] ); ?>"></span>
-								<div class="ps-stack-info">
-									<h3><?php echo esc_html( $stack['title'] ); ?></h3>
-									<p><?php echo esc_html( $stack['desc'] ); ?></p>
-								</div>
-								<div class="ps-stack-counter">
-									<span class="ps-stack-num"><?php echo intval( $count_in ); ?></span>
-									<span class="ps-stack-of">/<?php echo intval( $count_total ); ?></span>
-								</div>
-							</div>
-							<div class="ps-stack-bar-wrap">
-								<div class="ps-stack-bar" style="width: <?php echo intval( $pct ); ?>%"></div>
-							</div>
-							<div class="ps-stack-tags">
-								<?php foreach ( $stack_slugs as $s_slug ) :
-									$is_in  = in_array( $s_slug, $installed_slugs, true );
-									$s_name = isset( $official[ $s_slug ]['name'] ) ? $official[ $s_slug ]['name'] : $s_slug;
-								?>
-									<span class="ps-stag <?php echo $is_in ? 'ps-stag-in' : 'ps-stag-out'; ?>">
-										<?php if ( $is_in ) : ?>
-											<span class="dashicons dashicons-yes"></span>
-										<?php endif; ?>
-										<?php echo esc_html( $s_name ); ?>
-									</span>
-								<?php endforeach; ?>
-							</div>
-							<?php if ( $count_in < $count_total ) : ?>
-								<a href="<?php echo esc_url( $catalog_url ); ?>" class="ps-stack-cta">
-									<?php esc_html_e( 'Stack vervollständigen', 'ps-update-manager' ); ?>
-									<span class="dashicons dashicons-arrow-right-alt2"></span>
-								</a>
-							<?php else : ?>
-								<span class="ps-stack-done">
-									<span class="dashicons dashicons-awards"></span>
-									<?php esc_html_e( 'Stack vollständig!', 'ps-update-manager' ); ?>
-								</span>
-							<?php endif; ?>
-						</div>
-					<?php endforeach; ?>
-				</div>
-			</section>
-
-
-
 			<!-- =================== INSTALLIERTE PRODUKTE =================== -->
 			<section class="ps-section">
 				<div class="ps-section-header">
@@ -802,9 +861,17 @@ class PS_Update_Manager_Admin_Dashboard {
 					<?php foreach ( $products as $product ) :
 						$has_update  = false;
 						$new_version = '';
-						if ( 'plugin' === $product['type'] && ! empty( $product['basename'] ) && is_object( $_wp_update_plugins ) && isset( $_wp_update_plugins->response[ $product['basename'] ] ) ) {
-							$has_update  = true;
-							$new_version = $_wp_update_plugins->response[ $product['basename'] ]->new_version ?? '';
+						$update_basename = $product['basename'] ?? '';
+						if ( 'plugin' === $product['type'] ) {
+							$matched_basename = '';
+							$plugin_update = $this->find_plugin_update_entry( $product, $_wp_update_plugins, $matched_basename );
+							if ( $plugin_update ) {
+								$has_update = true;
+								$new_version = $plugin_update->new_version ?? '';
+								if ( ! empty( $matched_basename ) ) {
+									$update_basename = $matched_basename;
+								}
+							}
 						} elseif ( 'theme' === $product['type'] && ! empty( $product['slug'] ) && is_object( $_wp_update_themes ) && isset( $_wp_update_themes->response[ $product['slug'] ] ) ) {
 							$has_update  = true;
 							$new_version = $_wp_update_themes->response[ $product['slug'] ]['new_version'] ?? '';
@@ -838,6 +905,12 @@ class PS_Update_Manager_Admin_Dashboard {
 								<?php endif; ?>
 							</div>
 							<div class="ps-inst-links">
+								<?php if ( $has_update ) : ?>
+									<button class="button button-primary button-small ps-update-product" data-slug="<?php echo esc_attr( $product['slug'] ); ?>" data-basename="<?php echo esc_attr( $update_basename ); ?>" data-type="<?php echo esc_attr( $product['type'] ); ?>" data-new-version="<?php echo esc_attr( $new_version ); ?>">
+										<span class="dashicons dashicons-update"></span>
+										<?php esc_html_e( 'Jetzt aktualisieren', 'ps-update-manager' ); ?>
+									</button>
+								<?php endif; ?>
 								<?php
 								$docs_url = ! empty( $product['docs_url'] )
 									? $product['docs_url']
@@ -1058,10 +1131,14 @@ class PS_Update_Manager_Admin_Dashboard {
 
 				// Update-Status aus WP-Transient lesen (kein GitHub-API-Call pro Produkt)
 				if ( 'plugin' === $product['type'] ) {
-					$_bn = $installed['basename'] ?? null;
-					if ( $_bn && is_object( $update_plugins ) && isset( $update_plugins->response[ $_bn ] ) ) {
+					$matched_basename = '';
+					$plugin_update = $this->find_plugin_update_entry( $installed, $update_plugins, $matched_basename );
+					if ( $plugin_update ) {
 						$product['update_available'] = true;
-						$product['new_version']      = $update_plugins->response[ $_bn ]->new_version ?? '';
+						$product['new_version']      = $plugin_update->new_version ?? '';
+						if ( ! empty( $matched_basename ) ) {
+							$product['basename'] = $matched_basename;
+						}
 					}
 				} elseif ( 'theme' === $product['type'] ) {
 					if ( is_object( $update_themes ) && isset( $update_themes->response[ $slug ] ) ) {
@@ -1599,7 +1676,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$count = 0;
 		foreach ( $products as $product ) {
 			if ( 'plugin' === $product['type'] ) {
-				if ( ! empty( $product['basename'] ) && is_object( $update_plugins ) && isset( $update_plugins->response[ $product['basename'] ] ) ) {
+				if ( $this->find_plugin_update_entry( $product, $update_plugins ) ) {
 					$count++;
 				}
 			} elseif ( 'theme' === $product['type'] ) {
@@ -1609,6 +1686,138 @@ class PS_Update_Manager_Admin_Dashboard {
 			}
 		}
 		return $count;
+	}
+
+	/**
+	 * Normalisiert Slug-/Verzeichnisnamen fuer tolerante Vergleiche.
+	 */
+	private function normalize_update_token( $value ) {
+		$value = strtolower( (string) $value );
+		$value = preg_replace( '/[^a-z0-9]+/', '-', $value );
+		$value = trim( $value, '-' );
+		$value = preg_replace( '/^(psource-|ps-)/', '', $value );
+
+		return $value;
+	}
+
+	/**
+	 * Findet ein passendes Plugin-Update aus dem WP-Transient auch bei leicht abweichenden Basenames/Slugs.
+	 *
+	 * @param array       $product Produktdaten aus Registry.
+	 * @param object|bool $update_plugins WP update_plugins transient.
+	 * @param string      $matched_basename Gefundener Basename (Output).
+	 * @return object|false
+	 */
+	private function find_plugin_update_entry( $product, $update_plugins, &$matched_basename = '' ) {
+		$matched_basename = '';
+
+		if ( ! is_object( $update_plugins ) || empty( $update_plugins->response ) ) {
+			return false;
+		}
+
+		$response = array();
+		if ( is_array( $update_plugins->response ) ) {
+			$response = $update_plugins->response;
+		} elseif ( is_object( $update_plugins->response ) ) {
+			$response = get_object_vars( $update_plugins->response );
+		}
+
+		if ( empty( $response ) ) {
+			return false;
+		}
+
+		$product_basename = (string) ( $product['basename'] ?? '' );
+		if ( ! empty( $product_basename ) && isset( $response[ $product_basename ] ) ) {
+			$entry = $this->normalize_plugin_update_entry( $response[ $product_basename ] );
+			if ( $entry ) {
+				$matched_basename = $product_basename;
+				return $entry;
+			}
+		}
+
+		$product_slug = (string) ( $product['slug'] ?? '' );
+		$product_dir  = ! empty( $product_basename ) ? dirname( $product_basename ) : '';
+		if ( '.' === $product_dir ) {
+			$product_dir = '';
+		}
+
+		$product_tokens = array_filter( array_unique( array(
+			$product_slug,
+			$product_dir,
+			$this->normalize_update_token( $product_slug ),
+			$this->normalize_update_token( $product_dir ),
+		) ) );
+
+		foreach ( $response as $candidate_basename => $candidate ) {
+			$candidate = $this->normalize_plugin_update_entry( $candidate );
+			if ( ! $candidate ) {
+				continue;
+			}
+
+			$candidate_slug = (string) ( $candidate->slug ?? '' );
+			$candidate_dir  = dirname( (string) $candidate_basename );
+			if ( '.' === $candidate_dir ) {
+				$candidate_dir = '';
+			}
+
+			$candidate_tokens = array_filter( array_unique( array(
+				$candidate_slug,
+				$candidate_dir,
+				$this->normalize_update_token( $candidate_slug ),
+				$this->normalize_update_token( $candidate_dir ),
+			) ) );
+
+			if ( empty( $candidate_tokens ) || empty( $product_tokens ) ) {
+				continue;
+			}
+
+			if ( array_intersect( $product_tokens, $candidate_tokens ) ) {
+				$matched_basename = (string) $candidate_basename;
+				return $candidate;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Normalisiert Update-Einträge aus dem WP-Transient auf ein einheitliches Objekt.
+	 *
+	 * ClassicPress/WordPress liefern je nach Quelle Arrays oder Objekte.
+	 * Für das Dashboard benötigen wir eine robuste, einheitliche Form.
+	 *
+	 * @param mixed $entry Roh-Eintrag aus update_plugins->response.
+	 * @return object|false
+	 */
+	private function normalize_plugin_update_entry( $entry ) {
+		if ( is_object( $entry ) ) {
+			return $entry;
+		}
+
+		if ( is_array( $entry ) ) {
+			return (object) $entry;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Aufloesen eines tatsaechlich updatebaren Plugin-Basenames fuer den Upgrader.
+	 */
+	private function resolve_plugin_update_basename( $slug, $basename = '' ) {
+		$update_plugins = get_site_transient( 'update_plugins' );
+		$product = array(
+			'slug'     => (string) $slug,
+			'basename' => (string) $basename,
+		);
+
+		$matched_basename = '';
+		$entry = $this->find_plugin_update_entry( $product, $update_plugins, $matched_basename );
+		if ( $entry && ! empty( $matched_basename ) ) {
+			return $matched_basename;
+		}
+
+		return (string) $basename;
 	}
 	
 	/**
@@ -1632,13 +1841,6 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		// Force: Transients löschen und neu checken
 		PS_Update_Manager_Update_Checker::get_instance()->force_check();
-
-		// Kurze Verzögerung um sicherzustellen, dass WP-Update-Prüfung fertig ist
-		sleep( 1 );
-
-		// Immer scannen (nicht Cache-Guard)
-		$scanner = PS_Update_Manager_Product_Scanner::get_instance();
-		$scanner->scan_all();
 
 		// Frische Daten laden
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
@@ -2050,7 +2252,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$basename = isset( $_POST['basename'] ) ? sanitize_text_field( $_POST['basename'] ) : '';
 		$type = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'plugin';
 
-		if ( empty( $slug ) || ( 'plugin' === $type && empty( $basename ) ) ) {
+		if ( empty( $slug ) ) {
 			wp_send_json_error( array( 'message' => __( 'Ungültige Parameter', 'ps-update-manager' ) ) );
 		}
 
@@ -2062,7 +2264,17 @@ class PS_Update_Manager_Admin_Dashboard {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		}
 
+		$checker = PS_Update_Manager_Update_Checker::get_instance();
+		$checker->force_check();
+
 		if ( 'plugin' === $type ) {
+			$basename = $this->resolve_plugin_update_basename( $slug, $basename );
+			if ( empty( $basename ) ) {
+				wp_send_json_error( array(
+					'message' => __( 'Kein gueltiger Plugin-Basename fuer das Update gefunden.', 'ps-update-manager' ),
+				) );
+			}
+
 			// Plugin-Update
 			$upgrader = new Plugin_Upgrader( new WP_Ajax_Upgrader_Skin() );
 			$result = $upgrader->upgrade( $basename );
@@ -2087,10 +2299,124 @@ class PS_Update_Manager_Admin_Dashboard {
 			) );
 		}
 
-		PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
+		$checker->force_check();
 
 		wp_send_json_success( array(
 			'message' => sprintf( __( '%s wurde erfolgreich aktualisiert.', 'ps-update-manager' ), $slug ),
+		) );
+	}
+
+	/**
+	 * AJAX: Alle verfügbaren PSOURCE-Produkte aktualisieren
+	 */
+	public function ajax_update_all_products() {
+		check_ajax_referer( 'ps_update_manager_nonce', 'nonce' );
+
+		if ( ! PS_Update_Manager_Settings::get_instance()->user_can_access( 'update_products' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Keine Berechtigung für diese Aktion', 'ps-update-manager' ) ) );
+		}
+
+		if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if ( ! class_exists( 'Plugin_Upgrader' ) || ! class_exists( 'Theme_Upgrader' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		}
+
+		$checker  = PS_Update_Manager_Update_Checker::get_instance();
+		$registry = PS_Update_Manager_Product_Registry::get_instance();
+
+		// Frischen Update-Stand aufbauen.
+		$checker->force_check();
+
+		$products       = $registry->get_all();
+		$update_plugins = get_site_transient( 'update_plugins' );
+		$update_themes  = get_site_transient( 'update_themes' );
+
+		$updated = array();
+		$failed  = array();
+		$queued  = 0;
+
+		$plugin_upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+		$theme_upgrader  = new Theme_Upgrader( new Automatic_Upgrader_Skin() );
+
+		foreach ( $products as $slug => $product ) {
+			// Selbst-Update waehrend des Requests vermeiden.
+			if ( 'plugin' === $product['type'] && ! empty( $product['basename'] ) && defined( 'PS_UPDATE_MANAGER_BASENAME' ) && PS_UPDATE_MANAGER_BASENAME === $product['basename'] ) {
+				continue;
+			}
+
+			if ( 'plugin' === $product['type'] ) {
+				$matched_basename = '';
+				$plugin_update = $this->find_plugin_update_entry( $product, $update_plugins, $matched_basename );
+				if ( ! $plugin_update || empty( $matched_basename ) ) {
+					continue;
+				}
+
+				$basename = $matched_basename;
+
+				$queued++;
+				$result = $plugin_upgrader->upgrade( $basename );
+				if ( is_wp_error( $result ) || false === $result ) {
+					$failed[] = array(
+						'slug'    => $slug,
+						'type'    => 'plugin',
+						'message' => is_wp_error( $result ) ? $result->get_error_message() : __( 'Update fehlgeschlagen', 'ps-update-manager' ),
+					);
+					continue;
+				}
+
+				$updated[] = array(
+					'slug' => $slug,
+					'type' => 'plugin',
+				);
+			} elseif ( 'theme' === $product['type'] ) {
+				$theme_slug = $product['slug'] ?? '';
+				if ( empty( $theme_slug ) || ! is_object( $update_themes ) || ! isset( $update_themes->response[ $theme_slug ] ) ) {
+					continue;
+				}
+
+				$queued++;
+				$result = $theme_upgrader->upgrade( $theme_slug );
+				if ( is_wp_error( $result ) || false === $result ) {
+					$failed[] = array(
+						'slug'    => $slug,
+						'type'    => 'theme',
+						'message' => is_wp_error( $result ) ? $result->get_error_message() : __( 'Update fehlgeschlagen', 'ps-update-manager' ),
+					);
+					continue;
+				}
+
+				$updated[] = array(
+					'slug' => $slug,
+					'type' => 'theme',
+				);
+			}
+		}
+
+		$checker->force_check();
+
+		if ( 0 === $queued ) {
+			wp_send_json_success( array(
+				'updated_count' => 0,
+				'failed_count'  => 0,
+				'message'       => __( 'Keine PSOURCE-Updates verfügbar.', 'ps-update-manager' ),
+				'updated'       => array(),
+				'failed'        => array(),
+			) );
+		}
+
+		wp_send_json_success( array(
+			'updated_count' => count( $updated ),
+			'failed_count'  => count( $failed ),
+			'message'       => sprintf(
+				/* translators: 1: successful updates count, 2: failed updates count */
+				__( 'Batch-Update abgeschlossen: %1$d erfolgreich, %2$d fehlgeschlagen.', 'ps-update-manager' ),
+				count( $updated ),
+				count( $failed )
+			),
+			'updated'       => $updated,
+			'failed'        => $failed,
 		) );
 	}
 }

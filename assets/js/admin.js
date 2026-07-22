@@ -4,24 +4,16 @@
 (function($) {
 	'use strict';
 	
-	// Debug: Prüfe ob jQuery geladen ist
-	console.log('PS Update Manager Admin JS geladen. jQuery verfügbar:', typeof $ !== 'undefined');
-	
 	function initForceCheck() {
 		var $button = $('#ps-force-check');
 		
 		if ($button.length === 0) {
-			console.warn('Button #ps-force-check nicht gefunden auf dieser Seite');
 			return;
 		}
-		
-		console.log('Button #ps-force-check gefunden, registriere Click-Handler');
 		
 		$button.on('click', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			
-			console.log('Button clicked, starte Force-Check');
 			
 			var originalText = $button.html();
 			
@@ -29,8 +21,6 @@
 			$button.prop('disabled', true)
 				.addClass('checking')
 				.html('<span class="dashicons dashicons-update"></span> ' + PSUpdateManager.strings.checking);
-			
-			console.log('AJAX Request wird gesendet an:', PSUpdateManager.ajaxUrl);
 			
 			// AJAX Request
 			$.ajax({
@@ -41,14 +31,11 @@
 					nonce: PSUpdateManager.nonce
 				},
 				success: function(response) {
-					console.log('Force-Check Response:', response);
-					
 					if (response.success) {
 						$button.html('<span class="dashicons dashicons-yes"></span> ' + PSUpdateManager.strings.success);
 						
 						// Seite nach 1 Sekunde neu laden
 						setTimeout(function() {
-							console.log('Laden Seite neu...');
 							location.reload();
 						}, 1000);
 					} else {
@@ -56,13 +43,11 @@
 						if (response.data && response.data.message) {
 							errorMsg = response.data.message;
 						}
-						console.error('Force-Check Fehler:', errorMsg);
 						showError(errorMsg);
 						resetButton();
 					}
 				},
 				error: function(xhr, status, error) {
-					console.error('AJAX Fehler:', status, error, xhr);
 					showError(PSUpdateManager.strings.error + ': ' + error);
 					resetButton();
 				}
@@ -85,15 +70,103 @@
 			}
 		});
 	}
+
+	function initUpdateAll() {
+		var $button = $('#ps-update-all');
+		var $forceCheckButton = $('#ps-force-check');
+		var $alertButton = $('#ps-alert-update-all');
+
+		if ($button.length === 0) {
+			return;
+		}
+
+		if ($alertButton.length) {
+			$alertButton.on('click', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (!$button.prop('disabled')) {
+					$button.trigger('click');
+				}
+			});
+		}
+
+		$button.on('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			if ($button.prop('disabled')) {
+				return;
+			}
+
+			var originalText = $button.html();
+			$button.prop('disabled', true)
+				.addClass('checking')
+				.html('<span class="dashicons dashicons-update spin"></span> Aktualisiere...');
+			$forceCheckButton.prop('disabled', true);
+			$alertButton.prop('disabled', true);
+
+			$.ajax({
+				url: PSUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_update_all_products',
+					nonce: PSUpdateManager.nonce
+				},
+				success: function(response) {
+					if (response && response.success) {
+						var msg = response.data && response.data.message ? response.data.message : 'Batch-Update abgeschlossen.';
+						$button.html('<span class="dashicons dashicons-yes"></span> Fertig');
+						showNotice((response.data && response.data.failed_count > 0) ? 'error' : 'success', msg);
+						setTimeout(function() {
+							location.reload();
+						}, 1200);
+						return;
+					}
+
+					var errorMsg = (response && response.data && response.data.message) ? response.data.message : 'Batch-Update fehlgeschlagen';
+					showNotice('error', errorMsg);
+					$button.prop('disabled', false).removeClass('checking').html(originalText);
+					$forceCheckButton.prop('disabled', false);
+					$alertButton.prop('disabled', false);
+				},
+				error: function(xhr, status, error) {
+					var errorMsg = error || 'Unbekannter Fehler beim Batch-Update';
+					try {
+						var json = JSON.parse(xhr.responseText);
+						if (json && json.data && json.data.message) {
+							errorMsg = json.data.message;
+						}
+					} catch (err) {}
+
+					showNotice('error', errorMsg);
+					$button.prop('disabled', false).removeClass('checking').html(originalText);
+					$forceCheckButton.prop('disabled', false);
+					$alertButton.prop('disabled', false);
+				}
+			});
+		});
+
+		function showNotice(type, message) {
+			var noticeClass = type === 'success' ? 'notice notice-success is-dismissible' : 'notice notice-error is-dismissible';
+			var $notice = $('<div class="' + noticeClass + '"><p>' + message + '</p></div>');
+			$('.wrap h1').first().after($notice);
+
+			$(document).on('click', '.notice-dismiss', function() {
+				$(this).parent().fadeOut();
+			});
+		}
+	}
 	
 	// Starte sofort wenn DOM ready
 	if (document.readyState === 'loading') {
 		$(document).ready(function() {
 			initForceCheck();
+			initUpdateAll();
 		});
 	} else {
 		// DOM ist bereits ready
 		initForceCheck();
+		initUpdateAll();
 	}
 	
 	$(document).ready(function() {
@@ -180,6 +253,61 @@
 					alert('Ein Fehler ist aufgetreten: ' + errorMsg);
 					$button.prop('disabled', false)
 						.html('<span class="dashicons dashicons-download"></span> Installieren');
+				}
+			});
+		});
+
+		/**
+		 * AJAX Update von Produkten (Dashboard)
+		 */
+		$(document).on('click', '.ps-update-product', function(e) {
+			e.preventDefault();
+			var $button = $(this);
+
+			if ($button.closest('.ps-update-manager-psources').length) {
+				return;
+			}
+
+			var slug = $button.data('slug');
+			var basename = $button.data('basename');
+			var type = $button.data('type') || 'plugin';
+			var originalText = $button.html();
+
+			$button.prop('disabled', true)
+				.html('<span class="dashicons dashicons-update spin"></span> Aktualisiere...');
+
+			$.ajax({
+				url: PSUpdateManager.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'ps_update_product',
+					nonce: PSUpdateManager.nonce,
+					slug: slug,
+					basename: basename,
+					type: type
+				},
+				success: function(response) {
+					if (response.success) {
+						$button.html('<span class="dashicons dashicons-yes"></span> Aktualisiert');
+						setTimeout(function() {
+							location.reload();
+						}, 800);
+					} else {
+						var errorMsg = response.data && response.data.message ? response.data.message : 'Update fehlgeschlagen';
+						alert(errorMsg);
+						$button.prop('disabled', false).html(originalText);
+					}
+				},
+				error: function(xhr, status, error) {
+					var errorMsg = error || 'Unbekannter Fehler beim Update';
+					try {
+						var response = JSON.parse(xhr.responseText);
+						if (response && response.data) {
+							errorMsg = typeof response.data === 'string' ? response.data : (response.data.message || errorMsg);
+						}
+					} catch (e) {}
+					alert(errorMsg);
+					$button.prop('disabled', false).html(originalText);
 				}
 			});
 		});

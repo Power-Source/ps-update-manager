@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,15 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.3.3 =
+
+* Fix: Update-Ordnernamen werden beim Core-Upgrader für PSOURCE-Produkte auf den erwarteten Slug normalisiert (keine Versionssuffixe wie `-1.0.2` mehr im Plugin-/Theme-Verzeichnis).
+* Fix: Dashboard-Update-Prüfung nutzt denselben synchronen Update-Flow wie das WordPress/ClassicPress-Aktualisierungsdashboard (inkl. sauberem Force-Check ohne Delay-Workaround).
+* Fix: Dashboard-Update-Erkennung verarbeitet WP/ClassicPress-Transient-Einträge jetzt robust als Array oder Objekt; dadurch erscheinen verfügbare Updates zuverlässig auch im PSOURCE Dashboard.
+* Fix: Produkt-Updates aus dem PSOURCE Dashboard laufen stabil über den integrierten AJAX-Upgrader und aktualisieren danach den Update-Stand konsistent.
+* Fix: Batch-Update im Dashboard wurde vereinfacht und nutzt jetzt einen zentralen Server-Endpunkt statt fragiler clientseitiger Einzel-Queue.
+* Remove: Abschnitt "Was willst du bauen?" (Stack-Karten) aus dem Dashboard vollständig entfernt.
 
 = 1.3.2 =
 
