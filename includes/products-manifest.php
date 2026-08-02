@@ -470,6 +470,15 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 	),
 
+	'upfront-builder' => array(
+		'type'        => 'plugin',
+		'name'        => 'Upfront Builder',
+		'repo'        => 'Power-Source/upfront-builder',
+		'description' => 'Die schnellste und visuellste Art, WordPress-Themes zu erstellen. Jetzt kann jeder WordPress-Themes entwerfen, bauen, exportieren, teilen und verkaufen.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-welcome-widgets-menus',
+	),
+
 	'ps-live-debug' => array(
 		'type'        => 'plugin',
 		'name'        => 'PSOURCE Live Debug',
@@ -498,6 +507,50 @@ return array(
 	 	'name'        => 'PS Padma Child',
 	 	'repo'        => 'Power-Source/ps-padma-child',
 	 	'description' => 'Sicheres Child-Theme für PS Padma. Perfekt für eigene Anpassungen und Custom Code, ohne Updates des Parent-Themes zu verlieren.',
+	 	'category'    => 'pagebuilder',
+	 	'icon'        => 'dashicons-admin-customizer',
+	 	'featured'    => true,
+	 	'badge'       => 'child-theme',
+	),
+
+	'upfront' => array(
+	 	'type'        => 'theme',
+	 	'name'        => 'Upfront',
+	 	'repo'        => 'Power-Source/upfront',
+	 	'description' => 'Ein leistungsstarkes Theme für ClassicPress mit umfangreichen Anpassungsmöglichkeiten.',
+	 	'category'    => 'pagebuilder',
+	 	'icon'        => 'dashicons-admin-customizer',
+	 	'featured'    => true,
+	 	'badge'       => 'framework',
+	),
+
+	'uf-fixer' => array(
+	 	'type'        => 'theme',
+	 	'name'        => 'UF Fixer',
+	 	'repo'        => 'Power-Source/uf-fixer',
+	 	'description' => 'Ein flaches und lebendiges Geschäftsthema, um Ihre Dienstleistungen zu verkaufen und sich von der Masse abzuheben. Fixer ist groß, mutig und will gesehen werden.',
+	 	'category'    => 'pagebuilder',
+	 	'icon'        => 'dashicons-admin-customizer',
+	 	'featured'    => true,
+	 	'badge'       => 'child-theme',
+	),
+
+	'uf-issue' => array(
+	 	'type'        => 'theme',
+	 	'name'        => 'Issue Magazine',
+	 	'repo'        => 'Power-Source/uf-issue',
+	 	'description' => 'Bringe Deine Artikel von Boutique-Magazinen bis hin zu Kiosk-fähigen Publikationen einem digitalen Publikum, ohne die einfache Kunstfertigkeit des Drucklayouts zu verlieren.',
+	 	'category'    => 'pagebuilder',
+	 	'icon'        => 'dashicons-admin-customizer',
+	 	'featured'    => true,
+	 	'badge'       => 'child-theme',
+	),
+
+	'uf-parrot' => array(
+	 	'type'        => 'theme',
+	 	'name'        => 'Parrot',
+	 	'repo'        => 'Power-Source/uf-parrot',
+	 	'description' => 'Egal, ob Du das nächste Snapchat erstellt hast oder einfach nur Dein neues ClassicPress-Plug-in in der Masse bewerben möchtest, Parrot bietet ein klares und professionelles Design, das den Fokus direkt auf Ihr Produkt legt – und warum Kunden es kaufen sollten.',
 	 	'category'    => 'pagebuilder',
 	 	'icon'        => 'dashicons-admin-customizer',
 	 	'featured'    => true,

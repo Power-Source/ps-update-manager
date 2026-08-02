@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,10 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.3.4 =
+
+* Upfront, Upfront Builder und mehrere UpFront Themes hinzugefügt
 
 = 1.3.3 =
 
