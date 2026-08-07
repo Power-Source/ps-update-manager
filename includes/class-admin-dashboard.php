@@ -111,6 +111,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			'toplevel_page_ps-update-manager',
 			'ps-update-manager_page_ps-update-manager',
 			'ps-update-manager_page_ps-update-manager-psources',
+			'ps-update-manager_page_ps-update-manager-community',
 			'ps-update-manager_page_ps-update-manager-tools',
 			'ps-update-manager_page_ps-update-manager-settings',
 		);
@@ -120,6 +121,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$our_pages    = array(
 			'ps-update-manager',
 			'ps-update-manager-psources',
+			'ps-update-manager-community',
 			'ps-update-manager-tools',
 			'ps-update-manager-settings',
 		);
@@ -145,7 +147,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		}
 		
 		// Settings CSS (Settings + Tools Seiten)
-		if ( in_array( $current_page, array( 'ps-update-manager-settings', 'ps-update-manager-tools' ), true ) ) {
+		if ( in_array( $current_page, array( 'ps-update-manager-settings', 'ps-update-manager-tools', 'ps-update-manager-community' ), true ) ) {
 			wp_enqueue_style( 'ps-settings', $base_url . 'assets/css/settings.css', array(), $settings_css_version );
 		}
 
@@ -182,6 +184,7 @@ class PS_Update_Manager_Admin_Dashboard {
 		$our_pages = array(
 			'ps-update-manager',
 			'ps-update-manager-psources',
+			'ps-update-manager-community',
 			'ps-update-manager-tools',
 			'ps-update-manager-settings',
 		);
@@ -325,6 +328,15 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		add_submenu_page(
 			'ps-update-manager',
+			__( 'PSOURCE Portal', 'ps-update-manager' ),
+			__( 'Portal', 'ps-update-manager' ),
+			'manage_network_options',
+			'ps-update-manager-community',
+			array( $this, 'render_psource_portal' )
+		);
+
+		add_submenu_page(
+			'ps-update-manager',
 			__( 'Tools', 'ps-update-manager' ),
 			__( 'Tools', 'ps-update-manager' ),
 			'manage_network_options',
@@ -415,6 +427,15 @@ class PS_Update_Manager_Admin_Dashboard {
 			'manage_options',
 			'ps-update-manager-psources',
 			array( $this, 'render_products' )
+		);
+
+		add_submenu_page(
+			'ps-update-manager',
+			__( 'PSOURCE Portal', 'ps-update-manager' ),
+			__( 'Portal', 'ps-update-manager' ),
+			'manage_options',
+			'ps-update-manager-community',
+			array( $this, 'render_psource_portal' )
 		);
 
 		add_submenu_page(
@@ -1601,6 +1622,111 @@ class PS_Update_Manager_Admin_Dashboard {
 	}
 
 	/**
+	 * PSOURCE Portal rendern.
+	 */
+	public function render_psource_portal() {
+		if ( ! $this->current_user_can_access() ) {
+			wp_die( esc_html__( 'Sie haben keine Berechtigung, um diese Seite anzuzeigen.', 'ps-update-manager' ) );
+		}
+
+		$portal_url = 'https://psource.eimen.net/';
+		$login_url  = 'https://psource.eimen.net/wp-login.php?redirect_to=' . rawurlencode( $portal_url );
+		$wiki_url   = 'https://psource.eimen.net/wiki/categories/psource/';
+		$forum_url  = 'https://psource.eimen.net/ps-forum/';
+		$news_url   = 'https://psource.eimen.net/aktivitaetswall/';
+		?>
+		<div class="wrap ps-update-manager-community">
+			<h1><?php esc_html_e( 'PSOURCE Portal', 'ps-update-manager' ); ?></h1>
+
+			<div class="ps-settings-hero ps-community-hero">
+				<div class="ps-settings-hero-content">
+					<span class="ps-settings-hero-kicker"><?php esc_html_e( 'Direkt im Manager', 'ps-update-manager' ); ?></span>
+					<h2><?php esc_html_e( 'Willkommen im PSOURCE Portal', 'ps-update-manager' ); ?></h2>
+					<p><?php esc_html_e( 'Hier findest Du News, Handbücher und die Community direkt eingebettet im PSOURCE Manager. So kannst Du im Adminbereich bleiben und trotzdem sofort auf die zentrale PSOURCE-Seite zugreifen.', 'ps-update-manager' ); ?></p>
+					<div class="ps-settings-hero-actions">
+						<a class="ps-settings-hero-btn ps-settings-hero-btn-primary" href="<?php echo esc_url( $portal_url ); ?>" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-admin-site-alt3"></span>
+							<?php esc_html_e( 'Portal extern öffnen', 'ps-update-manager' ); ?>
+						</a>
+						<a class="ps-settings-hero-btn" href="<?php echo esc_url( $login_url ); ?>" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-lock"></span>
+							<?php esc_html_e( 'Login extern öffnen', 'ps-update-manager' ); ?>
+						</a>
+						<a class="ps-settings-hero-btn" href="<?php echo esc_url( $news_url ); ?>" target="_blank" rel="noopener noreferrer">
+							<span class="dashicons dashicons-megaphone"></span>
+							<?php esc_html_e( 'DEV News', 'ps-update-manager' ); ?>
+						</a>
+					</div>
+				</div>
+
+				<div class="ps-settings-hero-menu">
+					<div class="ps-settings-hero-menu-item">
+						<strong><?php esc_html_e( 'Hilfe & Einstieg', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Wenn das Embed in Deinem Browser oder durch spätere Sicherheitsheader blockiert wird, kannst Du das Portal jederzeit extern öffnen.', 'ps-update-manager' ); ?></span>
+					</div>
+					<a class="ps-settings-hero-menu-item" href="<?php echo esc_url( $wiki_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<strong><?php esc_html_e( 'Wiki', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Dokumentation, Integrationen und technische Anleitungen.', 'ps-update-manager' ); ?></span>
+					</a>
+					<a class="ps-settings-hero-menu-item" href="<?php echo esc_url( $forum_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<strong><?php esc_html_e( 'Forum', 'ps-update-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Fragen stellen, Feedback geben und mit der Community sprechen.', 'ps-update-manager' ); ?></span>
+					</a>
+				</div>
+			</div>
+
+			<div class="ps-settings-section ps-community-help-box">
+				<h2><?php esc_html_e( 'Kurzhilfe', 'ps-update-manager' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Das Portal wird unten direkt per iFrame geladen. Nutze die Schnelllinks, wenn Du gezielt ins Wiki, in die News oder ins Forum springen willst.', 'ps-update-manager' ); ?></p>
+				<div class="ps-community-link-grid">
+					<a class="ps-community-link-card" href="<?php echo esc_url( $portal_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<span class="dashicons dashicons-admin-home"></span>
+						<div>
+							<strong><?php esc_html_e( 'Startseite', 'ps-update-manager' ); ?></strong>
+							<span><?php esc_html_e( 'Die zentrale PSOURCE-Übersicht in einem neuen Tab öffnen.', 'ps-update-manager' ); ?></span>
+						</div>
+					</a>
+					<a class="ps-community-link-card" href="<?php echo esc_url( $wiki_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<span class="dashicons dashicons-book-alt"></span>
+						<div>
+							<strong><?php esc_html_e( 'Handbücher', 'ps-update-manager' ); ?></strong>
+							<span><?php esc_html_e( 'Direkt zu den PSOURCE-Wikis und Anleitungen.', 'ps-update-manager' ); ?></span>
+						</div>
+					</a>
+					<a class="ps-community-link-card" href="<?php echo esc_url( $forum_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<span class="dashicons dashicons-format-chat"></span>
+						<div>
+							<strong><?php esc_html_e( 'Community', 'ps-update-manager' ); ?></strong>
+							<span><?php esc_html_e( 'Support, Diskussionen und Rückfragen im Forum.', 'ps-update-manager' ); ?></span>
+						</div>
+					</a>
+				</div>
+			</div>
+
+			<div class="ps-community-embed-shell">
+				<div class="ps-community-embed-head">
+					<div>
+						<h2><?php esc_html_e( 'PSOURCE eingebettet', 'ps-update-manager' ); ?></h2>
+						<p><?php esc_html_e( 'Live-Ansicht von psource.eimen.net direkt im Adminbereich.', 'ps-update-manager' ); ?></p>
+					</div>
+					<a class="button" href="<?php echo esc_url( $portal_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Im neuen Tab öffnen', 'ps-update-manager' ); ?></a>
+				</div>
+				<div class="ps-community-embed-frame-wrap">
+					<iframe
+						title="<?php esc_attr_e( 'PSOURCE Portal', 'ps-update-manager' ); ?>"
+						class="ps-community-embed-frame"
+						src="<?php echo esc_url( $portal_url ); ?>"
+						loading="lazy"
+						referrerpolicy="strict-origin-when-cross-origin"
+					></iframe>
+					<p class="ps-community-embed-note"><?php esc_html_e( 'Falls das Portal hier leer bleibt, blockiert die Gegenseite oder der Browser das Einbetten. Nutze dann den Button oben zum externen Öffnen.', 'ps-update-manager' ); ?></p>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render capability group helper
 	 */
 	private function render_capability_group( $all_capabilities, $settings, $available_roles, $capability_keys ) {
@@ -1892,112 +2018,66 @@ class PS_Update_Manager_Admin_Dashboard {
 			) );
 		}
 
-		// Zielverzeichnis und Zielordner vorbereiten
-		$destination = trailingslashit( ( 'theme' === $type ) ? WP_CONTENT_DIR . '/themes' : WP_PLUGIN_DIR );
-		$slug_safe = sanitize_file_name( $slug );
-		$target_dir = trailingslashit( $destination ) . $slug_safe;
-		$dirs_before = glob( $destination . '*', GLOB_ONLYDIR );
-		$dirs_before = is_array( $dirs_before ) ? array_map( 'realpath', $dirs_before ) : array();
-		// Vorhandenen Zielordner vorab löschen
-		if ( file_exists( $target_dir ) ) {
-			$this->delete_directory_recursive( $target_dir );
-		}
-		
-		// Temporäres Verzeichnis
-		$temp_file = download_url( $download_url );
-		
-		if ( is_wp_error( $temp_file ) ) {
-			return new WP_Error( 'download_failed', sprintf(
-				__( 'Download fehlgeschlagen: %s', 'ps-update-manager' ),
-				$temp_file->get_error_message()
-			) );
-		}
-		
-		if ( ! file_exists( $temp_file ) ) {
-			return new WP_Error( 'temp_file_not_exists', __( 'Temporäre Datei konnte nicht erstellt werden', 'ps-update-manager' ) );
-		}
-		
-		// Zielverzeichnis ist oben bereits gesetzt
-		
-		// Entpacken - WP_Filesystem initialisieren
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		
-		$wp_filesystem_ok = WP_Filesystem();
-		
-		if ( ! $wp_filesystem_ok ) {
-			if ( file_exists( $temp_file ) ) {
-				wp_delete_file( $temp_file );
-			}
+
+		if ( ! WP_Filesystem() ) {
 			return new WP_Error( 'wp_filesystem_error', __( 'ClassicPress Dateisystem konnte nicht initialisiert werden. Bitte prüfe die Dateisystem-Berechtigungen.', 'ps-update-manager' ) );
 		}
-		
-		global $wp_filesystem;
-		
-		$unzip_result = unzip_file( $temp_file, $destination );
-		
-		// Temp-Datei löschen (proper cleanup ohne error suppression)
-		if ( file_exists( $temp_file ) ) {
-			wp_delete_file( $temp_file );
-		}
-		
-		if ( is_wp_error( $unzip_result ) ) {
-			return new WP_Error( 'unzip_failed', sprintf(
-				__( 'Entpacken fehlgeschlagen: %s', 'ps-update-manager' ),
-				$unzip_result->get_error_message()
-			) );
-		}
-		
-		// GitHub ZIP hat Ordner wie "Power-Source-ps-chat-abc123"
-		// Umbenennen zu "ps-chat"
-		if ( is_dir( $target_dir ) ) {
-			return true;
-		}
 
-		$extracted_dir = $this->find_extracted_directory( $destination, $repo );
-
-		if ( ! $extracted_dir ) {
-			$dirs_after = glob( $destination . '*', GLOB_ONLYDIR );
-			$dirs_after = is_array( $dirs_after ) ? array_map( 'realpath', $dirs_after ) : array();
-			$new_dirs = array_values( array_diff( $dirs_after, $dirs_before ) );
-			if ( count( $new_dirs ) === 1 && is_dir( $new_dirs[0] ) ) {
-				$extracted_dir = $new_dirs[0];
-			}
-		}
-		
-		if ( $extracted_dir ) {
-			// SICHERHEIT: Path Traversal Prevention
-			// $slug_safe und $target_dir sind oben bereits gesetzt
-			// Prüfe ob Destination existiert
-			if ( ! file_exists( $destination ) ) {
-				return new WP_Error( 'destination_not_exists', __( 'Zielverzeichnis existiert nicht', 'ps-update-manager' ) );
+		$slug_safe = sanitize_file_name( $slug );
+		$install_filter = function( $source, $remote_source, $upgrader, $hook_extra ) use ( $slug_safe, $type ) {
+			if ( ! is_string( $source ) || ! is_dir( $source ) || ! is_array( $hook_extra ) ) {
+				return $source;
 			}
 
-			$destination_real = realpath( $destination );
-			if ( ! $destination_real ) {
-				return new WP_Error( 'invalid_destination', __( 'Ungültiges Zielverzeichnis', 'ps-update-manager' ) );
+			if ( ( $hook_extra['action'] ?? '' ) !== 'install' || ( $hook_extra['type'] ?? '' ) !== $type ) {
+				return $source;
 			}
 
-			$target_real = realpath( dirname( $target_dir ) );
-			if ( ! $target_real || 0 !== strpos( $target_real, $destination_real ) ) {
-				return new WP_Error( 'security_error', __( 'Sicherheitsfehler: Ungültiger Zielpfad', 'ps-update-manager' ) );
+			$source_dir_name = basename( untrailingslashit( $source ) );
+			if ( $source_dir_name === $slug_safe ) {
+				return $source;
 			}
 
-			if ( ! file_exists( $target_dir ) ) {
-				$rename_result = rename( $extracted_dir, $target_dir );
-				if ( ! $rename_result ) {
-					return new WP_Error( 'rename_failed', __( 'Umbenennen des Verzeichnisses fehlgeschlagen', 'ps-update-manager' ) );
+			$parent_dir = trailingslashit( dirname( untrailingslashit( $source ) ) );
+			$normalized_source = $parent_dir . $slug_safe;
+
+			if ( file_exists( $normalized_source ) ) {
+				$this->delete_directory_recursive( $normalized_source );
+				if ( file_exists( $normalized_source ) ) {
+					return $source;
 				}
 			}
-			// Nach erfolgreichem Umbenennen: Ursprünglichen extrahierten Ordner löschen, falls noch vorhanden und nicht identisch mit Ziel
-			if ( file_exists( $extracted_dir ) && $extracted_dir !== $target_dir ) {
-				$this->delete_directory_recursive( $extracted_dir );
+
+			if ( @rename( $source, $normalized_source ) ) {
+				return $normalized_source;
 			}
+
+			return $source;
+		};
+
+		add_filter( 'upgrader_source_selection', $install_filter, 20, 4 );
+
+		try {
+			if ( 'theme' === $type ) {
+				$upgrader = new Theme_Upgrader( new Automatic_Upgrader_Skin() );
+			} else {
+				$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+			}
+
+			$result = $upgrader->install( $download_url );
+		} finally {
+			remove_filter( 'upgrader_source_selection', $install_filter, 20 );
 		}
 
-		if ( ! is_dir( $target_dir ) ) {
-			return new WP_Error( 'install_directory_missing', __( 'Installation fehlgeschlagen: Zielordner wurde nach dem Entpacken nicht gefunden.', 'ps-update-manager' ) );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		if ( false === $result ) {
+			return new WP_Error( 'install_failed', __( 'Installation fehlgeschlagen', 'ps-update-manager' ) );
 		}
 
 		return true;

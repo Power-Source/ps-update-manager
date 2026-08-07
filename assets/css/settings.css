@@ -338,6 +338,112 @@
 	margin: 5px 0;
 	color: #333;
 }
+.ps-community-hero {
+	margin-bottom: 20px;
+}
+.ps-community-help-box {
+	max-width: 1200px;
+	background: #ffffff;
+	padding: 22px;
+	border-radius: 16px;
+	box-shadow: 0 16px 36px rgba(19, 37, 56, 0.08);
+	border: 1px solid #e4e8ee;
+}
+.ps-community-link-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	margin-top: 18px;
+}
+.ps-community-link-card {
+	display: grid;
+	grid-template-columns: 28px minmax(0, 1fr);
+	gap: 12px;
+	align-items: start;
+	padding: 16px;
+	border-radius: 14px;
+	border: 1px solid #d9e3ec;
+	background: linear-gradient(180deg, #fbfdff 0%, #f4f8fb 100%);
+	text-decoration: none;
+	color: #17324d;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.ps-community-link-card:hover,
+.ps-community-link-card:focus {
+	transform: translateY(-2px);
+	border-color: #b7c9d9;
+	box-shadow: 0 10px 24px rgba(31, 62, 93, 0.1);
+	color: #17324d;
+}
+.ps-community-link-card .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+	color: #d98b3a;
+}
+.ps-community-link-card strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 15px;
+	color: #17324d;
+}
+.ps-community-link-card span {
+	display: block;
+	font-size: 13px;
+	line-height: 1.55;
+	color: #516170;
+}
+.ps-community-embed-shell {
+	max-width: 1200px;
+	margin-top: 20px;
+	padding: 18px;
+	border-radius: 18px;
+	background: #fff;
+	border: 1px solid #dfe5eb;
+	box-shadow: 0 18px 42px rgba(19, 37, 56, 0.1);
+}
+.ps-community-embed-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	padding: 8px 6px 18px;
+}
+.ps-community-embed-head h2 {
+	margin: 0 0 4px;
+	font-size: 22px;
+	color: #17324d;
+	border: 0;
+	padding: 0;
+}
+.ps-community-embed-head p {
+	margin: 0;
+	color: #5a6875;
+	font-size: 14px;
+}
+.ps-community-embed-frame-wrap {
+	border-radius: 16px;
+	overflow: hidden;
+	background: linear-gradient(180deg, #eff4f8 0%, #f7fafc 100%);
+	border: 1px solid #dbe3ea;
+}
+.ps-community-embed-frame {
+	display: block;
+	width: 100%;
+	min-height: 980px;
+	border: 0;
+	background: #fff;
+}
+.ps-community-embed-note {
+	margin: 0;
+	padding: 14px 18px;
+	font-size: 13px;
+	line-height: 1.55;
+	color: #61707d;
+	background: #f6f9fb;
+	border-top: 1px solid #dbe3ea;
+}
 
 /**
  * Default Theme Tool - Empfohlene Themes
@@ -382,6 +488,16 @@
 		grid-template-columns: 1fr;
 	}
 }
+	.ps-community-link-grid {
+		grid-template-columns: 1fr;
+	}
+	.ps-community-embed-head {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.ps-community-embed-frame {
+		min-height: 720px;
+	}
 
 .ps-theme-card {
 	background: linear-gradient(135deg, #3d3d5c 0%, #2a2a3d 100%);

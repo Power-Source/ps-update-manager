@@ -48,6 +48,14 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 == Changelog ==
 
+= 1.3.5 =
+
+* Fix: Tab-Wechsel im PSOURCE Katalog lädt Plugins/Themes jetzt wieder direkt per AJAX nach, ohne manuellen Seiten-Reload.
+* Fix: Installation aus dem PSOURCE Katalog nutzt jetzt denselben Core-Upgrader-Flow wie Produkt-Updates und behandelt GitHub-Release-ZIPs robuster.
+* Fix: Install- und Update-Handling für PSOURCE-Produkte wurde weiter vereinheitlicht, um inkonsistente Ordner-/Paketstrukturen besser abzufangen.
+* Add: Neue Admin-Unterseite "Portal" im PS MANAGER Menü mit eingebetteter Ansicht von https://psource.eimen.net/.
+* Add: Portal-Seite mit Willkommensbereich, Kurzhilfe, Schnelllinks zu Wiki/Forum/News und externem Login-Button ergänzt.
+
 = 1.3.4 =
 
 * Upfront, Upfront Builder und mehrere UpFront Themes hinzugefügt

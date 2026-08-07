@@ -131,7 +131,7 @@
 			
 			// Kategorien für den Tab laden
 			this.loadCategories(tab);
-			this.resetFilters(false);
+			this.resetFilters();
 		},
 
 		getInitialTab() {
