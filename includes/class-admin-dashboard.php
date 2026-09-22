@@ -933,9 +933,10 @@ class PS_Update_Manager_Admin_Dashboard {
 									</button>
 								<?php endif; ?>
 								<?php
+								// Fallback nur falls docs_url fehlt: auf GitHub-Repo verlinken (keine erfundene Domain)
 								$docs_url = ! empty( $product['docs_url'] )
 									? $product['docs_url']
-									: 'https://power-source.github.io/' . rawurlencode( $product['slug'] );
+									: ( ! empty( $product['github_repo'] ) ? 'https://github.com/' . $product['github_repo'] : '' );
 								?>
 								<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="ps-icon-link" title="<?php esc_attr_e( 'Dokumentation', 'ps-update-manager' ); ?>">
 									<span class="dashicons dashicons-book"></span>
@@ -1390,9 +1391,10 @@ class PS_Update_Manager_Admin_Dashboard {
 						<span class="dashicons dashicons-sos"></span> Support
 					</a>
 					<?php
+					// Fallback nur falls docs_url fehlt: auf GitHub-Repo verlinken (keine erfundene Domain)
 					$docs_url = ! empty( $product['docs_url'] ) 
 						? $product['docs_url'] 
-						: 'https://power-source.github.io/' . rawurlencode( $product['slug'] );
+						: ( ! empty( $product['repo'] ) ? 'https://github.com/' . $product['repo'] : '' );
 					?>
 					<a href="<?php echo esc_url( $docs_url ); ?>" target="_blank" class="ps-link">
 						<span class="dashicons dashicons-media-document"></span> Handbuch

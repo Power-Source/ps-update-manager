@@ -40,8 +40,15 @@ class PS_Update_Manager_Update_Checker {
 	 * Plugin Updates prüfen
 	 */
 	public function check_plugin_updates( $transient ) {
-		if ( empty( $transient->checked ) ) {
+		// WICHTIG: $transient->checked ist nach force_check() (Transient vorher gelöscht) oft LEER,
+		// weil ClassicPress/WordPress in wp_update_plugins() die 'checked'-Liste nur befüllt, wenn der
+		// alte Transient noch "frisch" war. Wir dürfen uns daher NICHT auf checked() verlassen und
+		// nicht mehr früh abbrechen - sonst werden Plugin-Updates nach jedem Force-Check ignoriert.
+		if ( ! is_object( $transient ) ) {
 			return $transient;
+		}
+		if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+			$transient->response = array();
 		}
 		
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_by_type( 'plugin' );
@@ -91,8 +98,11 @@ class PS_Update_Manager_Update_Checker {
 	 * Theme Updates prüfen
 	 */
 	public function check_theme_updates( $transient ) {
-		if ( empty( $transient->checked ) ) {
+		if ( ! is_object( $transient ) ) {
 			return $transient;
+		}
+		if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+			$transient->response = array();
 		}
 		
 		$products = PS_Update_Manager_Product_Registry::get_instance()->get_by_type( 'theme' );

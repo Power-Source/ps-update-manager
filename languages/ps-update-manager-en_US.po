@@ -1,0 +1,1247 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PSOURCE Manager 1.3.6\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ps-update-manager\n"
+"Last-Translator: PSource\n"
+"Language-Team: English <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-22T21:00:09+00:00\n"
+"PO-Revision-Date: 2026-09-22 21:00+0000\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: manual\n"
+"X-Domain: ps-update-manager\n"
+
+#. Plugin Name of the plugin
+#: ps-update-manager.php
+#: includes/class-admin-dashboard.php:302
+#: includes/class-admin-dashboard.php:405
+#: includes/class-admin-dashboard.php:718
+msgid "PSOURCE Manager"
+msgstr "PSOURCE Manager"
+
+#. Plugin URI of the plugin
+#: ps-update-manager.php
+msgid "https://psource.eimen.net/wiki/psource-manager-dokumentation/"
+msgstr "https://psource.eimen.net/wiki/psource-manager-dokumentation/"
+
+#. Description of the plugin
+#: ps-update-manager.php
+msgid "PSOURCE Management & Toolbox Hub - Updates, Tools & Netzwerk-Administration"
+msgstr "PSOURCE Management & Toolbox Hub - Updates, Tools & Network Administration"
+
+#. Author of the plugin
+#: ps-update-manager.php
+msgid "PSource"
+msgstr "PSource"
+
+#. Author URI of the plugin
+#: ps-update-manager.php
+msgid "https://psource.eimen.net"
+msgstr "https://psource.eimen.net"
+
+#: includes/class-admin-dashboard.php:20
+#: includes/class-admin-dashboard.php:1096
+#: includes/class-admin-dashboard.php:1265
+#: includes/class-admin-dashboard.php:1967
+#: includes/class-admin-dashboard.php:2187
+#: includes/class-admin-dashboard.php:2259
+#: includes/class-admin-dashboard.php:2293
+#: includes/class-admin-dashboard.php:2330
+#: includes/class-admin-dashboard.php:2398
+msgid "Keine Berechtigung für diese Aktion"
+msgstr "No permission for this action"
+
+#: includes/class-admin-dashboard.php:28
+#: includes/class-admin-dashboard.php:2266
+#: includes/class-admin-dashboard.php:2301
+#: includes/class-admin-dashboard.php:2338
+msgid "Ungültige Parameter"
+msgstr "Invalid parameters"
+
+#: includes/class-admin-dashboard.php:35
+msgid "Sicherheitsfehler: Produkt nicht im offiziellen Manifest"
+msgstr "Security error: product not in official manifest"
+
+#: includes/class-admin-dashboard.php:40
+msgid "Ungültiger Produkttyp"
+msgstr "Invalid product type"
+
+#: includes/class-admin-dashboard.php:55
+#, php-format
+msgid "%s erfolgreich installiert!"
+msgstr "%s installed successfully!"
+
+#: includes/class-admin-dashboard.php:171
+msgid "Wird geprüft..."
+msgstr "Checking..."
+
+#: includes/class-admin-dashboard.php:172
+msgid "Erfolgreich!"
+msgstr "Success!"
+
+#: includes/class-admin-dashboard.php:173
+msgid "Ein Fehler ist aufgetreten"
+msgstr "An error occurred"
+
+#: includes/class-admin-dashboard.php:303
+#: includes/class-admin-dashboard.php:406
+msgid "PS MANAGER"
+msgstr "PS MANAGER"
+
+#: includes/class-admin-dashboard.php:313
+#: includes/class-admin-dashboard.php:314
+#: includes/class-admin-dashboard.php:416
+#: includes/class-admin-dashboard.php:417
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: includes/class-admin-dashboard.php:322
+#: includes/class-admin-dashboard.php:425
+#: includes/class-admin-dashboard.php:841
+#: includes/class-admin-dashboard.php:982
+msgid "PSOURCE Katalog"
+msgstr "PSOURCE Catalog"
+
+#: includes/class-admin-dashboard.php:323
+#: includes/class-admin-dashboard.php:426
+msgid "PSOURCE"
+msgstr "PSOURCE"
+
+#: includes/class-admin-dashboard.php:331
+#: includes/class-admin-dashboard.php:434
+#: includes/class-admin-dashboard.php:1641
+#: includes/class-admin-dashboard.php:1718
+msgid "PSOURCE Portal"
+msgstr "PSOURCE Portal"
+
+#: includes/class-admin-dashboard.php:332
+#: includes/class-admin-dashboard.php:435
+msgid "Portal"
+msgstr "Portal"
+
+#: includes/class-admin-dashboard.php:340
+#: includes/class-admin-dashboard.php:341
+#: includes/class-admin-dashboard.php:443
+#: includes/class-admin-dashboard.php:444
+msgid "Tools"
+msgstr "Tools"
+
+#: includes/class-admin-dashboard.php:349
+#: includes/class-admin-dashboard.php:350
+#: includes/class-admin-dashboard.php:452
+#: includes/class-admin-dashboard.php:453
+#: includes/class-admin-dashboard.php:866
+msgid "Einstellungen"
+msgstr "Settings"
+
+#: includes/class-admin-dashboard.php:516
+msgid "Berechtigungseinstellungen erfolgreich gespeichert."
+msgstr "Permission settings saved successfully."
+
+#: includes/class-admin-dashboard.php:645
+#: includes/class-admin-dashboard.php:1479
+#: includes/class-admin-dashboard.php:1631
+#: includes/class-admin-dashboard.php:2153
+msgid "Sie haben keine Berechtigung, um diese Seite anzuzeigen."
+msgstr "You do not have permission to view this page."
+
+#: includes/class-admin-dashboard.php:719
+msgid "Dein ClassicPress Ökosystem – Open Source, Deutsch, vollständig."
+msgstr "Your ClassicPress ecosystem – open source, German, complete."
+
+#: includes/class-admin-dashboard.php:725
+msgid "Updates prüfen"
+msgstr "Check for updates"
+
+#: includes/class-admin-dashboard.php:729
+msgid "Alle PSOURCE aktualisieren"
+msgstr "Update all PSOURCE products"
+
+#: includes/class-admin-dashboard.php:733
+msgid "Alle PSOURCE entdecken"
+msgstr "Discover all PSOURCE products"
+
+#: includes/class-admin-dashboard.php:742
+#: includes/class-admin-dashboard.php:1011
+#: includes/tools/class-default-theme-tool.php:103
+#: includes/tools/class-default-theme-tool.php:128
+msgid "Installiert"
+msgstr "Installed"
+
+#: includes/class-admin-dashboard.php:747
+#: includes/class-admin-dashboard.php:923
+#: includes/class-admin-dashboard.php:1012
+#: includes/class-admin-dashboard.php:1369
+#: includes/class-admin-dashboard.php:1465
+msgid "Aktiv"
+msgstr "Active"
+
+#: includes/class-admin-dashboard.php:752
+msgid "Updates"
+msgstr "Updates"
+
+#: includes/class-admin-dashboard.php:759
+msgid "Tipps fuer dein Setup"
+msgstr "Tips for your setup"
+
+#: includes/class-admin-dashboard.php:781
+#, php-format
+msgid "Letzter Scan vor %s"
+msgstr "Last scan %s ago"
+
+#: includes/class-admin-dashboard.php:790
+#, php-format
+msgid "Letzter Sync vor %s"
+msgstr "Last sync %s ago"
+
+#: includes/class-admin-dashboard.php:806
+#, php-format
+msgid "%d Update verfügbar"
+msgid_plural "%d Updates verfügbar"
+msgstr[0] "%d update available"
+msgstr[1] "%d updates available"
+
+#: includes/class-admin-dashboard.php:819
+msgid "u.a."
+msgstr "among others"
+
+#: includes/class-admin-dashboard.php:824
+msgid "Jetzt hier aktualisieren"
+msgstr "Update now"
+
+#: includes/class-admin-dashboard.php:833
+msgid "Schnellzugriff"
+msgstr "Quick access"
+
+#: includes/class-admin-dashboard.php:834
+msgid "Direkte Shortcuts zu Tools, Einstellungen und wichtigen Aktionen."
+msgstr "Direct shortcuts to tools, settings and important actions."
+
+#: includes/class-admin-dashboard.php:842
+#, php-format
+msgid "%d weitere Plugins verfügbar"
+msgstr "%d more plugins available"
+
+#: includes/class-admin-dashboard.php:867
+msgid "Berechtigungen und Systemoptionen"
+msgstr "Permissions and system options"
+
+#: includes/class-admin-dashboard.php:878
+msgid "Installierte PSOURCE"
+msgstr "Installed PSOURCE"
+
+#: includes/class-admin-dashboard.php:879
+#, php-format
+msgid "%d Plugins & Themes auf dieser Installation."
+msgstr "%d plugins & themes on this installation."
+
+#: includes/class-admin-dashboard.php:920
+msgid "Netzwerk"
+msgstr "Network"
+
+#: includes/class-admin-dashboard.php:925
+#: includes/class-admin-dashboard.php:1372
+msgid "Inaktiv"
+msgstr "Inactive"
+
+#: includes/class-admin-dashboard.php:932
+#: includes/class-admin-dashboard.php:1414
+msgid "Jetzt aktualisieren"
+msgstr "Update now"
+
+#: includes/class-admin-dashboard.php:941
+#: includes/class-update-checker.php:446
+msgid "Dokumentation"
+msgstr "Documentation"
+
+#: includes/class-admin-dashboard.php:958
+msgid "PSOURCE ist Open Source"
+msgstr "PSOURCE is open source"
+
+#: includes/class-admin-dashboard.php:959
+msgid "Alles kostenlos, alles auf GitHub. Beiträge, Issues und Ideen willkommen."
+msgstr "Everything free, everything on GitHub. Contributions, issues and ideas welcome."
+
+#: includes/class-admin-dashboard.php:963
+msgid "GitHub / Power-Source"
+msgstr "GitHub / Power-Source"
+
+#: includes/class-admin-dashboard.php:977
+msgid "Du hast keine Berechtigung, um diese Seite anzuzeigen."
+msgstr "You do not have permission to view this page."
+
+#: includes/class-admin-dashboard.php:984
+msgid "Entdecke und installiere offizielle PSOURCE Plugins und Themes aus dem Power-Source Repository."
+msgstr "Discover and install official PSOURCE plugins and themes from the Power-Source repository."
+
+#: includes/class-admin-dashboard.php:991
+msgid "Plugins"
+msgstr "Plugins"
+
+#: includes/class-admin-dashboard.php:995
+msgid "Themes"
+msgstr "Themes"
+
+#: includes/class-admin-dashboard.php:1002
+msgid "Suche nach Name oder Beschreibung…"
+msgstr "Search by name or description…"
+
+#: includes/class-admin-dashboard.php:1005
+msgid "Alle Kategorien"
+msgstr "All categories"
+
+#: includes/class-admin-dashboard.php:1010
+msgid "Alle"
+msgstr "All"
+
+#: includes/class-admin-dashboard.php:1013
+msgid "Verfügbar"
+msgstr "Available"
+
+#: includes/class-admin-dashboard.php:1014
+msgid "Update verfügbar"
+msgstr "Update available"
+
+#: includes/class-admin-dashboard.php:1019
+msgid "Filter anwenden"
+msgstr "Apply filter"
+
+#: includes/class-admin-dashboard.php:1024
+msgid "Zurücksetzen"
+msgstr "Reset"
+
+#: includes/class-admin-dashboard.php:1226
+msgid "Keine PSOURCE gefunden."
+msgstr "No PSOURCE products found."
+
+#: includes/class-admin-dashboard.php:1304
+#: includes/tools/class-default-theme-tool.php:178
+msgid "Empfohlen"
+msgstr "Recommended"
+
+#: includes/class-admin-dashboard.php:1340
+msgid "Pagebuilder"
+msgstr "Page builder"
+
+#: includes/class-admin-dashboard.php:1345
+msgid "Child-Theme"
+msgstr "Child theme"
+
+#: includes/class-admin-dashboard.php:1350
+msgid "Template"
+msgstr "Template"
+
+#: includes/class-admin-dashboard.php:1359
+msgid "Nicht installiert"
+msgstr "Not installed"
+
+#: includes/class-admin-dashboard.php:1361
+#, php-format
+msgid "Update: v%s"
+msgstr "Update: v%s"
+
+#: includes/class-admin-dashboard.php:1364
+msgid "Netzwerkweit aktiviert"
+msgstr "Network activated"
+
+#: includes/class-admin-dashboard.php:1366
+msgid "Netzwerkweit"
+msgstr "Network-wide"
+
+#: includes/class-admin-dashboard.php:1409
+msgid "Installieren"
+msgstr "Install"
+
+#: includes/class-admin-dashboard.php:1426
+msgid "Nur Unterseiten"
+msgstr "Subsites only"
+
+#: includes/class-admin-dashboard.php:1433
+msgid "Netzwerkweit aktivieren"
+msgstr "Network activate"
+
+#: includes/class-admin-dashboard.php:1441
+#: includes/class-admin-dashboard.php:1455
+msgid "Aktivieren"
+msgstr "Activate"
+
+#: includes/class-admin-dashboard.php:1460
+msgid "Deaktivieren"
+msgstr "Deactivate"
+
+#: includes/class-admin-dashboard.php:1488
+msgid "Dashboard Zugriff"
+msgstr "Dashboard access"
+
+#: includes/class-admin-dashboard.php:1489
+msgid "Berechtigung für allgemeinen Zugriff auf das Plugin-Dashboard"
+msgstr "Permission for general access to the plugin dashboard"
+
+#: includes/class-admin-dashboard.php:1492
+msgid "Katalog Anzeigen"
+msgstr "View catalog"
+
+#: includes/class-admin-dashboard.php:1493
+msgid "Erlaubt Benutzern, die Produktkatalog anzuschauen"
+msgstr "Allows users to view the product catalog"
+
+#: includes/class-admin-dashboard.php:1496
+msgid "Updates Prüfen"
+msgstr "Check updates"
+
+#: includes/class-admin-dashboard.php:1497
+msgid "Erlaubt Force-Check und Aktualisierungssuche"
+msgstr "Allows forced checks and update searches"
+
+#: includes/class-admin-dashboard.php:1500
+msgid "Produkte Installieren"
+msgstr "Install products"
+
+#: includes/class-admin-dashboard.php:1501
+msgid "Erlaubt Installation von Plugins und Themes"
+msgstr "Allows installation of plugins and themes"
+
+#: includes/class-admin-dashboard.php:1504
+msgid "Produkte Aktualisieren"
+msgstr "Update products"
+
+#: includes/class-admin-dashboard.php:1505
+msgid "Erlaubt Updates von installierten Produkten"
+msgstr "Allows updating installed products"
+
+#: includes/class-admin-dashboard.php:1508
+msgid "Plugins Verwalten"
+msgstr "Manage plugins"
+
+#: includes/class-admin-dashboard.php:1509
+msgid "Erlaubt Aktivierung/Deaktivierung von Plugins"
+msgstr "Allows activating/deactivating plugins"
+
+#: includes/class-admin-dashboard.php:1512
+msgid "Themes Verwalten"
+msgstr "Manage themes"
+
+#: includes/class-admin-dashboard.php:1513
+msgid "Erlaubt Aktivierung/Deaktivierung von Themes"
+msgstr "Allows activating/deactivating themes"
+
+#: includes/class-admin-dashboard.php:1516
+msgid "Netzwerk-Tools"
+msgstr "Network tools"
+
+#: includes/class-admin-dashboard.php:1517
+msgid "Zugriff auf Standard-Theme und andere Netzwerk-Tools"
+msgstr "Access to the default theme tool and other network tools"
+
+#: includes/class-admin-dashboard.php:1520
+msgid "TOS Einstellungen"
+msgstr "TOS settings"
+
+#: includes/class-admin-dashboard.php:1521
+msgid "Verwaltung von Terms of Service Einstellungen"
+msgstr "Manage terms of service settings"
+
+#: includes/class-admin-dashboard.php:1524
+msgid "Plugin-Einstellungen"
+msgstr "Plugin settings"
+
+#: includes/class-admin-dashboard.php:1525
+msgid "Zugriff auf diese Einstellungsseite"
+msgstr "Access to this settings page"
+
+#: includes/class-admin-dashboard.php:1528
+msgid "GitHub API Testen"
+msgstr "Test GitHub API"
+
+#: includes/class-admin-dashboard.php:1529
+msgid "Erlaubt GitHub API Verbindungstests"
+msgstr "Allows GitHub API connection tests"
+
+#: includes/class-admin-dashboard.php:1534
+msgid "PS Update Manager - Berechtigungsmanagement"
+msgstr "PS Update Manager - Permission Management"
+
+#: includes/class-admin-dashboard.php:1538
+msgid "PSOURCE Netzwerk"
+msgstr "PSOURCE Network"
+
+#: includes/class-admin-dashboard.php:1539
+msgid "Alles Wichtige rund um PSOURCE an einem Ort"
+msgstr "Everything important about PSOURCE in one place"
+
+#: includes/class-admin-dashboard.php:1540
+msgid "Bleib bei neuen Entwicklungen auf dem Laufenden, spring direkt in die Dokumentation oder diskutiere mit der Community im Forum. Wenn Du tiefer einsteigen willst, findest Du alle Repositories auch gesammelt auf GitHub."
+msgstr "Stay up to date with new developments, jump straight into the documentation or discuss with the community in the forum. If you want to dig deeper, you'll find all repositories collected on GitHub as well."
+
+#: includes/class-admin-dashboard.php:1544
+msgid "Aktuelle DEV News"
+msgstr "Latest DEV news"
+
+#: includes/class-admin-dashboard.php:1548
+msgid "Dokumentationen"
+msgstr "Documentation"
+
+#: includes/class-admin-dashboard.php:1552
+#: includes/class-admin-dashboard.php:1571
+#: includes/class-admin-dashboard.php:1674
+msgid "Forum"
+msgstr "Forum"
+
+#: includes/class-admin-dashboard.php:1563
+#: includes/class-admin-dashboard.php:1659
+msgid "DEV News"
+msgstr "DEV News"
+
+#: includes/class-admin-dashboard.php:1564
+msgid "Neue Builds, Änderungen und laufende Entwicklung."
+msgstr "New builds, changes and ongoing development."
+
+#: includes/class-admin-dashboard.php:1567
+#: includes/class-admin-dashboard.php:1670
+msgid "Wiki"
+msgstr "Wiki"
+
+#: includes/class-admin-dashboard.php:1568
+msgid "Handbücher, Integrationen und technische Doku."
+msgstr "Handbooks, integrations and technical documentation."
+
+#: includes/class-admin-dashboard.php:1572
+msgid "Fragen, Feedback und Austausch mit der Community."
+msgstr "Questions, feedback and exchange with the community."
+
+#: includes/class-admin-dashboard.php:1576
+msgid "Quellcode, Issues und Beiträge direkt bei Power-Source."
+msgstr "Source code, issues and contributions directly at Power-Source."
+
+#: includes/class-admin-dashboard.php:1587
+msgid "🔐 Grundzugriff & Katalog"
+msgstr "🔐 Basic access & catalog"
+
+#: includes/class-admin-dashboard.php:1593
+msgid "⬇️ Installation & Updates"
+msgstr "⬇️ Installation & updates"
+
+#: includes/class-admin-dashboard.php:1599
+msgid "🛠️ Netzwerk-Tools (Multisite)"
+msgstr "🛠️ Network tools (multisite)"
+
+#: includes/class-admin-dashboard.php:1605
+msgid "⚙️ Admin & Debug"
+msgstr "⚙️ Admin & debug"
+
+#: includes/class-admin-dashboard.php:1609
+#: includes/tools/class-multisite-privacy-tool.php:853
+msgid "Einstellungen speichern"
+msgstr "Save settings"
+
+#: includes/class-admin-dashboard.php:1614
+msgid "💡 Wichtige Hinweise"
+msgstr "💡 Important notes"
+
+#: includes/class-admin-dashboard.php:1616
+msgid "Der Netzwerk-Administrator hat immer Zugriff auf alle Funktionen."
+msgstr "The network administrator always has access to all functions."
+
+#: includes/class-admin-dashboard.php:1617
+msgid "Wenn ein Benutzer z.B. \"Katalog anzeigen\" nicht darf, sieht er keine Produktliste."
+msgstr "If a user is not allowed to, e.g., \"View catalog\", they will not see a product list."
+
+#: includes/class-admin-dashboard.php:1618
+msgid "Installation ist NICHT automatisch erlaubt, wenn nur Katalog anzeigen aktiviert ist."
+msgstr "Installation is NOT automatically allowed if only \"View catalog\" is enabled."
+
+#: includes/class-admin-dashboard.php:1619
+msgid "Diese Einstellungen gelten netzwerkweit für alle Seiten."
+msgstr "These settings apply network-wide to all sites."
+
+#: includes/class-admin-dashboard.php:1645
+msgid "Direkt im Manager"
+msgstr "Right inside the manager"
+
+#: includes/class-admin-dashboard.php:1646
+msgid "Willkommen im PSOURCE Portal"
+msgstr "Welcome to the PSOURCE Portal"
+
+#: includes/class-admin-dashboard.php:1647
+msgid "Hier findest Du News, Handbücher und die Community direkt eingebettet im PSOURCE Manager. So kannst Du im Adminbereich bleiben und trotzdem sofort auf die zentrale PSOURCE-Seite zugreifen."
+msgstr "Here you'll find news, handbooks and the community embedded directly in the PSOURCE Manager. This way you can stay in the admin area and still access the central PSOURCE site right away."
+
+#: includes/class-admin-dashboard.php:1651
+msgid "Portal extern öffnen"
+msgstr "Open portal externally"
+
+#: includes/class-admin-dashboard.php:1655
+msgid "Login extern öffnen"
+msgstr "Open login externally"
+
+#: includes/class-admin-dashboard.php:1666
+msgid "Hilfe & Einstieg"
+msgstr "Help & getting started"
+
+#: includes/class-admin-dashboard.php:1667
+msgid "Wenn das Embed in Deinem Browser oder durch spätere Sicherheitsheader blockiert wird, kannst Du das Portal jederzeit extern öffnen."
+msgstr "If the embed is blocked by your browser or by security headers on the other end, you can always open the portal externally."
+
+#: includes/class-admin-dashboard.php:1671
+msgid "Dokumentation, Integrationen und technische Anleitungen."
+msgstr "Documentation, integrations and technical guides."
+
+#: includes/class-admin-dashboard.php:1675
+msgid "Fragen stellen, Feedback geben und mit der Community sprechen."
+msgstr "Ask questions, give feedback and talk to the community."
+
+#: includes/class-admin-dashboard.php:1681
+msgid "Kurzhilfe"
+msgstr "Quick help"
+
+#: includes/class-admin-dashboard.php:1682
+msgid "Das Portal wird unten direkt per iFrame geladen. Nutze die Schnelllinks, wenn Du gezielt ins Wiki, in die News oder ins Forum springen willst."
+msgstr "The portal is loaded below directly via iframe. Use the quick links if you want to jump straight into the wiki, the news or the forum."
+
+#: includes/class-admin-dashboard.php:1687
+msgid "Startseite"
+msgstr "Home"
+
+#: includes/class-admin-dashboard.php:1688
+msgid "Die zentrale PSOURCE-Übersicht in einem neuen Tab öffnen."
+msgstr "Open the central PSOURCE overview in a new tab."
+
+#: includes/class-admin-dashboard.php:1694
+msgid "Handbücher"
+msgstr "Handbooks"
+
+#: includes/class-admin-dashboard.php:1695
+msgid "Direkt zu den PSOURCE-Wikis und Anleitungen."
+msgstr "Go straight to the PSOURCE wikis and guides."
+
+#: includes/class-admin-dashboard.php:1701
+msgid "Community"
+msgstr "Community"
+
+#: includes/class-admin-dashboard.php:1702
+msgid "Support, Diskussionen und Rückfragen im Forum."
+msgstr "Support, discussions and questions in the forum."
+
+#: includes/class-admin-dashboard.php:1711
+msgid "PSOURCE eingebettet"
+msgstr "PSOURCE embedded"
+
+#: includes/class-admin-dashboard.php:1712
+msgid "Live-Ansicht von psource.eimen.net direkt im Adminbereich."
+msgstr "Live view of psource.eimen.net directly in the admin area."
+
+#: includes/class-admin-dashboard.php:1714
+msgid "Im neuen Tab öffnen"
+msgstr "Open in new tab"
+
+#: includes/class-admin-dashboard.php:1724
+msgid "Falls das Portal hier leer bleibt, blockiert die Gegenseite oder der Browser das Einbetten. Nutze dann den Button oben zum externen Öffnen."
+msgstr "If the portal stays empty here, the remote site or your browser is blocking the embed. In that case use the button above to open it externally."
+
+#: includes/class-admin-dashboard.php:1981
+#, php-format
+msgid "Überprüfung abgeschlossen: %d Updates verfügbar"
+msgstr "Check complete: %d updates available"
+
+#: includes/class-admin-dashboard.php:2008
+#, php-format
+msgid "Ungültiges Release-Format für \"%s\""
+msgstr "Invalid release format for \"%s\""
+
+#: includes/class-admin-dashboard.php:2018
+#, php-format
+msgid "Keine Download-URL in GitHub Release \"%s\" gefunden"
+msgstr "No download URL found in GitHub release \"%s\""
+
+#: includes/class-admin-dashboard.php:2028
+msgid "ClassicPress Dateisystem konnte nicht initialisiert werden. Bitte prüfe die Dateisystem-Berechtigungen."
+msgstr "Could not initialize the ClassicPress filesystem. Please check the filesystem permissions."
+
+#: includes/class-admin-dashboard.php:2082
+msgid "Installation fehlgeschlagen"
+msgstr "Installation failed"
+
+#: includes/class-admin-dashboard.php:2162
+msgid "PS Manager Tools"
+msgstr "PS Manager Tools"
+
+#: includes/class-admin-dashboard.php:2166
+#: includes/class-tool-manager.php:126
+msgid "Keine Tools verfügbar."
+msgstr "No tools available."
+
+#: includes/class-admin-dashboard.php:2193
+msgid "Repository-Name erforderlich"
+msgstr "Repository name required"
+
+#: includes/class-admin-dashboard.php:2282
+#, php-format
+msgid "%s wurde erfolgreich deaktiviert."
+msgstr "%s was deactivated successfully."
+
+#: includes/class-admin-dashboard.php:2319
+#, php-format
+msgid "%s wurde erfolgreich aktiviert."
+msgstr "%s was activated successfully."
+
+#: includes/class-admin-dashboard.php:2356
+msgid "Kein gueltiger Plugin-Basename fuer das Update gefunden."
+msgstr "No valid plugin basename found for the update."
+
+#: includes/class-admin-dashboard.php:2380
+#: includes/class-admin-dashboard.php:2446
+#: includes/class-admin-dashboard.php:2467
+msgid "Update fehlgeschlagen"
+msgstr "Update failed"
+
+#: includes/class-admin-dashboard.php:2387
+#, php-format
+msgid "%s wurde erfolgreich aktualisiert."
+msgstr "%s was updated successfully."
+
+#: includes/class-admin-dashboard.php:2485
+msgid "Keine PSOURCE-Updates verfügbar."
+msgstr "No PSOURCE updates available."
+
+#. translators: 1: successful updates count, 2: failed updates count
+#: includes/class-admin-dashboard.php:2496
+#, php-format
+msgid "Batch-Update abgeschlossen: %1$d erfolgreich, %2$d fehlgeschlagen."
+msgstr "Batch update complete: %1$d successful, %2$d failed."
+
+#: includes/class-dependency-manager.php:247
+msgid "Erweitere deine Möglichkeiten mit:"
+msgstr "Extend your possibilities with:"
+
+#: includes/class-github-api.php:75
+#, php-format
+msgid "Repository \"%s\" auf GitHub nicht gefunden"
+msgstr "Repository \"%s\" not found on GitHub"
+
+#: includes/class-github-api.php:85
+msgid "GitHub API Rate Limit erreicht. Bitte später erneut versuchen."
+msgstr "GitHub API rate limit reached. Please try again later."
+
+#: includes/class-github-api.php:89
+#, php-format
+msgid "GitHub API Fehler: %s"
+msgstr "GitHub API error: %s"
+
+#: includes/class-github-api.php:98
+#, php-format
+msgid "GitHub API antwortete mit ungültiger Antwort für \"%s\""
+msgstr "GitHub API responded with an invalid response for \"%s\""
+
+#: includes/class-github-api.php:147
+#, php-format
+msgid "GitHub Releases Seite antwortete mit %d"
+msgstr "GitHub releases page responded with %d"
+
+#: includes/class-github-api.php:192
+msgid "Release konnte aus der GitHub-HTML-Seite nicht ermittelt werden."
+msgstr "Could not determine the release from the GitHub HTML page."
+
+#: includes/class-github-api.php:248
+msgid "Invalid GitHub API response"
+msgstr "Invalid GitHub API response"
+
+#: includes/class-update-checker.php:181
+msgid "Keine Beschreibung verfügbar."
+msgstr "No description available."
+
+#: includes/class-update-checker.php:191
+msgid "Support & Diskussion"
+msgstr "Support & discussion"
+
+#: includes/class-update-checker.php:455
+msgid "Support"
+msgstr "Support"
+
+#: includes/class-update-checker.php:464
+msgid "Handbuch"
+msgstr "Handbook"
+
+#: includes/class-update-checker.php:480
+msgid "Kein Changelog verfügbar."
+msgstr "No changelog available."
+
+#: includes/tools/class-default-theme-tool.php:20
+#: includes/tools/class-default-theme-tool.php:147
+msgid "Standard-Theme"
+msgstr "Default theme"
+
+#: includes/tools/class-default-theme-tool.php:21
+msgid "Standard-Theme für neue Blog-Registrierungen festlegen"
+msgstr "Set the default theme for new blog registrations"
+
+#: includes/tools/class-default-theme-tool.php:70
+msgid "Wähle ein Theme aus, das automatisch bei neuen Blog-Registrierungen aktiviert wird."
+msgstr "Choose a theme that will be activated automatically for new blog registrations."
+
+#: includes/tools/class-default-theme-tool.php:77
+msgid "Empfohlene Themes"
+msgstr "Recommended themes"
+
+#: includes/tools/class-default-theme-tool.php:80
+msgid "Diese Themes sind speziell für PSOURCE-Websites optimiert und werden für neue Blog-Registrierungen empfohlen."
+msgstr "These themes are specially optimized for PSOURCE websites and are recommended for new blog registrations."
+
+#: includes/tools/class-default-theme-tool.php:93
+msgid "Leistungsstarker Drag & Drop Pagebuilder für ClassicPress. Erstelle professionelle Websites mit visuellem Editor."
+msgstr "Powerful drag & drop page builder for ClassicPress. Build professional websites with a visual editor."
+
+#: includes/tools/class-default-theme-tool.php:98
+#: includes/tools/class-default-theme-tool.php:123
+msgid "Jetzt installieren"
+msgstr "Install now"
+
+#: includes/tools/class-default-theme-tool.php:118
+msgid "Sicheres Child-Theme für PS Padma. Perfekt für eigene Anpassungen und Custom Code, ohne Updates des Parent-Themes zu verlieren."
+msgstr "Safe child theme for PS Padma. Perfect for your own customizations and custom code without losing parent theme updates."
+
+#: includes/tools/class-default-theme-tool.php:137
+msgid "Standard-Theme Auswahl"
+msgstr "Default theme selection"
+
+#: includes/tools/class-default-theme-tool.php:185
+msgid "Dieses Theme wird bei neuen Blog-Registrierungen als Standard aktiviert."
+msgstr "This theme is activated as the default for new blog registrations."
+
+#: includes/tools/class-default-theme-tool.php:191
+#: includes/tools/class-signup-tos-tool.php:141
+#: includes/tools/class-signup-tos-tool.php:497
+msgid "Speichern"
+msgstr "Save"
+
+#: includes/tools/class-multisite-privacy-tool.php:62
+msgid "Multisite-Datenschutz"
+msgstr "Multisite privacy"
+
+#: includes/tools/class-multisite-privacy-tool.php:63
+msgid "Steuere die Sichtbarkeit und Zugriffsstufen von Unterseiten (oeffentlich, privat, passwortgeschuetzt usw.)."
+msgstr "Control the visibility and access levels of subsites (public, private, password protected, etc.)."
+
+#: includes/tools/class-multisite-privacy-tool.php:111
+msgid "Blog-Datenschutzoptionen"
+msgstr "Blog privacy options"
+
+#: includes/tools/class-multisite-privacy-tool.php:116
+#: includes/tools/class-multisite-privacy-tool.php:760
+#: includes/tools/class-multisite-privacy-tool.php:765
+msgid "Verfügbare Datenschutzstufen"
+msgstr "Available privacy levels"
+
+#: includes/tools/class-multisite-privacy-tool.php:122
+msgid "Wähle aus, welche Datenschutzstufen in diesem Netzwerk für Blogs verfügbar sind."
+msgstr "Choose which privacy levels are available for blogs in this network."
+
+#: includes/tools/class-multisite-privacy-tool.php:129
+#: includes/tools/class-multisite-privacy-tool.php:819
+msgid "Standard-Datenschutzstufe"
+msgstr "Default privacy level"
+
+#: includes/tools/class-multisite-privacy-tool.php:135
+msgid "Lege fest, welche Datenschutzstufe neue Blogs standardmäßig bekommen."
+msgstr "Define which privacy level new blogs get by default."
+
+#: includes/tools/class-multisite-privacy-tool.php:141
+#: includes/tools/class-multisite-privacy-tool.php:837
+msgid "Überschreibungen für Unterseiten"
+msgstr "Overrides for subsites"
+
+#: includes/tools/class-multisite-privacy-tool.php:146
+msgid "Unterseiten dürfen den Netzwerk-Datenschutz überschreiben"
+msgstr "Subsites may override the network privacy setting"
+
+#: includes/tools/class-multisite-privacy-tool.php:153
+msgid "Unterseiten können ihre Datenschutzstufe in den Einstellungen selbst wählen"
+msgstr "Subsites can choose their own privacy level in the settings"
+
+#: includes/tools/class-multisite-privacy-tool.php:159
+msgid "Netzwerk-Synchronisierung"
+msgstr "Network synchronization"
+
+#: includes/tools/class-multisite-privacy-tool.php:161
+msgid "Wendet die oben gesetzte Standard-Datenschutzstufe auf alle Unterseiten im Netzwerk an und synchronisiert blog_public entsprechend."
+msgstr "Applies the default privacy level set above to all subsites in the network and synchronizes blog_public accordingly."
+
+#: includes/tools/class-multisite-privacy-tool.php:165
+msgid "Zur Synchronisierung im PS Manager"
+msgstr "Go to synchronization in PS Manager"
+
+#: includes/tools/class-multisite-privacy-tool.php:176
+#: includes/tools/class-multisite-privacy-tool.php:215
+msgid "Keine Berechtigung."
+msgstr "No permission."
+
+#: includes/tools/class-multisite-privacy-tool.php:179
+msgid "Ungültige Anfrage."
+msgstr "Invalid request."
+
+#: includes/tools/class-multisite-privacy-tool.php:245
+msgid "Ungültiger Befehl."
+msgstr "Invalid command."
+
+#: includes/tools/class-multisite-privacy-tool.php:255
+msgid "Öffentlich – für alle frei zugänglich"
+msgstr "Public – freely accessible to everyone"
+
+#: includes/tools/class-multisite-privacy-tool.php:256
+#: includes/tools/class-multisite-privacy-tool.php:394
+msgid "Öffentlich, aber Suchmaschinen blockiert"
+msgstr "Public, but search engines blocked"
+
+#: includes/tools/class-multisite-privacy-tool.php:257
+msgid "Nur Netzwerkmitglieder – nur für eingeloggte Netzwerkmitglieder sichtbar"
+msgstr "Network members only – visible only to logged-in network members"
+
+#: includes/tools/class-multisite-privacy-tool.php:258
+msgid "Nur Seitenmitglieder – nur für Mitglieder dieser Unterseite sichtbar"
+msgstr "Site members only – visible only to members of this subsite"
+
+#: includes/tools/class-multisite-privacy-tool.php:259
+msgid "Nur Administratoren – nur für Administratoren sichtbar"
+msgstr "Administrators only – visible only to administrators"
+
+#: includes/tools/class-multisite-privacy-tool.php:260
+msgid "Passwortgeschützt – Zugriff nur mit Passwort"
+msgstr "Password protected – access only with a password"
+
+#: includes/tools/class-multisite-privacy-tool.php:288
+#: includes/tools/class-multisite-privacy-tool.php:518
+#: includes/tools/class-multisite-privacy-tool.php:770
+msgid "Öffentlich"
+msgstr "Public"
+
+#: includes/tools/class-multisite-privacy-tool.php:289
+#: includes/tools/class-multisite-privacy-tool.php:774
+msgid "Suchmaschinen blockiert"
+msgstr "Search engines blocked"
+
+#: includes/tools/class-multisite-privacy-tool.php:290
+#: includes/tools/class-multisite-privacy-tool.php:395
+#: includes/tools/class-multisite-privacy-tool.php:520
+#: includes/tools/class-multisite-privacy-tool.php:778
+msgid "Nur Netzwerkmitglieder"
+msgstr "Network members only"
+
+#: includes/tools/class-multisite-privacy-tool.php:291
+#: includes/tools/class-multisite-privacy-tool.php:521
+#: includes/tools/class-multisite-privacy-tool.php:782
+msgid "Nur Seitenmitglieder"
+msgstr "Site members only"
+
+#: includes/tools/class-multisite-privacy-tool.php:292
+#: includes/tools/class-multisite-privacy-tool.php:397
+#: includes/tools/class-multisite-privacy-tool.php:522
+#: includes/tools/class-multisite-privacy-tool.php:786
+msgid "Nur Administratoren"
+msgstr "Administrators only"
+
+#: includes/tools/class-multisite-privacy-tool.php:293
+#: includes/tools/class-multisite-privacy-tool.php:398
+#: includes/tools/class-multisite-privacy-tool.php:523
+#: includes/tools/class-multisite-privacy-tool.php:790
+msgid "Passwortgeschützt"
+msgstr "Password protected"
+
+#: includes/tools/class-multisite-privacy-tool.php:329
+msgid "Die verfügbaren Datenschutzstufen wurden geändert."
+msgstr "The available privacy levels have been changed."
+
+#: includes/tools/class-multisite-privacy-tool.php:330
+msgid "Jetzt synchronisieren"
+msgstr "Synchronize now"
+
+#: includes/tools/class-multisite-privacy-tool.php:393
+msgid "Öffentlich (für alle sichtbar)"
+msgstr "Public (visible to everyone)"
+
+#: includes/tools/class-multisite-privacy-tool.php:396
+msgid "Nur Mitglieder dieser Unterseite"
+msgstr "Members of this subsite only"
+
+#: includes/tools/class-multisite-privacy-tool.php:423
+msgid "Lege die Datenschutzstufe fest:"
+msgstr "Set the privacy level:"
+
+#: includes/tools/class-multisite-privacy-tool.php:436
+msgid "Passwort für den Zugriff"
+msgstr "Password for access"
+
+#: includes/tools/class-multisite-privacy-tool.php:442
+msgid "Hinweis: Deine bisherige Datenschutzstufe ist im Netzwerk nicht mehr erlaubt und wurde automatisch auf einen zulässigen Wert geändert."
+msgstr "Note: Your previous privacy level is no longer allowed on the network and has been automatically changed to a permitted value."
+
+#: includes/tools/class-multisite-privacy-tool.php:519
+msgid "Öffentlich mit Suchmaschinen-Block"
+msgstr "Public with search engine block"
+
+#: includes/tools/class-multisite-privacy-tool.php:538
+msgid "Datenschutz der neuen Unterseite"
+msgstr "Privacy of the new subsite"
+
+#: includes/tools/class-multisite-privacy-tool.php:711
+msgid "Geschützter Inhalt"
+msgstr "Protected content"
+
+#: includes/tools/class-multisite-privacy-tool.php:721
+msgid "Diese Website ist passwortgeschützt"
+msgstr "This site is password protected"
+
+#: includes/tools/class-multisite-privacy-tool.php:723
+msgid "Passwort eingeben"
+msgstr "Enter password"
+
+#: includes/tools/class-multisite-privacy-tool.php:724
+msgid "Öffnen"
+msgstr "Open"
+
+#: includes/tools/class-multisite-privacy-tool.php:738
+msgid "Dieses Tool ist nur im Netzwerk-Admin verfügbar."
+msgstr "This tool is only available in the network admin."
+
+#: includes/tools/class-multisite-privacy-tool.php:749
+msgid "Blog-Datenschutz-Einstellungen"
+msgstr "Blog privacy settings"
+
+#: includes/tools/class-multisite-privacy-tool.php:751
+msgid "Lege fest, welche Datenschutzstufen für Blogs im Netzwerk verfügbar sein sollen."
+msgstr "Define which privacy levels should be available for blogs on the network."
+
+#: includes/tools/class-multisite-privacy-tool.php:771
+msgid "Für alle frei zugänglich"
+msgstr "Freely accessible to everyone"
+
+#: includes/tools/class-multisite-privacy-tool.php:775
+msgid "Nicht für Suchmaschinen sichtbar"
+msgstr "Not visible to search engines"
+
+#: includes/tools/class-multisite-privacy-tool.php:779
+msgid "Nur für eingeloggte Netzwerkmitglieder sichtbar"
+msgstr "Visible only to logged-in network members"
+
+#: includes/tools/class-multisite-privacy-tool.php:783
+msgid "Nur für Mitglieder dieser Unterseite sichtbar"
+msgstr "Visible only to members of this subsite"
+
+#: includes/tools/class-multisite-privacy-tool.php:787
+msgid "Nur für Administratoren dieser Unterseite zugänglich"
+msgstr "Accessible only to administrators of this subsite"
+
+#: includes/tools/class-multisite-privacy-tool.php:791
+msgid "Zugriff nur mit Passwort"
+msgstr "Access only with a password"
+
+#: includes/tools/class-multisite-privacy-tool.php:831
+msgid "Diese Datenschutzstufe wird automatisch für neu erstellte Blogs gesetzt."
+msgstr "This privacy level is set automatically for newly created blogs."
+
+#: includes/tools/class-multisite-privacy-tool.php:841
+msgid "Unterseiten dürfen Einstellungen überschreiben"
+msgstr "Subsites may override the settings"
+
+#: includes/tools/class-multisite-privacy-tool.php:847
+msgid "Wenn aktiviert, erscheinen die Datenschutzoptionen in den Unterseiten (Einstellungen → Lesen)."
+msgstr "When enabled, the privacy options appear on the subsites (Settings → Reading)."
+
+#: includes/tools/class-multisite-privacy-tool.php:858
+msgid "Notfall-Wartung: Netzwerk-Synchronisierung"
+msgstr "Emergency maintenance: network synchronization"
+
+#: includes/tools/class-multisite-privacy-tool.php:860
+msgid "Warnung: Das setzt alle Datenschutz-Einstellungen der Unterseiten auf den oben konfigurierten Standard zurück und synchronisiert die Sichtbarkeit (blog_public)."
+msgstr "Warning: This resets all privacy settings of the subsites to the default configured above and synchronizes the visibility (blog_public)."
+
+#: includes/tools/class-multisite-privacy-tool.php:863
+msgid "Hinweis: Der Vorgang kann je nach Anzahl der Unterseiten einige Sekunden dauern. Bitte nicht abbrechen."
+msgstr "Note: Depending on the number of subsites, this process can take a few seconds. Please do not cancel it."
+
+#: includes/tools/class-multisite-privacy-tool.php:868
+msgid "Alle Unterseiten jetzt synchronisieren"
+msgstr "Synchronize all subsites now"
+
+#: includes/tools/class-multisite-privacy-tool.php:870
+#: includes/tools/class-multisite-privacy-tool.php:905
+msgid "Synchronisierung läuft…"
+msgstr "Synchronization in progress…"
+
+#: includes/tools/class-multisite-privacy-tool.php:882
+msgid "Das setzt alle Datenschutz-Einstellungen der Unterseiten auf die hier angegebenen Werte zurück. Möchtest du fortfahren?"
+msgstr "This resets all privacy settings of the subsites to the values specified here. Do you want to continue?"
+
+#: includes/tools/class-multisite-privacy-tool.php:892
+msgid "Fehler beim Laden der Unterseiten"
+msgstr "Error loading the subsites"
+
+#: includes/tools/class-multisite-privacy-tool.php:921
+msgid "Fehler beim Starten der Synchronisierung"
+msgstr "Error starting the synchronization"
+
+#: includes/tools/class-multisite-privacy-tool.php:930
+msgid "Alle Unterseiten wurden erfolgreich synchronisiert."
+msgstr "All subsites were synchronized successfully."
+
+#: includes/tools/class-multisite-privacy-tool.php:934
+#, php-format
+msgid "Synchronisierung abgeschlossen, aber %d Unterseiten konnten nicht aktualisiert werden."
+msgstr "Synchronization complete, but %d subsites could not be updated."
+
+#: includes/tools/class-multisite-privacy-tool.php:936
+msgid "Betroffene Seiten-IDs:"
+msgstr "Affected site IDs:"
+
+#: includes/tools/class-multisite-privacy-tool.php:939
+msgid "Synchronisierung fehlgeschlagen."
+msgstr "Synchronization failed."
+
+#: includes/tools/class-multisite-privacy-tool.php:1001
+msgid "Die verfügbaren Datenschutzstufen wurden geändert. Tipp: Nutze die Notfall-Wartungsbox unten, um alle Unterseiten mit den neuen Netzwerk-Einstellungen zu synchronisieren."
+msgstr "The available privacy levels have been changed. Tip: Use the emergency maintenance box below to synchronize all subsites with the new network settings."
+
+#: includes/tools/class-multisite-privacy-tool.php:1024
+msgid "Datenschutz-Einstellungen erfolgreich gespeichert!"
+msgstr "Privacy settings saved successfully!"
+
+#: includes/tools/class-signup-tos-tool.php:21
+msgid "Nutzungsbedingungen (TOS)"
+msgstr "Terms of Service (TOS)"
+
+#: includes/tools/class-signup-tos-tool.php:22
+msgid "Nutzungsbedingungen für Registrierung konfigurieren"
+msgstr "Configure terms of service for registration"
+
+#: includes/tools/class-signup-tos-tool.php:58
+msgid "Konfiguriere Nutzungsbedingungen für dein Netzwerk."
+msgstr "Configure terms of service for your network."
+
+#: includes/tools/class-signup-tos-tool.php:60
+msgid "Konfiguriere Nutzungsbedingungen für deine Website."
+msgstr "Configure terms of service for your website."
+
+#: includes/tools/class-signup-tos-tool.php:76
+msgid "Modus"
+msgstr "Mode"
+
+#: includes/tools/class-signup-tos-tool.php:82
+msgid "Global (Netzwerkweit)"
+msgstr "Global (network-wide)"
+
+#: includes/tools/class-signup-tos-tool.php:85
+msgid "Global mit Unterseiten-Überschreibung"
+msgstr "Global with subsite override"
+
+#: includes/tools/class-signup-tos-tool.php:88
+msgid "Pro Unterseite"
+msgstr "Per subsite"
+
+#: includes/tools/class-signup-tos-tool.php:92
+msgid "Bestimme, wie die TOS verwaltet werden."
+msgstr "Determine how the TOS is managed."
+
+#: includes/tools/class-signup-tos-tool.php:101
+#: includes/tools/class-signup-tos-tool.php:353
+#: includes/tools/class-signup-tos-tool.php:354
+#: includes/tools/class-signup-tos-tool.php:398
+msgid "Nutzungsbedingungen"
+msgstr "Terms of Service"
+
+#: includes/tools/class-signup-tos-tool.php:121
+msgid "Gib die Nutzungsbedingungen ein, die bei der Registrierung angezeigt werden."
+msgstr "Enter the terms of service that are displayed during registration."
+
+#: includes/tools/class-signup-tos-tool.php:130
+#: includes/tools/class-signup-tos-tool.php:474
+msgid "Akzeptanz erforderlich"
+msgstr "Acceptance required"
+
+#: includes/tools/class-signup-tos-tool.php:135
+msgid "Nutzer müssen den TOS zustimmen, um sich registrieren zu können."
+msgstr "Users must agree to the TOS in order to register."
+
+#: includes/tools/class-signup-tos-tool.php:284
+msgid "Ich akzeptiere die Nutzungsbedingungen"
+msgstr "I accept the terms of service"
+
+#: includes/tools/class-signup-tos-tool.php:306
+#: includes/tools/class-signup-tos-tool.php:332
+msgid "Bitte akzeptiere die Nutzungsbedingungen."
+msgstr "Please accept the terms of service."
+
+#: includes/tools/class-signup-tos-tool.php:387
+msgid "Nutzungsbedingungen erfolgreich gespeichert!"
+msgstr "Terms of service saved successfully!"
+
+#: includes/tools/class-signup-tos-tool.php:403
+msgid "Überschreibungs-Modus aktiv"
+msgstr "Override mode active"
+
+#: includes/tools/class-signup-tos-tool.php:404
+msgid "Du kannst die netzwerkweiten Nutzungsbedingungen für diese Unterseite überschreiben. Lass die Felder leer, um die globalen Einstellungen zu verwenden."
+msgstr "You can override the network-wide terms of service for this subsite. Leave the fields empty to use the global settings."
+
+#: includes/tools/class-signup-tos-tool.php:416
+msgid "Netzwerkweite TOS (Global)"
+msgstr "Network-wide TOS (global)"
+
+#: includes/tools/class-signup-tos-tool.php:423
+msgid "Diese Nutzungsbedingungen sind netzwerkweit definiert."
+msgstr "These terms of service are defined network-wide."
+
+#: includes/tools/class-signup-tos-tool.php:425
+msgid "Diese werden aktuell verwendet."
+msgstr "These are currently in use."
+
+#: includes/tools/class-signup-tos-tool.php:437
+msgid "Nutzungsbedingungen (Diese Unterseite)"
+msgstr "Terms of service (this subsite)"
+
+#: includes/tools/class-signup-tos-tool.php:439
+msgid "Nutzungsbedingungen (Überschreibung)"
+msgstr "Terms of service (override)"
+
+#: includes/tools/class-signup-tos-tool.php:463
+msgid "Diese Nutzungsbedingungen werden nur für diese Unterseite verwendet."
+msgstr "These terms of service are used only for this subsite."
+
+#: includes/tools/class-signup-tos-tool.php:465
+msgid "Leer lassen, um die globalen Nutzungsbedingungen zu verwenden."
+msgstr "Leave empty to use the global terms of service."
+
+#: includes/tools/class-signup-tos-tool.php:480
+msgid "Nutzer müssen die TOS akzeptieren"
+msgstr "Users must accept the TOS"
+
+#. translators: %s: global required status
+#: includes/tools/class-signup-tos-tool.php:487
+#, php-format
+msgid "Global: %s"
+msgstr "Global: %s"
+
+#: includes/tools/class-signup-tos-tool.php:488
+msgid "Erforderlich"
+msgstr "Required"
+
+#: includes/tools/class-signup-tos-tool.php:488
+msgid "Optional"
+msgstr "Optional"
+
+#: includes/tools/class-signup-tos-tool.php:502
+#: includes/tools/class-signup-tos-tool.php:508
+msgid "Überschreibung zurücksetzen"
+msgstr "Reset override"
+
+#: includes/tools/class-signup-tos-tool.php:503
+msgid "Möchtest du die unterseiten-spezifischen Einstellungen löschen und wieder die globalen Einstellungen verwenden?"
+msgstr "Do you want to delete the subsite-specific settings and use the global settings again?"
+
+#: includes/tools/class-signup-tos-tool.php:507
+msgid "Bist du sicher? Die unterseiten-spezifischen Einstellungen werden gelöscht."
+msgstr "Are you sure? The subsite-specific settings will be deleted."
+
+#: includes/tools/class-signup-tos-tool.php:517
+msgid "Überschreibung wurde zurückgesetzt. Die globalen Einstellungen werden nun verwendet."
+msgstr "The override has been reset. The global settings are now in use."

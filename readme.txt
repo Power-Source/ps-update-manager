@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,15 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.3.6 =
+
+* Fix: Docs-Links für Plugins/Themes nutzen jetzt den echten `Plugin URI`/`Theme URI`-Header statt einer erfundenen `power-source.github.io`-Adresse (Fallback: GitHub-Repo-Link).
+* Fix: Plugin-Updates wurden nach "Updates prüfen" bzw. im täglichen Cron nicht erkannt, weil ClassicPress/WordPress-Core die `checked`-Liste im Update-Transient nach einem Force-Check leer lässt. Der Update-Checker verlässt sich jetzt nicht mehr auf dieses leere Feld – Plugin-Updates erscheinen wieder zuverlässig im Dashboard, in den Plugin-Listen und inkl. nativer Auto-Update-Umschaltung.
+* Fix: PSOURCE-Portal-Einbettung (iFrame) benötigte horizontales Scrollen, weil die eingebettete Seite breiter ist als der verfügbare Adminbereich. Das iFrame wird nun passend skaliert, sodass es ohne Scrollen komplett sichtbar ist.
+* Fix: Fehlerhaft geschlossene Media Query in den Einstellungen sorgte dafür, dass mobile Styles für Portal/Community-Links immer (auch auf Desktop) griffen.
+* Add: Vollständige Übersetzungsinfrastruktur – POT-Vorlage sowie komplette englische Übersetzung (`en_US`) im Ordner `languages/`.
+* Add: README.md (Deutsch) und README.en.md (Englisch) mit Feature-Übersicht, Schnellstart, Multisite- und Entwickler-Hinweisen.
 
 = 1.3.5 =
 
@@ -164,6 +173,16 @@ Vollständiger Changelog: [CHANGELOG.md](https://github.com/Power-Source/ps-upda
 
 * GitHub Issues: https://github.com/Power-Source/ps-update-manager/issues
 * Dokumentation: https://github.com/Power-Source/ps-update-manager
+
+== Translations ==
+
+Die Standardsprache des Plugins ist Deutsch. Verfügbare Übersetzungen:
+
+* Englisch (en_US)
+
+Übersetzungsdateien liegen im Ordner `languages/` (`.pot`-Vorlage, `.po`/`.mo` je Sprache).
+Weitere Sprachen können auf Basis von `languages/ps-update-manager.pot` erstellt werden
+(z.B. mit Poedit) und als `ps-update-manager-{locale}.po`/`.mo` im selben Ordner abgelegt werden.
 
 == Contribute ==
 

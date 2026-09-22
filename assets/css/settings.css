@@ -395,7 +395,7 @@
 	color: #516170;
 }
 .ps-community-embed-shell {
-	max-width: 1200px;
+	max-width: 100%;
 	margin-top: 20px;
 	padding: 18px;
 	border-radius: 18px;
@@ -423,17 +423,27 @@
 	font-size: 14px;
 }
 .ps-community-embed-frame-wrap {
+	position: relative;
+	height: 980px;
 	border-radius: 16px;
 	overflow: hidden;
 	background: linear-gradient(180deg, #eff4f8 0%, #f7fafc 100%);
 	border: 1px solid #dbe3ea;
 }
+/* Eingebettete Seite ist breiter als der verfügbare Admin-Platz und hat sonst einen
+ * eigenen horizontalen Scrollbalken. Wir rendern sie deshalb bewusst breiter/höher
+ * (133.34%) und skalieren sie um den gleichen Faktor (0.75) herunter, damit sie exakt
+ * in den Wrapper passt, ohne dass darin gescrollt werden muss. */
 .ps-community-embed-frame {
-	display: block;
-	width: 100%;
-	min-height: 980px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 133.34%;
+	height: 133.34%;
 	border: 0;
 	background: #fff;
+	transform: scale(0.75);
+	transform-origin: 0 0;
 }
 .ps-community-embed-note {
 	margin: 0;
@@ -487,7 +497,6 @@
 	.ps-recommended-themes-grid {
 		grid-template-columns: 1fr;
 	}
-}
 	.ps-community-link-grid {
 		grid-template-columns: 1fr;
 	}
@@ -495,9 +504,10 @@
 		flex-direction: column;
 		align-items: flex-start;
 	}
-	.ps-community-embed-frame {
-		min-height: 720px;
+	.ps-community-embed-frame-wrap {
+		height: 720px;
 	}
+}
 
 .ps-theme-card {
 	background: linear-gradient(135deg, #3d3d5c 0%, #2a2a3d 100%);

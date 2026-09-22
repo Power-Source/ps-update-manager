@@ -146,10 +146,11 @@ Scan-Ergebnisse werden gecacht:
 
 ### Automatisch generierte URLs
 
-Basierend auf dem `repo`-Feld werden automatisch generiert:
+`docs_url` kommt aus dem `Plugin URI` / `Theme URI` Header des jeweiligen Produkts (kein separates
+GitHub-Pages-Hosting nötig). Nur falls der Header leer ist, wird auf das GitHub-Repo verlinkt:
 
 ```php
-'docs_url'      => 'https://power-source.github.io/' . $manifest['repo'],
+'docs_url'      => ! empty( $plugin_data['PluginURI'] ) ? $plugin_data['PluginURI'] : 'https://github.com/' . $manifest['repo'],
 'support_url'   => 'https://github.com/' . $manifest['repo'] . '/issues',
 'changelog_url' => 'https://github.com/' . $manifest['repo'] . '/releases',
 'author_url'    => 'https://github.com/Power-Source',

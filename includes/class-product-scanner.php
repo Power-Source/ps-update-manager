@@ -125,7 +125,8 @@ class PS_Update_Manager_Product_Scanner {
 				'description'   => $manifest['description'],
 				'author'        => $plugin_data['Author'] ?? 'PSource',
 				'author_url'    => 'https://github.com/Power-Source',
-			'docs_url'      => 'https://power-source.github.io/' . explode('/', $manifest['repo'])[1],
+				// Docs-Link kommt aus dem Plugin-Header (Plugin URI), nicht aus einer erratenen URL
+				'docs_url'      => ! empty( $plugin_data['PluginURI'] ) ? $plugin_data['PluginURI'] : 'https://github.com/' . $manifest['repo'],
 				'support_url'   => 'https://github.com/' . $manifest['repo'] . '/issues',
 				'changelog_url' => 'https://github.com/' . $manifest['repo'] . '/releases',
 				'icon'          => $manifest['icon'] ?? 'dashicons-admin-plugins',
@@ -174,7 +175,8 @@ class PS_Update_Manager_Product_Scanner {
 				'description'   => $manifest['description'],
 				'author'        => 'PSource',
 				'author_url'    => 'https://github.com/power-source',
-				'docs_url'      => 'https://power-source.github.io/' . explode('/', $manifest['repo'])[1],
+				// Docs-Link kommt aus dem Theme-Header (Theme URI), nicht aus einer erratenen URL
+				'docs_url'      => $theme_obj->get( 'ThemeURI' ) ? $theme_obj->get( 'ThemeURI' ) : 'https://github.com/' . $manifest['repo'],
 				'support_url'   => 'https://github.com/' . $manifest['repo'] . '/issues',
 				'changelog_url' => 'https://github.com/' . $manifest['repo'] . '/releases',
 				'icon'          => $manifest['icon'] ?? 'dashicons-admin-appearance',
