@@ -500,8 +500,6 @@ class PS_Update_Manager_Update_Checker {
 
 		delete_site_transient( 'update_plugins' );
 		delete_site_transient( 'update_themes' );
-		$this->clear_update_info_cache();
-		PS_Update_Manager_GitHub_API::get_instance()->clear_cache();
 		
 		wp_update_plugins();
 		wp_update_themes();

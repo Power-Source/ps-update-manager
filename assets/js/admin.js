@@ -48,7 +48,15 @@
 					}
 				},
 				error: function(xhr, status, error) {
-					showError(PSUpdateManager.strings.error + ': ' + error);
+					var errorMsg = PSUpdateManager.strings.error;
+					if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+						errorMsg += ': ' + xhr.responseJSON.data.message;
+					} else if (error) {
+						errorMsg += ': ' + error;
+					} else if (status) {
+						errorMsg += ': ' + status;
+					}
+					showError(errorMsg);
 					resetButton();
 				}
 			});
@@ -130,13 +138,23 @@
 					$alertButton.prop('disabled', false);
 				},
 				error: function(xhr, status, error) {
-					var errorMsg = error || 'Unbekannter Fehler beim Batch-Update';
+					var errorMsg = 'Batch-Update konnte nicht abgeschlossen werden';
 					try {
 						var json = JSON.parse(xhr.responseText);
 						if (json && json.data && json.data.message) {
 							errorMsg = json.data.message;
 						}
 					} catch (err) {}
+
+					if (errorMsg === 'Batch-Update konnte nicht abgeschlossen werden') {
+						if (status === 'timeout') {
+							errorMsg = 'Batch-Update hat zu lange gedauert und wurde abgebrochen.';
+						} else if (xhr.status) {
+							errorMsg += ' (HTTP ' + xhr.status + ').';
+						} else if (error) {
+							errorMsg += ': ' + error;
+						}
+					}
 
 					showNotice('error', errorMsg);
 					$button.prop('disabled', false).removeClass('checking').html(originalText);
