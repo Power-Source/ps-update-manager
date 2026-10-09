@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 6.4
 ClassicPress: 2.7.0
 Requires PHP: 7.4
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,8 +48,11 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 == Changelog ==
 
-= 1.3.6 =
+= 1.3.7 =
+* Fix: Einzelne Plugin-Updates stellen den vorherigen Aktivierungsstatus nach dem AJAX-Update wieder her, auch bei Netzwerkaktivierung.
+* Fix: Batch-Updates verwenden jetzt die ClassicPress-Bulk-Upgrader-API, damit mehrere Plugins und Themes in einem Durchlauf ohne leeren Update-Transient aktualisiert werden.
 
+= 1.3.6 =
 * Fix: Docs-Links für Plugins/Themes nutzen jetzt den echten `Plugin URI`/`Theme URI`-Header statt einer erfundenen `power-source.github.io`-Adresse (Fallback: GitHub-Repo-Link).
 * Fix: Plugin-Updates wurden nach "Updates prüfen" bzw. im täglichen Cron nicht erkannt, weil ClassicPress/WordPress-Core die `checked`-Liste im Update-Transient nach einem Force-Check leer lässt. Der Update-Checker verlässt sich jetzt nicht mehr auf dieses leere Feld – Plugin-Updates erscheinen wieder zuverlässig im Dashboard, in den Plugin-Listen und inkl. nativer Auto-Update-Umschaltung.
 * Fix: PSOURCE-Portal-Einbettung (iFrame) benötigte horizontales Scrollen, weil die eingebettete Seite breiter ist als der verfügbare Adminbereich. Das iFrame wird nun passend skaliert, sodass es ohne Scrollen komplett sichtbar ist.

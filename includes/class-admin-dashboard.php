@@ -1307,16 +1307,7 @@ class PS_Update_Manager_Admin_Dashboard {
 			<?php if ( ! empty( $product['logo'] ) ) : ?>
 				<?php
 				$default_logo = PS_UPDATE_MANAGER_URL . 'psource-logo.png';
-				$repo_logo_fallback = '';
-				if ( ! empty( $product['repo'] ) ) {
-					$safe_repo = preg_replace( '#[^A-Za-z0-9._/-]#', '', (string) $product['repo'] );
-					if ( ! empty( $safe_repo ) ) {
-						$repo_logo_fallback = 'https://cdn.jsdelivr.net/gh/' . $safe_repo . '@HEAD/psource-logo.png';
-					}
-				}
-				$onerror = ! empty( $repo_logo_fallback )
-					? "this.onerror=function(){this.onerror=null;this.src='" . esc_js( $default_logo ) . "';};this.src='" . esc_js( $repo_logo_fallback ) . "';"
-					: "this.onerror=null;this.src='" . esc_js( $default_logo ) . "';";
+				$onerror = "this.onerror=null;this.src='" . esc_js( $default_logo ) . "';";
 				?>
 				<div class="ps-store-card-logo">
 					<img src="<?php echo esc_url( $product['logo'] ); ?>" alt="<?php echo esc_attr( $product['name'] ); ?>" onerror="<?php echo esc_attr( $onerror ); ?>" />
@@ -1947,6 +1938,23 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		return (string) $basename;
 	}
+
+	private function get_plugin_activation_state( $basename ) {
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+
+		return array(
+			'site'    => in_array( $basename, $active_plugins, true ),
+			'network' => is_multisite() && is_plugin_active_for_network( $basename ),
+		);
+	}
+
+	private function restore_plugin_activation_state( $basename, $activation_state ) {
+		if ( empty( $activation_state['site'] ) && empty( $activation_state['network'] ) ) {
+			return true;
+		}
+
+		return activate_plugin( $basename, '', ! empty( $activation_state['network'] ) );
+	}
 	
 	/**
 	 * Aktive Produkte zählen
@@ -2238,13 +2246,6 @@ class PS_Update_Manager_Admin_Dashboard {
 			return content_url( 'themes/' . $slug . '/psource-logo.png' );
 		}
 
-		if ( ! empty( $repo ) ) {
-			$safe_repo = preg_replace( '#[^A-Za-z0-9._/-]#', '', (string) $repo );
-			if ( ! empty( $safe_repo ) ) {
-				return 'https://cdn.jsdelivr.net/gh/' . $safe_repo . '@HEAD/Logo.png';
-			}
-		}
-
 		// Ultimativer Fallback: psource-logo.png aus PS Update Manager Plugin
 		return PS_UPDATE_MANAGER_URL . 'psource-logo.png';
 	}
@@ -2348,6 +2349,7 @@ class PS_Update_Manager_Admin_Dashboard {
 
 		$checker = PS_Update_Manager_Update_Checker::get_instance();
 		$checker->force_check();
+		$plugin_activation_state = array();
 
 		if ( 'plugin' === $type ) {
 			$basename = $this->resolve_plugin_update_basename( $slug, $basename );
@@ -2356,6 +2358,8 @@ class PS_Update_Manager_Admin_Dashboard {
 					'message' => __( 'Kein gueltiger Plugin-Basename fuer das Update gefunden.', 'ps-update-manager' ),
 				) );
 			}
+
+			$plugin_activation_state = $this->get_plugin_activation_state( $basename );
 
 			// Plugin-Update
 			$upgrader = new Plugin_Upgrader( new WP_Ajax_Upgrader_Skin() );
@@ -2379,6 +2383,15 @@ class PS_Update_Manager_Admin_Dashboard {
 			wp_send_json_error( array(
 				'message' => __( 'Update fehlgeschlagen', 'ps-update-manager' ),
 			) );
+		}
+
+		if ( 'plugin' === $type ) {
+			$activation_result = $this->restore_plugin_activation_state( $basename, $plugin_activation_state );
+			if ( is_wp_error( $activation_result ) ) {
+				wp_send_json_error( array(
+					'message' => $activation_result->get_error_message(),
+				) );
+			}
 		}
 
 		$checker->force_check();
@@ -2418,9 +2431,8 @@ class PS_Update_Manager_Admin_Dashboard {
 		$updated = array();
 		$failed  = array();
 		$queued  = 0;
-
-		$plugin_upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
-		$theme_upgrader  = new Theme_Upgrader( new Automatic_Upgrader_Skin() );
+		$plugin_updates = array();
+		$theme_updates  = array();
 
 		foreach ( $products as $slug => $product ) {
 			// Selbst-Update waehrend des Requests vermeiden.
@@ -2436,9 +2448,23 @@ class PS_Update_Manager_Admin_Dashboard {
 				}
 
 				$basename = $matched_basename;
+				$plugin_updates[ $basename ] = $slug;
+			} elseif ( 'theme' === $product['type'] ) {
+				$theme_slug = $product['slug'] ?? '';
+				if ( empty( $theme_slug ) || ! is_object( $update_themes ) || ! isset( $update_themes->response[ $theme_slug ] ) ) {
+					continue;
+				}
 
-				$queued++;
-				$result = $plugin_upgrader->upgrade( $basename );
+				$theme_updates[ $theme_slug ] = $slug;
+			}
+		}
+
+		if ( ! empty( $plugin_updates ) ) {
+			$queued += count( $plugin_updates );
+			$plugin_results = ( new Plugin_Upgrader( new Automatic_Upgrader_Skin() ) )->bulk_upgrade( array_keys( $plugin_updates ) );
+
+			foreach ( $plugin_updates as $basename => $slug ) {
+				$result = is_array( $plugin_results ) && array_key_exists( $basename, $plugin_results ) ? $plugin_results[ $basename ] : false;
 				if ( is_wp_error( $result ) || false === $result ) {
 					$failed[] = array(
 						'slug'    => $slug,
@@ -2452,14 +2478,15 @@ class PS_Update_Manager_Admin_Dashboard {
 					'slug' => $slug,
 					'type' => 'plugin',
 				);
-			} elseif ( 'theme' === $product['type'] ) {
-				$theme_slug = $product['slug'] ?? '';
-				if ( empty( $theme_slug ) || ! is_object( $update_themes ) || ! isset( $update_themes->response[ $theme_slug ] ) ) {
-					continue;
-				}
+			}
+		}
 
-				$queued++;
-				$result = $theme_upgrader->upgrade( $theme_slug );
+		if ( ! empty( $theme_updates ) ) {
+			$queued += count( $theme_updates );
+			$theme_results = ( new Theme_Upgrader( new Automatic_Upgrader_Skin() ) )->bulk_upgrade( array_keys( $theme_updates ) );
+
+			foreach ( $theme_updates as $theme_slug => $slug ) {
+				$result = is_array( $theme_results ) && array_key_exists( $theme_slug, $theme_results ) ? $theme_results[ $theme_slug ] : false;
 				if ( is_wp_error( $result ) || false === $result ) {
 					$failed[] = array(
 						'slug'    => $slug,
