@@ -497,6 +497,16 @@ class PS_Update_Manager_Update_Checker {
 	public function force_check() {
 		// Vor dem Update-Check immer frisch scannen, damit die Registry vollständige Basenames/Slugs enthält.
 		PS_Update_Manager_Product_Scanner::get_instance()->scan_all();
+		$products = PS_Update_Manager_Product_Registry::get_instance()->get_all();
+		$repos = array();
+		foreach ( $products as $product ) {
+			if ( ! empty( $product['github_repo'] ) ) {
+				$repos[] = $product['github_repo'];
+			}
+		}
+
+		PS_Update_Manager_GitHub_API::get_instance()->refresh_latest_releases( $repos );
+		$this->clear_update_info_cache();
 
 		delete_site_transient( 'update_plugins' );
 		delete_site_transient( 'update_themes' );

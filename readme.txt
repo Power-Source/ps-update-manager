@@ -48,10 +48,13 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 == Changelog ==
 
+= 1.3.8 =
+* Fix: Parallele GitHub-Abfragen bevorzugen die PSR-4-Klassen der Requests-Bibliothek, um Deprecation-Warnungen zu vermeiden; ältere Core-Versionen nutzen weiterhin den Legacy-Fallback.
+
 = 1.3.7 =
 * Fix: Einzelne Plugin-Updates stellen den vorherigen Aktivierungsstatus nach dem AJAX-Update wieder her, auch bei Netzwerkaktivierung.
 * Fix: Batch-Updates verwenden jetzt die ClassicPress-Bulk-Upgrader-API, damit mehrere Plugins und Themes in einem Durchlauf ohne leeren Update-Transient aktualisiert werden.
-* Fix: Manuelle Update-Prüfungen behalten Release-Caches bei und laufen dadurch nicht mehr durch serielle GitHub-Abfragen in ein Timeout.
+* Fix: Manuelle Update-Prüfungen aktualisieren GitHub-Release-Caches parallel, damit neue Releases sofort erkannt werden ohne serielle Abfragen und Timeouts.
 
 = 1.3.6 =
 * Fix: Docs-Links für Plugins/Themes nutzen jetzt den echten `Plugin URI`/`Theme URI`-Header statt einer erfundenen `power-source.github.io`-Adresse (Fallback: GitHub-Repo-Link).

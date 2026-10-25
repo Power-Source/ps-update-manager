@@ -128,6 +128,87 @@ class PS_Update_Manager_GitHub_API {
 	}
 
 	/**
+	 * Aktualisiert mehrere Release-Caches parallel für einen manuellen Update-Check.
+	 *
+	 * @param string[] $repos GitHub-Repositories im Format owner/repo.
+	 */
+	public function refresh_latest_releases( $repos ) {
+		if ( ! is_array( $repos ) || empty( $repos ) ) {
+			return;
+		}
+
+		if ( class_exists( 'WpOrg\Requests\Requests' ) ) {
+			$requests_class = 'WpOrg\Requests\Requests';
+		} else {
+			if ( ! class_exists( 'Requests' ) ) {
+				require_once ABSPATH . WPINC . '/class-requests.php';
+			}
+			$requests_class = 'Requests';
+		}
+
+		$requests = array();
+		foreach ( array_unique( $repos ) as $repo ) {
+			$repo = trim( (string) $repo );
+			if ( ! preg_match( '#^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$#', $repo ) ) {
+				continue;
+			}
+
+			$requests[ $repo ] = array(
+				'url'     => "https://api.github.com/repos/{$repo}/releases/latest",
+				'headers' => array(
+					'Accept'     => 'application/vnd.github.v3+json',
+					'User-Agent' => 'PS-Update-Manager/1.3.7',
+				),
+			);
+		}
+
+		if ( empty( $requests ) ) {
+			return;
+		}
+
+		try {
+			$responses = $requests_class::request_multiple( $requests, array(
+				'timeout' => 15,
+				'verify'  => true,
+			) );
+		} catch ( Exception $exception ) {
+			return;
+		}
+
+		foreach ( $responses as $repo => $response ) {
+			if ( ! is_object( $response ) || empty( $response->status_code ) || 200 !== (int) $response->status_code ) {
+				continue;
+			}
+
+			$data = json_decode( $response->body, true );
+			if ( ! is_array( $data ) || empty( $data['tag_name'] ) ) {
+				continue;
+			}
+
+			$release = array(
+				'version'      => ltrim( $data['tag_name'], 'v' ),
+				'tag_name'     => $data['tag_name'],
+				'name'         => $data['name'] ?? $data['tag_name'],
+				'download_url' => $data['zipball_url'] ?? '',
+				'changelog'    => $data['body'] ?? '',
+				'published_at' => $data['published_at'] ?? '',
+				'html_url'     => $data['html_url'] ?? '',
+			);
+
+			if ( ! empty( $data['assets'] ) && is_array( $data['assets'] ) ) {
+				foreach ( $data['assets'] as $asset ) {
+					if ( isset( $asset['name'], $asset['browser_download_url'] ) && preg_match( '/\.zip$/i', $asset['name'] ) ) {
+						$release['download_url'] = $asset['browser_download_url'];
+						break;
+					}
+				}
+			}
+
+			set_transient( 'ps_github_release_' . md5( $repo ), $release, 12 * HOUR_IN_SECONDS );
+		}
+	}
+
+	/**
 	 * Fallback: Neueste Release-Asset über HTML-Releases-Seite extrahieren
 	 * Hinweis: Nicht so robust wie die API, aber vermeidet Rate-Limit.
 	 */
