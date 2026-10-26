@@ -32,6 +32,17 @@ return array(
 		),
 	),
 
+	'ps-seo' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS SEO',
+		'repo'        => 'Power-Source/ps-seo',
+		'description' => 'Moderne SEO-Werkzeuge für Metadaten, Social Sharing, Schema und Sitemaps.',
+		'category'    => 'content',
+		'icon'        => 'dashicons-search',
+		'compatible_with' => array(
+			'marketpress' => 'Optimiere Produktseiten für Suchmaschinen und Social Sharing',
+		),
+	),
 
 	'ps-snapshot' => array(
 		'type'        => 'plugin',
@@ -555,6 +566,17 @@ return array(
 	 	'icon'        => 'dashicons-admin-customizer',
 	 	'featured'    => true,
 	 	'badge'       => 'child-theme',
+	),
+
+	'uf-spirit' => array(
+		'type'        => 'theme',
+		'name'        => 'Spirit',
+		'repo'        => 'Power-Source/uf-spirit',
+		'description' => 'Ein professionell gestaltetes High-End-Portfoliothema mit einem frischen, natürlichen Design, inspiriert von atemberaubender Fotografie und sauberer, mutiger Typografie.',
+		'category'    => 'pagebuilder',
+		'icon'        => 'dashicons-admin-customizer',
+		'featured'    => true,
+		'badge'       => 'child-theme',
 	),
 
 	

@@ -40,6 +40,16 @@ class PS_Update_Manager_Product_Scanner {
 		
 		if ( file_exists( $manifest_file ) ) {
 			$this->official_products = include $manifest_file;
+
+			$manifest_hash        = md5_file( $manifest_file );
+			$cached_manifest_hash = get_option( 'ps_update_manager_manifest_hash' );
+
+			if ( $manifest_hash && $manifest_hash !== $cached_manifest_hash ) {
+				delete_transient( 'ps_last_scan_time' );
+				delete_transient( 'ps_discovered_products' );
+				delete_transient( 'ps_update_manager_products_cache' );
+				update_option( 'ps_update_manager_manifest_hash', $manifest_hash, false );
+			}
 		}
 		
 		if ( ! is_array( $this->official_products ) ) {

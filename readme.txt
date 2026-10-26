@@ -2,10 +2,10 @@
 Contributors: PSOURCE
 Tags: updates, github, plugins, themes, auto-update
 Requires at least: 5.0
-Tested up to: 6.4
-ClassicPress: 2.7.0
+Tested up to: 7.1
+ClassicPress: 2.7.4
 Requires PHP: 7.4
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,8 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 
 = 1.3.8 =
 * Fix: Parallele GitHub-Abfragen bevorzugen die PSR-4-Klassen der Requests-Bibliothek, um Deprecation-Warnungen zu vermeiden; ältere Core-Versionen nutzen weiterhin den Legacy-Fallback.
+* Fix: Änderungen am offiziellen Produkt-Manifest invalidieren jetzt automatisch die Scan- und Registry-Caches. Bereits installierte, neu ins Manifest aufgenommene Plugins und Themes werden beim nächsten Katalog-Aufruf erkannt.
+* Add: PS SEO und das Upfront-Child-Theme Spirit wurden zum offiziellen PSOURCE-Katalog hinzugefügt.
 
 = 1.3.7 =
 * Fix: Einzelne Plugin-Updates stellen den vorherigen Aktivierungsstatus nach dem AJAX-Update wieder her, auch bei Netzwerkaktivierung.

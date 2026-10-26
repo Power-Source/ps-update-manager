@@ -157,7 +157,7 @@ class PS_Update_Manager_GitHub_API {
 				'url'     => "https://api.github.com/repos/{$repo}/releases/latest",
 				'headers' => array(
 					'Accept'     => 'application/vnd.github.v3+json',
-					'User-Agent' => 'PS-Update-Manager/1.3.7',
+					'User-Agent' => 'PS-Update-Manager/1.3.8',
 				),
 			);
 		}
