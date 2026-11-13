@@ -147,6 +147,7 @@ Bug reports, concrete improvement suggestions and pull requests are welcome.
 - [GitHub repository](https://github.com/Power-Source/ps-update-manager)
 - [Issues and feature ideas](https://github.com/Power-Source/ps-update-manager/issues)
 - [PSOURCE](https://psource.eimen.net/)
+- [Support PSOURCE](https://psource.eimen.net/spendenaktionen/psource-unterstuetzen/)
 
 When reporting bugs, please describe your ClassicPress and PHP version, whether it's a multisite installation, and the steps to reproduce the behavior.
 

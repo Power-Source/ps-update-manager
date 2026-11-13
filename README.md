@@ -147,6 +147,7 @@ Fehlerberichte, konkrete Verbesserungsvorschläge und Pull Requests sind willkom
 - [GitHub-Repository](https://github.com/Power-Source/ps-update-manager)
 - [Issues und Feature-Ideen](https://github.com/Power-Source/ps-update-manager/issues)
 - [PSOURCE](https://psource.eimen.net/)
+- [PSOURCE unterstützen](https://psource.eimen.net/spendenaktionen/psource-unterstuetzen/)
 
 Bitte beschreibe bei Fehlern Deine ClassicPress- und PHP-Version, ob es sich um eine Multisite-Installation handelt, sowie die Schritte, mit denen sich das Verhalten reproduzieren lässt.
 

@@ -40,6 +40,10 @@ Das PS Manager Dashboard bietet:
 
 Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Source/ps-update-manager).
 
+= PSOURCE unterstützen =
+
+[Unterstütze PSOURCE](https://psource.eimen.net/spendenaktionen/psource-unterstuetzen/).
+
 == Installation ==
 
 1. Plugin hochladen in `/wp-content/plugins/ps-update-manager/`
