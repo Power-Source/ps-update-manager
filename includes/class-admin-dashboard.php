@@ -2222,7 +2222,7 @@ class PS_Update_Manager_Admin_Dashboard {
 
 	/**
 	 * Produkt-Logo URL auflösen
-	 * Prüft ob Logo.png im Plugin-Verzeichnis existiert, sonst psource-logo.png Fallback
+	 * Verwendet den ersten verfügbaren Screenshot, danach Logo-Dateien als Fallback
 	 *
 	 * @param string $slug Plugin/Theme Slug
 	 * @return string Logo URL
@@ -2231,6 +2231,16 @@ class PS_Update_Manager_Admin_Dashboard {
 		// Prüfe zunächst ob das Plugin/Theme lokal installiert ist
 		$plugin_dir = WP_PLUGIN_DIR . '/' . $slug;
 		$theme_dir  = WP_CONTENT_DIR . '/themes/' . $slug;
+
+		// Screenshot-Dateien bevorzugen
+		$screenshot_files = array( 'screenshot.png', 'screenshot.jpg', 'screenshot.jpeg' );
+		foreach ( $screenshot_files as $screenshot_file ) {
+			if ( file_exists( $plugin_dir . '/' . $screenshot_file ) ) {
+				return content_url( 'plugins/' . $slug . '/' . $screenshot_file );
+			} elseif ( file_exists( $theme_dir . '/' . $screenshot_file ) ) {
+				return content_url( 'themes/' . $slug . '/' . $screenshot_file );
+			}
+		}
 
 		// Logo.png lokal prüfen
 		if ( file_exists( $plugin_dir . '/Logo.png' ) ) {
