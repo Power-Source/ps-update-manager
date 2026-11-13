@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 7.1
 ClassicPress: 2.7.4
 Requires PHP: 7.4
-Stable tag: 1.3.8
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,10 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.3.9 =
+* Add: BoniPress, Neue Blog-Vorlagen und Quick Forum zum offiziellen Produktkatalog hinzugefügt.
+* Add: Gegenseitige Kompatibilitätsempfehlungen für BoniPress, Blog-Vorlagen, PS Affiliate und PS Maps sowie für PS Support und PS Chat und für MarketPress und PS Events ergänzt.
 
 = 1.3.8 =
 * Fix: Parallele GitHub-Abfragen bevorzugen die PSR-4-Klassen der Requests-Bibliothek, um Deprecation-Warnungen zu vermeiden; ältere Core-Versionen nutzen weiterhin den Legacy-Fallback.

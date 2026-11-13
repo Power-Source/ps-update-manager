@@ -1,8 +1,8 @@
 **Deutsch** | [English](README.en.md)
 
-[![Version](https://img.shields.io/badge/Version-1.3.8-2271b1?style=flat-square)](readme.txt)
+[![Version](https://img.shields.io/badge/Version-1.3.9-2271b1?style=flat-square)](readme.txt)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white)
-![WordPress](https://img.shields.io/badge/WordPress-bis%207.1.0-21759b?style=flat-square&logo=wordpress&logoColor=white)
+![WordPress](https://img.shields.io/badge/WordPress-bis%207.1.4-21759b?style=flat-square&logo=wordpress&logoColor=white)
 ![ClassicPress](https://img.shields.io/badge/ClassicPress-2.7.4%2B-03768e?style=flat-square)
 [![Lizenz](https://img.shields.io/badge/Lizenz-GPL--2.0--or--later-2ea44f?style=flat-square)](https://www.gnu.org/licenses/gpl-2.0.html)
 
@@ -17,10 +17,10 @@
 
 ---
 
-## Neu in 1.3.8
+## Neu in 1.3.9
 
-- Der offizielle Katalog enthält jetzt **PS SEO** sowie das Upfront-Child-Theme **Spirit**.
-- Änderungen am Produkt-Manifest invalidieren automatisch die Scan- und Registry-Caches. Dadurch erkennt der Katalog bereits installierte Produkte unmittelbar nach ihrer Aufnahme ins Manifest.
+- Der offizielle Katalog enthält jetzt **BoniPress**, **Neue Blog-Vorlagen** und **Quick Forum**.
+- Neue gegenseitige Kompatibilitätsempfehlungen verknüpfen unter anderem BoniPress, Blog-Vorlagen, PS Affiliate und PS Maps mit passenden Produkten.
 
 ## Mehr als ein Updater
 

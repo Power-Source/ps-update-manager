@@ -44,6 +44,22 @@ return array(
 		),
 	),
 
+	'bonips' => array(
+		'type'        => 'plugin',
+		'name'        => 'BoniPress',
+		'repo'        => 'Power-Source/bonips',
+		'description' => 'Ein flexibles Punktesystem für Deine Webseite: Belohne Aktivitäten, verwalte Guthaben und ermögliche das Einlösen oder Übertragen von Punkten.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-awards',
+		'compatible_with' => array(
+			'marketpress'         => 'Belohne Einkäufe mit Punkten und ermögliche Punktzahlungen im Shop',
+			'ps-mitgliedschaften' => 'Vergib Punkte für Registrierungen und bezahlte Mitgliedschaftsrechnungen',
+			'events-and-bookings' => 'Belohne Veranstaltungsveröffentlichungen und Teilnahmezusagen mit Punkten',
+			'coursepress'         => 'Belohne Kursanmeldungen und Lernfortschritte mit Punkten',
+			'ps-community'        => 'Belohne Aktivitäten, Forenbeiträge, Gruppen und Freundschaften mit Punkten',
+		),
+	),
+
 	'ps-snapshot' => array(
 		'type'        => 'plugin',
 		'name'        => 'PS Snapshot',
@@ -73,6 +89,8 @@ return array(
 			'ps-community' => 'Grenze Communityfunktionen auf Mitglieder ein',
 			'ps-kleinanzeigen' => 'Erlaube das veröffentlichen von Anzeigen nur für Mitglieder.',
 			'cp-defender' => 'Verhindere Spam-Registrierungen und biete deinen Mitgliedern mehr Sicherheit',
+			'bonips' => 'Belohne Registrierungen und bezahlte Mitgliedschaftsrechnungen mit Punkten',
+			'affiliate' => 'Vergib Provisionen für vermittelte Mitgliedschaften',
 		),
 	),
 
@@ -104,6 +122,8 @@ return array(
 			'ps-kleinanzeigen'    => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
 			'ps-jobboard'         => 'Erhalte Zahlungen für Jobangebote oder Premium-Listings',
 			'events-and-bookings' => 'Verkaufe Tickets für Veranstaltungen und Partys direkt auf Deiner Webseite',
+			'bonips'              => 'Belohne Einkäufe mit Punkten und ermögliche Punktzahlungen im Shop',
+			'affiliate'           => 'Vergib Provisionen für vermittelte Shop-Bestellungen',
 		),
 	),
 
@@ -132,6 +152,8 @@ return array(
 			'marketpress' => 'Biete Deinen Webseiten-Betreibern einen integrierten E-Commerce-Shop mit Netzwerkweiten Marktplatzfunktionen',
 			'ps-support' => 'Premiumsupport für Deine Webseiten-Betreiber mit Features wie Ticketing, FAQs und mehr',
 			'ps-postindexer' => 'Sammle Content aus dem gesamten Netzwerk und stelle ihn in einem benutzerfreundlichen Dashboard zur Verfügung',
+			'blogvorlagen' => 'Biete passende Webseiten-Vorlagen für Deine Hosting-Tarife an',
+			'affiliate' => 'Vergib Provisionen für vermittelte Hosting-Upgrades',
 		),
 	),
 
@@ -209,6 +231,8 @@ return array(
 		'compatible_with' => array(
 			'marketpress'      	  => 'Verlange Zahlungen für die Platzierung von Anzeigen oder Premium-Listings',
 			'ps-mitgliedschaften' => 'Erlaube das veröffentlichen von Anzeigen nur für Mitglieder.',
+			'affiliate'           => 'Vergib über MarketPress Provisionen für vermittelte Credit-Pakete und Einmalzahlungen',
+			'ps-maps'             => 'Zeige Kleinanzeigenregionen mit Kartenmarkern an',
 		),
 	),
 
@@ -242,6 +266,9 @@ return array(
 		'description' => 'Ein mächtiges Terminmanager-Plugin für Deine ClassicPress-Seite. Ermögliche Benutzern, Termine zu verwalten, Erinnerungen zu erhalten und vieles mehr. Ideal für die Organisation von Meetings und Veranstaltungen.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'ps-maps' => 'Zeige Terminstandorte über die Standort- und Karten-Erweiterungen auf einer Karte an',
+		),
 	),
 
 	'ps-postindexer' => array(
@@ -253,6 +280,7 @@ return array(
 		'icon'        => 'dashicons-welcome-widgets-menus',
 		'compatible_with' => array(
 			'msreader'      => 'Netzwerkweiter Reader mit dem Benutzer Beiträge im Netzwerk durchsuchen können',
+			'ps-maps'       => 'Zeige Karten zu Beiträgen aus dem gesamten Netzwerk anhand ihrer Schlagwörter an',
 		),
 	),
 
@@ -263,6 +291,18 @@ return array(
 		'description' => 'Füge Deiner ClassicPress-Webseite schnell und einfach ein soziales Netzwerk hinzu! PS Community ist unsere Community-Lösung für ClassicPress mit Benutzerprofilen, Freundschaften, privaten Nachrichten, Aktivitäts-Feeds, Gruppen und vielem mehr. Erstelle eine lebendige Community rund um Deine Webseite und binde Deine Benutzer mit sozialen Funktionen ein.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-groups',
+		'compatible_with' => array(
+			'bonips' => 'Belohne Aktivitäten, Forenbeiträge, Gruppen und Freundschaften mit Punkten',
+		),
+	),
+
+	'ps-smart-forum' => array(
+		'type'        => 'plugin',
+		'name'        => 'Quick Forum',
+		'repo'        => 'cp-psource/pscp-forum',
+		'description' => 'Erstelle Foren für Deine Webseite oder Dein Multisite-Netzwerk und binde sie in Seiten oder Beiträge ein.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-format-chat',
 	),
 
 	'ps-wiki' => array(
@@ -308,6 +348,26 @@ return array(
 		'description' => 'Erstelle ein Verzeichnis für Blogs in Deinem Netzwerk. Benutzer können Blogs durchsuchen, nach Kategorien filtern und ihre Favoriten markieren.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'blogvorlagen' => 'Blende Vorlagen-Webseiten aus dem Blogverzeichnis aus',
+		),
+	),
+
+	'blogvorlagen' => array(
+		'type'        => 'plugin',
+		'name'        => 'Neue Blog-Vorlagen',
+		'repo'        => 'cp-psource/blogvorlagen',
+		'description' => 'Erstelle Vorlagen aus bestehenden Webseiten, um neue Webseiten in Deinem Multisite-Netzwerk schneller einzurichten.',
+		'category'    => 'multisite',
+		'icon'        => 'dashicons-admin-page',
+		'compatible_with' => array(
+			'ps-bloghosting'          => 'Biete passende Webseiten-Vorlagen für Deine Hosting-Tarife an',
+			'multisite-content-copier' => 'Verteile Inhalte an Webseiten einer Vorlagengruppe',
+			'blogs-directory'         => 'Blende Vorlagen-Webseiten aus dem Blogverzeichnis aus',
+			'upfront'                 => 'Passe Upfront-Einstellungen beim Erstellen neuer Webseiten aus Vorlagen an',
+			'ps-cloner'               => 'Klone Webseiten, ohne beim Anlegen eine Blog-Vorlage anzuwenden',
+			'affiliate'               => 'Übernimm mit der Bloghosting-Erweiterung keine Affiliate-Zuordnungen aus Vorlagen',
+		),
 	),
 
 	'affiliate' => array(
@@ -317,6 +377,14 @@ return array(
 		'description' => 'Verwalte Dein Affiliate-Programm direkt aus Deinem ClassicPress-Dashboard. Verfolge Partner, Provisionen und Zahlungen einfach und effizient.',
 		'category'    => 'ecommerce',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'marketpress'         => 'Vergib Provisionen für vermittelte Shop-Bestellungen',
+			'ps-mitgliedschaften' => 'Vergib Provisionen für vermittelte Mitgliedschaften',
+			'ps-bloghosting'      => 'Vergib Provisionen für vermittelte Hosting-Upgrades',
+			'directory'           => 'Vergib Provisionen für vermittelte Verzeichnis-Mitgliedschaften',
+			'ps-kleinanzeigen'    => 'Vergib über MarketPress Provisionen für vermittelte Credit-Pakete und Einmalzahlungen',
+			'blogvorlagen'        => 'Übernimm mit der Bloghosting-Erweiterung keine Affiliate-Zuordnungen aus Vorlagen',
+		),
 	),
 
 	'ps-cloner' => array(
@@ -326,6 +394,9 @@ return array(
 		'description' => 'Klonen von Webseiten innerhalb eines Netzwerks einfach gemacht. Erstelle Kopien von bestehenden Seiten mit allen Inhalten, Einstellungen und Plugins.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'blogvorlagen' => 'Klone Webseiten, ohne beim Anlegen eine Blog-Vorlage anzuwenden',
+		),
 	),
 
 	'msreader' => array(
@@ -344,6 +415,9 @@ return array(
 		'description' => 'CoursePress vereinfacht die Online-Ausbildung mit Kursseiten, Paywalls, Social Sharing und einer interaktiven Lernumgebung, mit der mehr Schüler miteinander verbunden werden können. Erstelle und verwalte Online-Kurse direkt von Deinem ClassicPress-Dashboard aus – ideal für Lehrer, Trainer und Bildungseinrichtungen.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'bonips' => 'Belohne Kursanmeldungen und Lernfortschritte mit Punkten',
+		),
 	),
 
 	'e-newsletter' => array(
@@ -362,6 +436,9 @@ return array(
 		'description' => 'Echtzeit-Chat für ClassicPress Multisite Netzwerke. Ermögliche es Deinen Benutzern, in Echtzeit zu kommunizieren, private Nachrichten zu senden und Gruppen-Chats zu erstellen. Alles bleibt auf Deinem eigenen Server – keine Drittanbieter erforderlich!',
 		'category'    => 'community',
 		'icon'        => 'dashicons-format-chat',
+		'compatible_with' => array(
+			'ps-support' => 'Ermögliche private Supportchats mit Deinem Support-Team',
+		),
 	),
 
 	'benutzerdefinierte-seitenleisten' => array(
@@ -398,6 +475,11 @@ return array(
 		'description' => 'PS Events bietet Dir ein flexibles System zur Organisation von Partys, Abendessen, Spendenaktionen – was auch immer Du Dir vorstellen kannst.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'bonips'      => 'Belohne Veranstaltungsveröffentlichungen und Teilnahmezusagen mit Punkten',
+			'marketpress' => 'Verkaufe Veranstaltungsbuchungen über MarketPress und nutze dessen Zahlungsarten',
+			'ps-maps'     => 'Zeige Veranstaltungsorte und Veranstaltungen auf Karten an',
+		),
 	),
 
 	'ps-fundraising' => array(
@@ -425,6 +507,12 @@ return array(
 		'description' => 'Google Maps lässt sich ganz einfach in Deine Webseite einbinden, anpassen und nutzen – in Beiträgen, Seiten oder als benutzerfreundliches Widget. Zeige lokale Bilder an und ermögliche Deinen Besuchern, innerhalb von Sekunden Wegbeschreibungen zu erhalten.',
 		'category'    => 'content',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'events-and-bookings' => 'Zeige Veranstaltungsorte und Veranstaltungen auf Karten an',
+			'ps-kleinanzeigen'    => 'Zeige Kleinanzeigenregionen mit Kartenmarkern an',
+			'terminmanager'       => 'Zeige Terminstandorte über die Standort- und Karten-Erweiterungen auf einer Karte an',
+			'ps-postindexer'      => 'Zeige Karten zu Beiträgen aus dem gesamten Netzwerk anhand ihrer Schlagwörter an',
+		),
 	),
 
 	'ps-medienoptimierung' => array(
@@ -461,6 +549,9 @@ return array(
 		'description' => 'Ein Verzeichnis-Plugin für ClassicPress, mit dem Du Einträge erstellen und verwalten kannst.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
+		'compatible_with' => array(
+			'affiliate' => 'Vergib Provisionen für vermittelte Verzeichnis-Mitgliedschaften',
+		),
 	),
 
 	'multisite-content-copier' => array(
@@ -470,6 +561,9 @@ return array(
 		'description' => 'Kopiere Inhalte zwischen verschiedenen Webseiten in einem Multisite-Netzwerk.',
 		'category'    => 'tools',
 		'icon'        => 'dashicons-admin-links',
+		'compatible_with' => array(
+			'blogvorlagen' => 'Verteile Inhalte an Webseiten einer Vorlagengruppe',
+		),
 	),
 
 	'ps-support' => array(
@@ -479,6 +573,9 @@ return array(
 		'description' => 'Richte auf jeder ClassicPress-Seite ein fantastisches Support-Ticket-System mit häufig gestellten Fragen ein, oder biete Deinen Usern einen Netzwerkweiten HelpDesk an.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-welcome-widgets-menus',
+		'compatible_with' => array(
+			'ps-chat' => 'Ergänze Dein Support-System um private Supportchats',
+		),
 	),
 
 	'upfront-builder' => array(
@@ -533,6 +630,9 @@ return array(
 	 	'icon'        => 'dashicons-admin-customizer',
 	 	'featured'    => true,
 	 	'badge'       => 'framework',
+		'compatible_with' => array(
+			'blogvorlagen' => 'Passe Upfront-Einstellungen beim Erstellen neuer Webseiten aus Vorlagen an',
+		),
 	),
 
 	'uf-fixer' => array(

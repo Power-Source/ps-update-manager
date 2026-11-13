@@ -40,7 +40,7 @@ class PS_Update_Manager_GitHub_API {
 		
 		$headers = array(
 			'Accept' => 'application/vnd.github.v3+json',
-			'User-Agent' => 'PS-Update-Manager/1.1.2',
+			'User-Agent' => 'PS-Update-Manager/' . PS_UPDATE_MANAGER_VERSION,
 		);
 		
 		$response = wp_remote_get( $url, array(
@@ -157,7 +157,7 @@ class PS_Update_Manager_GitHub_API {
 				'url'     => "https://api.github.com/repos/{$repo}/releases/latest",
 				'headers' => array(
 					'Accept'     => 'application/vnd.github.v3+json',
-					'User-Agent' => 'PS-Update-Manager/1.3.8',
+					'User-Agent' => 'PS-Update-Manager/' . PS_UPDATE_MANAGER_VERSION,
 				),
 			);
 		}
@@ -217,7 +217,7 @@ class PS_Update_Manager_GitHub_API {
 		$response = wp_remote_get( $releases_url, array(
 			'timeout' => 15,
 			'headers' => array(
-				'User-Agent' => 'PS-Update-Manager/1.1.2',
+				'User-Agent' => 'PS-Update-Manager/' . PS_UPDATE_MANAGER_VERSION,
 			),
 		) );
 		if ( is_wp_error( $response ) ) {
