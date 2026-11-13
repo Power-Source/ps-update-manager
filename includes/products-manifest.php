@@ -299,7 +299,7 @@ return array(
 	'ps-smart-forum' => array(
 		'type'        => 'plugin',
 		'name'        => 'Quick Forum',
-		'repo'        => 'cp-psource/pscp-forum',
+		'repo'        => 'Power-Source/ps-smart-forum',
 		'description' => 'Erstelle Foren für Deine Webseite oder Dein Multisite-Netzwerk und binde sie in Seiten oder Beiträge ein.',
 		'category'    => 'community',
 		'icon'        => 'dashicons-format-chat',
@@ -356,7 +356,7 @@ return array(
 	'blogvorlagen' => array(
 		'type'        => 'plugin',
 		'name'        => 'Neue Blog-Vorlagen',
-		'repo'        => 'cp-psource/blogvorlagen',
+		'repo'        => 'Power-Source/blogvorlagen',
 		'description' => 'Erstelle Vorlagen aus bestehenden Webseiten, um neue Webseiten in Deinem Multisite-Netzwerk schneller einzurichten.',
 		'category'    => 'multisite',
 		'icon'        => 'dashicons-admin-page',
