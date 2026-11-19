@@ -293,6 +293,21 @@ return array(
 		'icon'        => 'dashicons-groups',
 		'compatible_with' => array(
 			'bonips' => 'Belohne Aktivitäten, Forenbeiträge, Gruppen und Freundschaften mit Punkten',
+			'pen-and-classicpress' => 'Ergänze Pen-and-Paper-Spielrunden mit Profilen, Freunden, Inventar, Wirtschaft und Handel',
+		),
+	),
+
+	'pen-and-classicpress' => array(
+		'type'        => 'plugin',
+		'name'        => 'PS Pen & Paper (Beta)',
+		'repo'        => 'Power-Source/pen-and-classicpress',
+		'description' => 'Ein universeller Pen-and-Paper-Baukasten für eigene Universen, Kampagnen, Regelwerke, Charaktere und Abenteuer. Mit Würfelwürfen, Spielprotokollen und einem themeunabhängigen Frontend-Spielbereich. Beta-Version: Vor dem Einsatz mit wichtigen Spielständen bitte eine Sicherung anlegen.',
+		'category'    => 'community',
+		'icon'        => 'dashicons-book-alt',
+		'compatible_with' => array(
+			'ps-chat'             => 'Nutze den Rundenchat am virtuellen Spieltisch',
+			'ps-community'        => 'Ergänze Profile, Freunde, Inventar, Wirtschaft und Handel für Deine Spielrunden',
+			'events-and-bookings' => 'Verknüpfe Spielrunden mit Veranstaltungen und verwalte dort Termine, Anmeldungen und Absagen',
 		),
 	),
 
@@ -438,6 +453,7 @@ return array(
 		'icon'        => 'dashicons-format-chat',
 		'compatible_with' => array(
 			'ps-support' => 'Ermögliche private Supportchats mit Deinem Support-Team',
+			'pen-and-classicpress' => 'Ermögliche Rundenchats am virtuellen Pen-and-Paper-Spieltisch',
 		),
 	),
 
@@ -479,6 +495,7 @@ return array(
 			'bonips'      => 'Belohne Veranstaltungsveröffentlichungen und Teilnahmezusagen mit Punkten',
 			'marketpress' => 'Verkaufe Veranstaltungsbuchungen über MarketPress und nutze dessen Zahlungsarten',
 			'ps-maps'     => 'Zeige Veranstaltungsorte und Veranstaltungen auf Karten an',
+			'pen-and-classicpress' => 'Verknüpfe Veranstaltungen mit Pen-and-Paper-Kampagnen und Spielrunden',
 		),
 	),
 

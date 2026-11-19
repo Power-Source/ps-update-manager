@@ -1,6 +1,6 @@
 [Deutsch](README.md) | **English**
 
-[![Version](https://img.shields.io/badge/Version-1.3.9-2271b1?style=flat-square)](readme.txt)
+[![Version](https://img.shields.io/badge/Version-1.4.0-2271b1?style=flat-square)](readme.txt)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4?style=flat-square&logo=php&logoColor=white)
 ![WordPress](https://img.shields.io/badge/WordPress-bis%207.1.4-21759b?style=flat-square&logo=wordpress&logoColor=white)
 ![ClassicPress](https://img.shields.io/badge/ClassicPress-2.7.4%2B-03768e?style=flat-square)
@@ -17,10 +17,10 @@
 
 ---
 
-## New in 1.3.9
+## New in 1.4.0
 
-- The official catalog now includes **BoniPress**, **Neue Blog-Vorlagen** and **Quick Forum**.
-- New reciprocal compatibility recommendations link BoniPress, Blog-Vorlagen, PS Affiliate and PS Maps to other suitable products.
+- The official catalog now includes **PS Pen & Paper (Beta)** with a reminder to back up important game data.
+- Reciprocal compatibility recommendations link PS Pen & Paper to **PS Chat**, **PS Community** and **PS Events**.
 
 ## More than an updater
 

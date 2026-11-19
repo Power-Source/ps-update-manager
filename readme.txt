@@ -5,7 +5,7 @@ Requires at least: 5.0
 Tested up to: 7.1
 ClassicPress: 2.7.4
 Requires PHP: 7.4
-Stable tag: 1.3.9
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ Vollständige Dokumentation findest du auf [GitHub](https://github.com/Power-Sou
 3. Dashboard ist unter "PS MANAGER" verfügbar
 
 == Changelog ==
+
+= 1.4.0 =
+* Add: PS Pen & Paper (Beta) zum offiziellen Produktkatalog hinzugefügt, mit gegenseitigen Kompatibilitätsempfehlungen für PS Chat, PS Community und PS Events sowie einem Hinweis zur Sicherung wichtiger Spielstände.
 
 = 1.3.9 =
 * Add: BoniPress, Neue Blog-Vorlagen und Quick Forum zum offiziellen Produktkatalog hinzugefügt.
